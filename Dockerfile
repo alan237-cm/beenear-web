@@ -45,6 +45,9 @@ RUN npm ci
 RUN npm run build
 # Crear base de datos SQLite temporal para el proceso de build
 RUN touch database/database.sqlite
+# Usar archivos para la caché durante el build
+ENV CACHE_STORE=file
+
 # Limpiar cachés de Laravel
 RUN php artisan optimize:clear
 
