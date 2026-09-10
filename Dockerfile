@@ -43,7 +43,8 @@ RUN npm ci
 
 # Compilar React/Vite
 RUN npm run build
-
+# Crear base de datos SQLite temporal para el proceso de build
+RUN touch database/database.sqlite
 # Limpiar cachés de Laravel
 RUN php artisan optimize:clear
 
