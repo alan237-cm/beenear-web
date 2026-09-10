@@ -138,7 +138,79 @@ const resources = {
       "footer_links": "Quick Links",
       "footer_contact": "Contact",
       "footer_rights": "All rights reserved.",
-      "footer_privacy": "Privacy Policy"
+      "footer_privacy": "Privacy Policy",
+
+      // NEW HOME SECTIONS (EN)
+      "hero_check_1": "Professional solutions",
+      "hero_check_2": "Business focus",
+      "hero_scroll": "SCROLL TO EXPLORE",
+      
+      "home_tech_pretitle": "BEE NEAR",
+      "home_tech_title_1": "Technology with a ",
+      "home_tech_title_highlight": "business vision.",
+      "home_tech_desc": "We help organizations transform their processes through technological solutions, strategy, and specialized services.",
+      
+      "home_card1_title": "Solutions",
+      "home_card1_desc": "Approaches designed for the specific needs of each organization.",
+      
+      "home_card2_title": "Results",
+      "home_card2_desc": "Technology oriented to generate value and growth for our clients.",
+      
+      "home_cta_subtitle": "READY TO START?",
+      "home_cta_title_1": "Let's make technology ",
+      "home_cta_title_highlight": "work for you.",
+      "home_cta_desc": "Explore our solutions and discover how Bee Near can help boost your organization.",
+
+      // NEW ABOUT US SECTIONS (EN)
+      "about_who_we_are": "WHO WE ARE",
+      "about_direction_pretitle": "OUR DIRECTION",
+      "about_direction_title_1": "A clear vision to ",
+      "about_direction_title_highlight": "transform.",
+      "about_values_desc": "The principles that guide our way of working, collaborating, and generating value.",
+      "about_cta_title_1": "Let's build something ",
+      "about_cta_title_highlight": "extraordinary.",
+      "about_cta_desc": "Learn about our solutions and discover how we can help you achieve your goals.",
+
+      // SERVICES PAGE (EN)
+      "services_hero_title": "Business Portfolio",
+      "services_hero_desc": "We offer specialized solutions tailored to your business needs.",
+      "services_hero_scroll": "OUR SOLUTIONS",
+      
+      "services_what_pretitle": "WHAT WE DO",
+      "services_what_title_1": "Solutions designed to ",
+      "services_what_title_highlight": "grow your business.",
+      
+      "srv_card1_title": "Contact Center Portfolio",
+      "srv_card1_desc": "We offer specialized solutions tailored to your business needs.",
+      "srv_card1_item1": "Customer Service",
+      "srv_card1_item2": "Pre & Post-Sales",
+      "srv_card1_item3": "Sales & Collections",
+      "srv_card1_item4": "Virtual PA",
+      "srv_card1_item5": "IT Development",
+      "srv_card_btn": "More Info!",
+      
+      "srv_card2_title": "Intake Sales Portfolio",
+      "srv_card2_desc": "We offer specialized solutions tailored to your business needs.",
+      "srv_card2_item1": "Re Purchase & Loyalty",
+      "srv_card2_item2": "Promotions & Referrals",
+      "srv_card2_item3": "Retention & Collection",
+      "srv_card2_item4": "Lead Nurturing",
+      "srv_card2_item5": "Existing Customer Engagement",
+      
+      "services_why_pretitle": "WHY BEE NEAR",
+      "services_why_title_1": "Technology and talent ",
+      "services_why_title_highlight": "working together.",
+      "services_why_desc": "We combine people, processes, and technology to create solutions that truly generate results for our clients.",
+      
+      "srv_blackcard_title": "Business Solutions",
+      "srv_blackcard_item1": "Human talent",
+      "srv_blackcard_item2": "Automation",
+      "srv_blackcard_item3": "Artificial Intelligence",
+      "srv_blackcard_result": "Business growth",
+      
+      "services_cta_title_1": "Ready to take your business ",
+      "services_cta_title_highlight": "to the next level?",
+      "services_cta_desc": "Let's talk about how our solutions can help you achieve your goals."
     }
   },
   es: {
@@ -278,6 +350,78 @@ const resources = {
       "footer_contact": "Contacto",
       "footer_rights": "Todos los derechos reservados.",
       "footer_privacy": "Aviso de Privacidad",
+
+      // NEW HOME SECTIONS (ES)
+      "hero_check_1": "Soluciones profesionales",
+      "hero_check_2": "Enfoque empresarial",
+      "hero_scroll": "DESLIZA PARA EXPLORAR",
+      
+      "home_tech_pretitle": "BEE NEAR",
+      "home_tech_title_1": "Tecnología con una visión ",
+      "home_tech_title_highlight": "empresarial.",
+      "home_tech_desc": "Ayudamos a las organizaciones a transformar sus procesos mediante soluciones tecnológicas, estrategia y servicios especializados.",
+      
+      "home_card1_title": "Soluciones",
+      "home_card1_desc": "Enfoques diseñados para las necesidades específicas de cada organización.",
+      
+      "home_card2_title": "Resultados",
+      "home_card2_desc": "Tecnología orientada a generar valor y crecimiento para nuestros clientes.",
+      
+      "home_cta_subtitle": "¿LISTO PARA COMENZAR?",
+      "home_cta_title_1": "Hagamos que la tecnología ",
+      "home_cta_title_highlight": "trabaje para ti.",
+      "home_cta_desc": "Conoce nuestras soluciones y descubre cómo Bee Near puede ayudar a impulsar tu organización.",
+
+      // NEW ABOUT US SECTIONS (ES)
+      "about_who_we_are": "QUIÉNES SOMOS",
+      "about_direction_pretitle": "NUESTRO RUMBO",
+      "about_direction_title_1": "Una visión clara para ",
+      "about_direction_title_highlight": "transformar.",
+      "about_values_desc": "Los principios que guían nuestra forma de trabajar, colaborar y generar valor.",
+      "about_cta_title_1": "Construyamos algo ",
+      "about_cta_title_highlight": "extraordinario.",
+      "about_cta_desc": "Conoce nuestras soluciones y descubre cómo podemos ayudarte a alcanzar tus objetivos.",
+
+      // SERVICES PAGE (ES)
+      "services_hero_title": "Portafolio de Negocios",
+      "services_hero_desc": "Ofrecemos soluciones especializadas adaptadas a las necesidades de tu negocio.",
+      "services_hero_scroll": "NUESTRAS SOLUCIONES",
+      
+      "services_what_pretitle": "QUÉ HACEMOS",
+      "services_what_title_1": "Soluciones diseñadas para ",
+      "services_what_title_highlight": "hacer crecer tu negocio.",
+      
+      "srv_card1_title": "Portafolio Contact Center",
+      "srv_card1_desc": "Ofrecemos soluciones especializadas adaptadas a las necesidades de tu negocio.",
+      "srv_card1_item1": "Atención al Cliente",
+      "srv_card1_item2": "Pre y Post Venta",
+      "srv_card1_item3": "Ventas y Cobranza",
+      "srv_card1_item4": "Asistente Virtual",
+      "srv_card1_item5": "Desarrollo TI",
+      "srv_card_btn": "¡Más Info!",
+      
+      "srv_card2_title": "Portafolio Intake Sales",
+      "srv_card2_desc": "Ofrecemos soluciones especializadas adaptadas a las necesidades de tu negocio.",
+      "srv_card2_item1": "Recompra y Lealtad",
+      "srv_card2_item2": "Promociones y Referidos",
+      "srv_card2_item3": "Retención y Cobranza",
+      "srv_card2_item4": "Nutrición de Leads",
+      "srv_card2_item5": "Interacción con Clientes",
+      
+      "services_why_pretitle": "POR QUÉ BEE NEAR",
+      "services_why_title_1": "Tecnología y talento ",
+      "services_why_title_highlight": "trabajando juntos.",
+      "services_why_desc": "Combinamos personas, procesos y tecnología para crear soluciones que realmente generen resultados para nuestros clientes.",
+      
+      "srv_blackcard_title": "Soluciones de Negocio",
+      "srv_blackcard_item1": "Talento humano",
+      "srv_blackcard_item2": "Automatización",
+      "srv_blackcard_item3": "Inteligencia Artificial",
+      "srv_blackcard_result": "Crecimiento empresarial",
+      
+      "services_cta_title_1": "¿Listo para llevar tu negocio ",
+      "services_cta_title_highlight": "al siguiente nivel?",
+      "services_cta_desc": "Hablemos sobre cómo nuestras soluciones pueden ayudarte a alcanzar tus objetivos."
     }
   }
 };

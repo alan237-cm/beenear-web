@@ -36,95 +36,74 @@ export default function About() {
                 {/* =====================================================
                     NAVBAR
                 ====================================================== */}
-                <nav className="absolute top-0 left-0 right-0 z-50 px-4 md:px-8 pt-5">
+                <div className="fixed top-4 inset-x-0 z-50 px-4 md:px-8 max-w-7xl mx-auto w-full">
+    <nav className="bg-white text-bee-dark px-6 md:px-8 h-[84px] flex justify-between items-center shadow-xl rounded-2xl">
+        
+        {/* Logo Imagotipo (Más grande y con efecto de escala) */}
+        <Link href="/" className="flex items-center cursor-pointer">
+            <img 
+                src="/images/imagotipo.jpeg" 
+                alt="Bee Near Logo" 
+                className="h-14 md:h-16 w-auto object-contain transform hover:scale-105 transition duration-300" 
+            />
+        </Link>
+        
+        {/* Menú de navegación con estilos, colores y espaciados originales */}
+        <div className="hidden md:flex items-center gap-7 font-medium text-sm">
+            
+            {/* Inicio */}
+            <Link 
+                href="/" 
+                className="relative text-bee-dark hover:text-bee-yellow transition duration-300"
+            >
+                {t('nav_home')}
+                {/* Línea indicadora de página activa */}
+            </Link>
 
-                    <div className="max-w-7xl mx-auto">
+            {/* Nosotros (ACTIVO) */}
+            <Link 
+                href="/nosotros" 
+                className="relative text-bee-dark hover:text-bee-yellow transition duration-300"
+            >
+                {t('nav_about')}
+                {/* Línea indicadora de página activa */}
+                <span className="absolute -bottom-2 left-0 w-full h-[2px] bg-bee-yellow rounded-full" />
+            </Link>
 
-                        <div className="h-[68px] bg-white/95 backdrop-blur-md rounded-xl shadow-md border border-white/70 px-5 md:px-7 flex justify-between items-center">
+            {/* Servicios */}
+            <Link 
+                href="/servicios" 
+                className="text-gray-600 hover:text-bee-dark transition duration-300"
+            >
+                {t('nav_services')}
+            </Link>
 
-                            {/* Logo */}
-                            <Link
-                                href="/"
-                                className="flex items-center gap-3 group"
-                            >
-                                <img
-                                    src="/images/logo.png"
-                                    alt="Bee Near Logo"
-                                    className="h-10 w-10 md:h-11 md:w-11 transition duration-300 group-hover:scale-105"
-                                />
+            {/* Separador vertical elegante */}
+            <div className="h-7 w-px bg-gray-200" />
 
-                                <div className="text-2xl md:text-3xl font-heading font-bold tracking-tight">
-                                    <span className="text-bee-dark">Bee</span>
-                                    <span className="text-bee-yellow">Near</span>
-                                </div>
-                            </Link>
+            {/* Idioma */}
+            <button 
+                onClick={toggleLanguage} 
+                className="font-bold text-sm text-bee-dark hover:text-bee-yellow transition duration-300"
+            >
+                {i18n.language === 'es' ? '🇺🇸 EN' : '🇲🇽 ES'}
+            </button>
 
-
-                            {/* Menú */}
-                            <div className="hidden md:flex items-center gap-7 font-medium text-sm">
-
-                                {/* Inicio */}
-                                <Link
-                                    href="/"
-                                    className="text-gray-600 hover:text-bee-dark transition duration-300"
-                                >
-                                    {t('nav_home')}
-                                </Link>
-
-
-                                {/* Nosotros */}
-                                <Link
-                                    href="/nosotros"
-                                    className="relative text-bee-dark hover:text-bee-yellow transition duration-300"
-                                >
-                                    {t('nav_about')}
-
-                                    <span className="absolute -bottom-2 left-0 w-full h-[2px] bg-bee-yellow rounded-full" />
-                                </Link>
-
-
-                                {/* Servicios */}
-                                <Link
-                                    href="/servicios"
-                                    className="text-gray-600 hover:text-bee-dark transition duration-300"
-                                >
-                                    {t('nav_services')}
-                                </Link>
-
-
-                                {/* Separador */}
-                                <div className="h-7 w-px bg-gray-200" />
-
-
-                                {/* Idioma */}
-                                <button
-                                    onClick={toggleLanguage}
-                                    className="font-bold text-sm text-bee-dark hover:text-bee-yellow transition duration-300"
-                                >
-                                    {i18n.language === 'es' ? '🇺🇸 EN' : '🇲🇽 ES'}
-                                </button>
-
-
-                                {/* Contacto */}
-                                <Link
-                                    href="/contacto"
-                                    className="group flex items-center gap-2 bg-bee-yellow text-bee-dark px-5 py-2.5 rounded-lg font-bold hover:bg-yellow-400 transition duration-300 shadow-sm"
-                                >
-                                    {t('nav_contact')}
-
-                                    <ArrowRight
-                                        size={17}
-                                        className="transition-transform duration-300 group-hover:translate-x-1"
-                                    />
-                                </Link>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </nav>
+            {/* Contacto (Botón con flecha animada y bordes redondeados) */}
+            <Link 
+                href="/contacto" 
+                className="group flex items-center gap-2 bg-bee-yellow text-bee-dark px-6 py-2.5 rounded-xl font-bold hover:bg-yellow-400 transition duration-300 shadow-sm"
+            >
+                {t('nav_contact')}
+                <ArrowRight 
+                    size={17} 
+                    className="transition-transform duration-300 group-hover:translate-x-1" 
+                />
+            </Link>
+            
+        </div>
+    </nav>
+</div>
 
 
                 {/* =====================================================
@@ -183,7 +162,7 @@ export default function About() {
                         <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
 
                             <span className="text-white/40 text-xs tracking-[0.25em] uppercase">
-                                Who we are
+                            {t('about_who_we_are')}
                             </span>
 
 
@@ -219,19 +198,18 @@ export default function About() {
                                     <span className="h-1 w-8 bg-bee-yellow rounded-full" />
 
                                     <span className="text-sm font-bold tracking-[0.2em] uppercase text-gray-500">
-                                        Our direction
+                                        {t('about_direction_pretitle')}
                                     </span>
 
                                 </div>
 
                                 <h2 className="text-4xl md:text-5xl font-heading font-extrabold leading-tight">
-                                    Una visión clara para
+                                    {t('about_direction_title_1')}
                                     <span className="text-bee-yellow">
-                                        {' '}transformar.
-                                    </span>
-                                </h2>
-
-                            </div>
+                                        {' '}{t('about_direction_title_highlight')}
+                                        </span>
+                                        </h2>
+                                </div>
 
 
                             {/* Tarjetas */}
@@ -347,10 +325,8 @@ export default function About() {
 
 
                                 <p className="text-gray-600 text-lg leading-relaxed">
-                                    Los principios que guían nuestra forma de trabajar,
-                                    colaborar y generar valor.
-                                </p>
-
+                                    {t('about_values_desc')}
+                                    </p>
                             </div>
 
 
@@ -444,16 +420,15 @@ export default function About() {
 
 
                             <h2 className="text-white text-4xl md:text-5xl font-heading font-extrabold mt-4 mb-6">
-                                Construyamos algo
+                                {t('about_cta_title_1')}
                                 <span className="text-bee-yellow">
-                                    {' '}extraordinario.
-                                </span>
+                                    {' '}{t('about_cta_title_highlight')}
+                                    </span>
                             </h2>
 
 
                             <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-9">
-                                Conoce nuestras soluciones y descubre cómo podemos
-                                ayudarte a alcanzar tus objetivos.
+                                {t('about_cta_desc')}
                             </p>
 
 

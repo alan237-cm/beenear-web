@@ -35,95 +35,74 @@ export default function Welcome() {
                 {/* =====================================================
                     NAVBAR
                 ====================================================== */}
-                <nav className="absolute top-0 left-0 right-0 z-50 px-4 md:px-8 pt-5">
+                {/* Navbar Flotante (Sticky) */}
+<div className="fixed top-4 inset-x-0 z-50 px-4 md:px-8 max-w-7xl mx-auto w-full">
+    <nav className="bg-white text-bee-dark px-6 md:px-8 h-[84px] flex justify-between items-center shadow-xl rounded-2xl">
+        
+        {/* Logo Imagotipo (Más grande y con efecto de escala) */}
+        <Link href="/" className="flex items-center cursor-pointer">
+            <img 
+                src="/images/imagotipo.jpeg" 
+                alt="Bee Near Logo" 
+                className="h-14 md:h-16 w-auto object-contain transform hover:scale-105 transition duration-300" 
+            />
+        </Link>
+        
+        {/* Menú de navegación con estilos, colores y espaciados originales */}
+        <div className="hidden md:flex items-center gap-7 font-medium text-sm">
+            
+            {/* Inicio */}
+            <Link 
+                href="/" 
+                className="relative text-bee-dark hover:text-bee-yellow transition duration-300"
+            >
+                {t('nav_home')}
+                {/* Línea indicadora de página activa */}
+                <span className="absolute -bottom-2 left-0 w-full h-[2px] bg-bee-yellow rounded-full" />
+            </Link>
 
-                    <div className="max-w-7xl mx-auto">
+            {/* Nosotros */}
+            <Link 
+                href="/nosotros" 
+                className="text-gray-600 hover:text-bee-dark transition duration-300"
+            >
+                {t('nav_about')}
+            </Link>
 
-                        <div className="h-[68px] bg-white/95 backdrop-blur-md rounded-xl shadow-md border border-white/70 px-5 md:px-7 flex justify-between items-center">
+            {/* Servicios */}
+            <Link 
+                href="/servicios" 
+                className="text-gray-600 hover:text-bee-dark transition duration-300"
+            >
+                {t('nav_services')}
+            </Link>
 
-                            {/* Logo */}
-                            <Link
-                                href="/"
-                                className="flex items-center gap-3 group"
-                            >
-                                <img
-                                    src="/images/logo.png"
-                                    alt="Bee Near Logo"
-                                    className="h-10 w-10 md:h-11 md:w-11 transition duration-300 group-hover:scale-105"
-                                />
+            {/* Separador vertical elegante */}
+            <div className="h-7 w-px bg-gray-200" />
 
-                                <div className="text-2xl md:text-3xl font-heading font-bold tracking-tight">
-                                    <span className="text-bee-dark">Bee</span>
-                                    <span className="text-bee-yellow">Near</span>
-                                </div>
-                            </Link>
+            {/* Idioma */}
+            <button 
+                onClick={toggleLanguage} 
+                className="font-bold text-sm text-bee-dark hover:text-bee-yellow transition duration-300"
+            >
+                {i18n.language === 'es' ? '🇺🇸 EN' : '🇲🇽 ES'}
+            </button>
 
-
-                            {/* Menú */}
-                            <div className="hidden md:flex items-center gap-7 font-medium text-sm">
-
-                                {/* Inicio */}
-                                <Link
-                                    href="/"
-                                    className="relative text-bee-dark hover:text-bee-yellow transition duration-300"
-                                >
-                                    {t('nav_home')}
-
-                                    <span className="absolute -bottom-2 left-0 w-full h-[2px] bg-bee-yellow rounded-full" />
-                                </Link>
-
-
-                                {/* Nosotros */}
-                                <Link
-                                    href="/nosotros"
-                                    className="text-gray-600 hover:text-bee-dark transition duration-300"
-                                >
-                                    {t('nav_about')}
-                                </Link>
-
-
-                                {/* Servicios */}
-                                <Link
-                                    href="/servicios"
-                                    className="text-gray-600 hover:text-bee-dark transition duration-300"
-                                >
-                                    {t('nav_services')}
-                                </Link>
-
-
-                                {/* Separador */}
-                                <div className="h-7 w-px bg-gray-200" />
-
-
-                                {/* Idioma */}
-                                <button
-                                    onClick={toggleLanguage}
-                                    className="font-bold text-sm text-bee-dark hover:text-bee-yellow transition duration-300"
-                                >
-                                    {i18n.language === 'es' ? '🇺🇸 EN' : '🇲🇽 ES'}
-                                </button>
-
-
-                                {/* Contacto */}
-                                <Link
-                                    href="/contacto"
-                                    className="group flex items-center gap-2 bg-bee-yellow text-bee-dark px-5 py-2.5 rounded-lg font-bold hover:bg-yellow-400 transition duration-300 shadow-sm"
-                                >
-                                    {t('nav_contact')}
-
-                                    <ArrowRight
-                                        size={17}
-                                        className="transition-transform duration-300 group-hover:translate-x-1"
-                                    />
-                                </Link>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </nav>
+            {/* Contacto (Botón con flecha animada y bordes redondeados) */}
+            <Link 
+                href="/contacto" 
+                className="group flex items-center gap-2 bg-bee-yellow text-bee-dark px-6 py-2.5 rounded-xl font-bold hover:bg-yellow-400 transition duration-300 shadow-sm"
+            >
+                {t('nav_contact')}
+                <ArrowRight 
+                    size={17} 
+                    className="transition-transform duration-300 group-hover:translate-x-1" 
+                />
+            </Link>
+            
+        </div>
+    </nav>
+</div>
 
 
                 {/* =====================================================
@@ -270,7 +249,7 @@ export default function Welcome() {
                                     />
 
                                     <span>
-                                        Soluciones profesionales
+                                        {t('hero_check_1')}
                                     </span>
 
                                 </div>
@@ -284,7 +263,7 @@ export default function Welcome() {
                                     />
 
                                     <span>
-                                        Enfoque empresarial
+                                        {t('hero_check_2')}
                                     </span>
 
                                 </div>
@@ -302,7 +281,7 @@ export default function Welcome() {
                         <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
 
                             <span className="text-white/50 text-xs tracking-[0.25em] uppercase">
-                                Scroll to explore
+                                {t('hero_scroll')}
                             </span>
 
 
@@ -338,24 +317,22 @@ export default function Welcome() {
                                     <span className="h-1 w-8 bg-bee-yellow rounded-full" />
 
                                     <span className="text-sm font-bold tracking-[0.2em] uppercase text-gray-500">
-                                        Bee Near
+                                        {t('home_tech_pretitle')}
                                     </span>
 
                                 </div>
 
 
                                 <h2 className="text-4xl md:text-5xl font-heading font-extrabold leading-tight mb-6">
-                                    Tecnología con una visión
+                                    {t('home_tech_title_1')}
                                     <span className="text-bee-yellow">
-                                        {' '}empresarial.
+                                        {' '}{t('home_tech_title_highlight')}
                                     </span>
                                 </h2>
 
 
                                 <p className="text-gray-600 text-lg leading-relaxed max-w-xl">
-                                    Ayudamos a las organizaciones a transformar sus
-                                    procesos mediante soluciones tecnológicas,
-                                    estrategia y servicios especializados.
+                                    {t('home_tech_desc')}
                                 </p>
 
                             </div>
@@ -378,13 +355,12 @@ export default function Welcome() {
 
 
                                     <h3 className="font-heading font-bold text-xl mb-2">
-                                        Soluciones
+                                        {t('home_card1_title')}
                                     </h3>
 
 
                                     <p className="text-gray-500 text-sm leading-relaxed">
-                                        Enfoques diseñados para las necesidades
-                                        específicas de cada organización.
+                                        {t('home_card1_desc')}
                                     </p>
 
                                 </div>
@@ -404,13 +380,12 @@ export default function Welcome() {
 
 
                                     <h3 className="font-heading font-bold text-xl mb-2">
-                                        Resultados
+                                        {t('home_card2_title')}
                                     </h3>
 
 
                                     <p className="text-gray-400 text-sm leading-relaxed">
-                                        Tecnología orientada a generar valor
-                                        y crecimiento para nuestros clientes.
+                                        {t('home_card2_desc')}
                                     </p>
 
                                 </div>
@@ -438,21 +413,20 @@ export default function Welcome() {
                     <div className="relative max-w-5xl mx-auto text-center">
 
                         <span className="text-bee-yellow text-sm font-bold tracking-[0.25em] uppercase">
-                            ¿Listo para comenzar?
+                            {t('home_cta_subtitle')}
                         </span>
 
 
                         <h2 className="text-white text-4xl md:text-5xl font-heading font-extrabold mt-4 mb-6">
-                            Hagamos que la tecnología
+                            {t('home_cta_title_1')}
                             <span className="text-bee-yellow">
-                                {' '}trabaje para ti.
+                                {' '}{t('home_cta_title_highlight')}
                             </span>
                         </h2>
 
 
                         <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-9">
-                            Conoce nuestras soluciones y descubre cómo Bee Near
-                            puede ayudar a impulsar tu organización.
+                            {t('home_cta_desc')}
                         </p>
 
 
@@ -475,170 +449,49 @@ export default function Welcome() {
                 </section>
 
 
-                {/* =====================================================
-                    FOOTER
-                ====================================================== */}
-                <footer className="bg-bee-dark text-white pt-16 pb-8 px-6 md:px-8 border-t border-white/10">
-
-                    <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-12 mb-12">
-
-                        {/* Marca */}
+                {/* Footer Corporativo */}
+                <footer className="bg-bee-dark text-white pt-16 pb-8 px-8 border-t-4 border-bee-yellow mt-auto">
+                    <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-12 mb-12">
+                        
+                        {/* Columna 1: Marca */}
                         <div>
-
-                            <div className="flex items-center gap-3 mb-6">
-
-                                <img
-                                    src="/images/logo.png"
-                                    alt="Bee Near Logo"
-                                    className="h-10 w-10"
-                                />
-
-                                <div className="text-2xl font-heading font-bold tracking-tight">
-
-                                    <span>Bee</span>
-                                    <span className="text-bee-yellow">Near</span>
-
+                            {/* Si usas el imagotipo aquí también, puedes cambiar este bloque */}
+                            <div className="flex items-center space-x-2 mb-6">
+                                <img src="/images/logo.png" alt="Bee Near Logo" className="h-10 w-10" />
+                                <div className="text-2xl font-heading font-bold tracking-wider">
+                                    <span className="text-white">Bee</span><span className="text-bee-yellow">Near</span>
                                 </div>
-
                             </div>
-
-
-                            <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
-                                {t('footer_desc')}
-                            </p>
-
+                            <p className="text-gray-400 text-sm leading-relaxed">{t('footer_desc')}</p>
                         </div>
-
-
-                        {/* Enlaces rápidos */}
+                        
+                        {/* Columna 2: Enlaces Rápidos */}
                         <div>
-
-                            <h4 className="text-sm font-heading font-bold mb-6 text-bee-yellow uppercase tracking-wider">
-                                {t('footer_links')}
-                            </h4>
-
-
-                            <ul className="space-y-4 text-sm text-gray-400">
-
-                                <li>
-                                    <Link
-                                        href="/"
-                                        className="hover:text-white transition"
-                                    >
-                                        {t('nav_home')}
-                                    </Link>
-                                </li>
-
-
-                                <li>
-                                    <Link
-                                        href="/nosotros"
-                                        className="hover:text-white transition"
-                                    >
-                                        {t('nav_about')}
-                                    </Link>
-                                </li>
-
-
-                                <li>
-                                    <Link
-                                        href="/servicios"
-                                        className="hover:text-white transition"
-                                    >
-                                        {t('nav_services')}
-                                    </Link>
-                                </li>
-
-
-                                <li>
-                                    <Link
-                                        href="/contacto"
-                                        className="hover:text-white transition"
-                                    >
-                                        {t('nav_contact')}
-                                    </Link>
-                                </li>
-
+                            <h4 className="text-sm font-bold tracking-[0.15em] uppercase mb-6 text-bee-yellow">{t('footer_links')}</h4>
+                            <ul className="space-y-4 text-sm text-gray-400 font-medium">
+                                <li><Link href="/" className="hover:text-bee-yellow transition">{t('nav_home')}</Link></li>
+                                <li><Link href="/nosotros" className="hover:text-bee-yellow transition">{t('nav_about')}</Link></li>
+                                <li><Link href="/servicios" className="hover:text-bee-yellow transition">{t('nav_services')}</Link></li>
+                                <li><Link href="/contacto" className="hover:text-bee-yellow transition">{t('nav_contact')}</Link></li>
                             </ul>
-
                         </div>
-
-
-                        {/* Contacto */}
+                        
+                        {/* Columna 3: Contacto */}
                         <div>
-
-                            <h4 className="text-sm font-heading font-bold mb-6 text-bee-yellow uppercase tracking-wider">
-                                {t('footer_contact')}
-                            </h4>
-
-
+                            <h4 className="text-sm font-bold tracking-[0.15em] uppercase mb-6 text-bee-yellow">{t('footer_contact')}</h4>
                             <ul className="space-y-4 text-sm text-gray-400">
-
-                                <li className="flex items-center gap-3">
-
-                                    <Mail
-                                        size={18}
-                                        className="text-bee-yellow flex-shrink-0"
-                                    />
-
-                                    <span>
-                                        moreinfo@beenear.mx
-                                    </span>
-
-                                </li>
-
-
-                                <li className="flex items-center gap-3">
-
-                                    <Phone
-                                        size={18}
-                                        className="text-bee-yellow flex-shrink-0"
-                                    />
-
-                                    <span>
-                                        +1 (215) 318-0179
-                                    </span>
-
-                                </li>
-
-
-                                <li className="flex items-start gap-3">
-
-                                    <MapPin
-                                        size={18}
-                                        className="text-bee-yellow flex-shrink-0 mt-1"
-                                    />
-
-                                    <span>
-                                        Ejército Nacional 373, CDMX
-                                    </span>
-
-                                </li>
-
+                                <li className="flex items-center gap-3"><Mail size={18} className="text-bee-yellow" /> moreinfo@beenear.mx</li>
+                                <li className="flex items-center gap-3"><Phone size={18} className="text-bee-yellow" /> +1 (215) 318-0179</li>
+                                <li className="flex items-start gap-3"><MapPin size={18} className="text-bee-yellow flex-shrink-0 mt-1" /> Ejército Nacional 373, CDMX</li>
                             </ul>
-
                         </div>
-
                     </div>
 
-
-                    {/* Copyright */}
-                    <div className="max-w-7xl mx-auto border-t border-gray-700/70 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500 gap-4">
-
-                        <p>
-                            &copy; {new Date().getFullYear()} BeeNear. {t('footer_rights')}
-                        </p>
-
-
-                        <a
-                            href="#"
-                            className="hover:text-bee-yellow transition font-medium"
-                        >
-                            {t('footer_privacy')}
-                        </a>
-
+                    {/* Copyright y Políticas */}
+                    <div className="max-w-6xl mx-auto border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500 gap-4">
+                        <p>&copy; {new Date().getFullYear()} Bee Near. {t('footer_rights')}</p>
+                        <a href="#" className="hover:text-bee-yellow transition font-medium">{t('footer_privacy')}</a>
                     </div>
-
                 </footer>
 
             </div>
