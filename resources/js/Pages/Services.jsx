@@ -87,6 +87,12 @@ export default function Services() {
                                 <span className="absolute -bottom-2 left-0 w-full h-[2px] bg-bee-yellow rounded-full" />
                             </Link>
 
+                            {/* Blog */}
+                            <Link href="/blog"
+                            className="text-gray-600 hover:text-bee-dark transition duration-300">
+                                Blog
+                            </Link>
+
                             {/* Separador vertical elegante */}
                             <div className="h-7 w-px bg-gray-200" />
 
@@ -143,9 +149,11 @@ export default function Services() {
                             </Link>
 
                             {/* Blog */}
-                            <Link href="/blog"
-                            className="text-gray-600 hover:text-bee-dark transition duration-300">
-                                Blog
+                            <Link
+                                href="/blog"
+                                onClick={() => setIsMenuOpen(false)}
+                                className="text-gray-700 hover:text-bee-yellow font-medium pb-3 border-b border-gray-100"
+                            >
                             </Link>
 
                             {/* Idioma y Contacto */}

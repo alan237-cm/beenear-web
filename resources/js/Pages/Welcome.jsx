@@ -92,8 +92,8 @@ export default function Welcome() {
                             </Link>
 
                             {/* Blog */}
-                            <Link href="/blog" 
-                            className="text-gray-600 hover:text-bee-dark transition duration-300">
+                            <Link href="/blog"
+                                className="text-gray-600 hover:text-bee-dark transition duration-300">
                                 Blog
                             </Link>
 
@@ -153,6 +153,14 @@ export default function Welcome() {
                                 {t('nav_services')}
                             </Link>
 
+                            {/* Blog */}
+                            <Link
+                                href="/blog"
+                                onClick={() => setIsMenuOpen(false)}
+                                className="text-gray-700 hover:text-bee-yellow font-medium pb-3 border-b border-gray-100"
+                            >
+                            </Link>
+
                             {/* Idioma y Contacto */}
                             <div className="flex justify-between items-center mt-2">
                                 {/* Cambiar idioma */}
@@ -183,7 +191,6 @@ export default function Welcome() {
 
                     {/* Carrusel de imágenes */}
                     <div className="absolute inset-0 z-0">
-
                         <Swiper
                             modules={[Autoplay, EffectFade]}
                             effect="fade"
@@ -195,36 +202,38 @@ export default function Welcome() {
                             allowTouchMove={false}
                             className="h-full w-full"
                         >
-
                             {/* Imagen 1 */}
                             <SwiperSlide>
-
                                 <div
                                     className="h-full w-full bg-cover bg-center"
-                                    style={{
-                                        backgroundImage:
-                                            "url('https://images.unsplash.com/photo-1549923746-c502d488b3ea?q=80&w=2071&auto=format&fit=crop')",
-                                    }}
+                                    style={{ backgroundImage: "url('/images/slide-1.jpg')" }}
                                 />
-
                             </SwiperSlide>
-
 
                             {/* Imagen 2 */}
                             <SwiperSlide>
-
                                 <div
                                     className="h-full w-full bg-cover bg-center"
-                                    style={{
-                                        backgroundImage:
-                                            "url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1950&auto=format&fit=crop')",
-                                    }}
+                                    style={{ backgroundImage: "url('/images/slide-2.jpg')" }}
                                 />
-
                             </SwiperSlide>
 
-                        </Swiper>
+                            {/* Imagen 3 */}
+                            <SwiperSlide>
+                                <div
+                                    className="h-full w-full bg-cover bg-center"
+                                    style={{ backgroundImage: "url('/images/slide-3.jpg')" }}
+                                />
+                            </SwiperSlide>
 
+                            {/* Imagen 4 */}
+                            <SwiperSlide>
+                                <div
+                                    className="h-full w-full bg-cover bg-center"
+                                    style={{ backgroundImage: "url('/images/slide-4.jpg')" }}
+                                />
+                            </SwiperSlide>
+                        </Swiper>
                     </div>
 
 

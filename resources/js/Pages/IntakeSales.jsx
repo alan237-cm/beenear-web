@@ -60,7 +60,7 @@ export default function IntakeSales() {
 
                             {/* Blog */}
                             <Link href="/blog"
-                            className="text-gray-600 hover:text-bee-dark transition duration-300">
+                                className="text-gray-600 hover:text-bee-dark transition duration-300">
                                 Blog
                             </Link>
 
@@ -91,6 +91,13 @@ export default function IntakeSales() {
                             </Link>
                             <Link href="/servicios" onClick={() => setIsMenuOpen(false)} className="text-bee-yellow font-bold pb-3 border-b border-gray-100">
                                 {t('nav_services')}
+                            </Link>
+                            {/* Blog */}
+                            <Link
+                                href="/blog"
+                                onClick={() => setIsMenuOpen(false)}
+                                className="text-gray-700 hover:text-bee-yellow font-medium pb-3 border-b border-gray-100"
+                            >
                             </Link>
                             <div className="flex justify-between items-center mt-2">
                                 <button onClick={toggleLanguage} className="font-bold text-sm text-bee-dark hover:text-bee-yellow transition duration-300">

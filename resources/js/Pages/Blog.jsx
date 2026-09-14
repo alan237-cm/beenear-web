@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import {
+    Menu,
+    X,
     ArrowRight,
     ArrowUpRight,
     Bot,
@@ -10,11 +12,16 @@ import {
     BarChart3,
     Clock3,
     Search,
+    Mail,
+    Phone,
+    MapPin,
 } from 'lucide-react';
 
 export default function Blog() {
-    const { i18n } = useTranslation();
+    const { t, i18n } = useTranslation();
     const isSpanish = i18n.language === 'es';
+    // Estado para controlar si el menú está abierto o cerrado
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     // =========================================================
     // IDIOMA
@@ -37,19 +44,19 @@ export default function Blog() {
     // =========================================================
     const categories = isSpanish
         ? [
-              'Todos',
-              'Inteligencia Artificial',
-              'Atención al cliente',
-              'Automatización',
-              'Ventas',
-          ]
+            'Todos',
+            'Inteligencia Artificial',
+            'Atención al cliente',
+            'Automatización',
+            'Ventas',
+        ]
         : [
-              'All',
-              'Artificial Intelligence',
-              'Customer Service',
-              'Automation',
-              'Sales',
-          ];
+            'All',
+            'Artificial Intelligence',
+            'Customer Service',
+            'Automation',
+            'Sales',
+        ];
 
     // =========================================================
     // ARTÍCULOS
@@ -205,8 +212,8 @@ export default function Blog() {
         activeCategory === 'Todos' || activeCategory === 'All'
             ? articles
             : articles.filter(
-                  (article) => article.category === activeCategory
-              );
+                (article) => article.category === activeCategory
+            );
 
     // =========================================================
     // CAMBIO DE CATEGORÍA CON ANIMACIÓN
@@ -237,123 +244,100 @@ export default function Blog() {
             <div className="min-h-screen bg-[#f8f8f6] text-bee-dark">
 
                 {/* =====================================================
-                    NAVBAR
+                NAVBAR ESTANDARIZADA (BLOG)
                 ====================================================== */}
-                <header className="absolute top-5 left-0 right-0 z-50 px-4">
+                <div className="fixed top-4 inset-x-0 z-50 px-4 md:px-8 max-w-7xl mx-auto w-full">
+                    <nav className="bg-white text-bee-dark px-6 md:px-8 h-[84px] flex justify-between items-center shadow-xl rounded-2xl relative">
 
-                    <nav
-                        aria-label="Main navigation"
-                        className="mx-auto flex h-[72px] max-w-7xl items-center justify-between rounded-2xl border border-white/20 bg-white/95 px-5 shadow-[0_15px_45px_rgba(0,0,0,0.10)] backdrop-blur-xl md:px-7"
-                    >
-
-                        {/* LOGO */}
-                        <Link
-                            href="/"
-                            className="group flex items-center gap-3"
-                        >
-
-                            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl">
-
-                                <img
-                                    src="/images/logo.png"
-                                    alt="BeeNear"
-                                    className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
-                                />
-
-                            </div>
-
-                            <div className="leading-none">
-
-                                <span className="block text-lg font-black tracking-tight text-bee-dark">
-                                    BEENEAR
-                                </span>
-
-                                <span className="hidden text-[9px] font-semibold uppercase tracking-[0.25em] text-gray-400 sm:block">
-                                    Technology & Innovation
-                                </span>
-
-                            </div>
-
+                        {/* Logo Imagotipo */}
+                        <Link href="/" className="flex items-center cursor-pointer">
+                            <img
+                                src="/images/imagotipo.jpeg"
+                                alt="Bee Near Logo"
+                                className="h-14 md:h-16 w-auto object-contain transform hover:scale-105 transition duration-300"
+                            />
                         </Link>
 
-
-                        {/* DESKTOP */}
-                        <div className="hidden items-center gap-8 lg:flex">
-
-                            <Link
-                                href="/"
-                                className="text-sm font-semibold text-gray-500 transition hover:text-bee-dark"
-                            >
-                                {isSpanish ? 'Inicio' : 'Home'}
-                            </Link>
-
-                            <Link
-                                href="/nosotros"
-                                className="text-sm font-semibold text-gray-500 transition hover:text-bee-dark"
-                            >
-                                {isSpanish ? 'Nosotros' : 'About'}
-                            </Link>
-
-                            <Link
-                                href="/servicios"
-                                className="text-sm font-semibold text-gray-500 transition hover:text-bee-dark"
-                            >
-                                {isSpanish ? 'Servicios' : 'Services'}
-                            </Link>
-
-
-                            {/* BLOG ACTIVO */}
-                            <Link
-                                href="/blog"
-                                className="relative text-sm font-semibold text-bee-dark"
-                            >
-                                Blog
-
-                                <span className="absolute -bottom-2 left-0 h-[2px] w-full rounded-full bg-bee-yellow" />
-                            </Link>
-
-
-                            <div className="h-7 w-px bg-gray-200" />
-
-
-                            {/* IDIOMA */}
-                            <button
-                                type="button"
-                                onClick={toggleLanguage}
-                                className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-bold uppercase tracking-wider text-gray-600 transition hover:border-bee-yellow hover:bg-yellow-50 hover:text-bee-dark"
-                            >
-                                {isSpanish ? 'EN' : 'ES'}
-                            </button>
-
-
-                            {/* CONTACTO */}
-                            <Link
-                                href="/contacto"
-                                className="group flex items-center gap-2 rounded-xl bg-bee-yellow px-5 py-3 text-sm font-bold text-bee-dark shadow-sm transition hover:bg-yellow-400"
-                            >
-                                {isSpanish ? 'Contacto' : 'Contact'}
-
-                                <ArrowUpRight
-                                    size={16}
-                                    className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                                />
-                            </Link>
-
-                        </div>
-
-
-                        {/* MOBILE */}
+                        {/* Botón Hamburguesa (Solo Móvil) */}
                         <button
-                            type="button"
-                            onClick={toggleLanguage}
-                            className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-bold uppercase tracking-wider text-gray-600 lg:hidden"
+                            className="md:hidden text-bee-dark p-2 focus:outline-none hover:text-bee-yellow transition"
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                            aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
                         >
-                            {isSpanish ? 'EN' : 'ES'}
+                            {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
                         </button>
 
+                        {/* Menú de navegación Desktop */}
+                        <div className="hidden md:flex items-center gap-7 font-medium text-sm">
+                            {/* Inicio (Inactivo) */}
+                            <Link href="/" className="text-gray-600 hover:text-bee-dark transition duration-300">
+                                {t('nav_home')}
+                            </Link>
+
+                            {/* Nosotros (Inactivo) */}
+                            <Link href="/nosotros" className="text-gray-600 hover:text-bee-dark transition duration-300">
+                                {t('nav_about')}
+                            </Link>
+
+                            {/* Servicios (Inactivo) */}
+                            <Link href="/servicios" className="text-gray-600 hover:text-bee-dark transition duration-300">
+                                {t('nav_services')}
+                            </Link>
+
+                            {/* Blog (ACTIVO) */}
+                            <Link href="/blog" className="relative text-bee-dark hover:text-bee-yellow transition duration-300">
+                                Blog
+                                <span className="absolute -bottom-2 left-0 w-full h-[2px] bg-bee-yellow rounded-full" />
+                            </Link>
+
+                            {/* Separador vertical elegante */}
+                            <div className="h-7 w-px bg-gray-200" />
+
+                            {/* Idioma */}
+                            <button
+                                onClick={toggleLanguage}
+                                className="font-bold text-sm text-bee-dark hover:text-bee-yellow transition duration-300"
+                            >
+                                {i18n.language === 'es' ? '🇺🇸 EN' : '🇲🇽 ES'}
+                            </button>
+
+                            {/* Contacto */}
+                            <Link
+                                href="/contacto"
+                                className="group flex items-center gap-2 bg-bee-yellow text-bee-dark px-6 py-2.5 rounded-xl font-bold hover:bg-yellow-400 transition duration-300 shadow-sm"
+                            >
+                                {t('nav_contact')}
+                                <ArrowRight size={17} className="transition-transform duration-300 group-hover:translate-x-1" />
+                            </Link>
+                        </div>
                     </nav>
 
-                </header>
+                    {/* Menú desplegable Móvil */}
+                    {isMenuOpen && (
+                        <div className="md:hidden absolute top-[100px] left-4 right-4 bg-white rounded-2xl shadow-2xl p-6 flex flex-col gap-4 border border-gray-100">
+                            <Link href="/" onClick={() => setIsMenuOpen(false)} className="text-gray-700 hover:text-bee-yellow font-medium pb-3 border-b border-gray-100">
+                                {t('nav_home')}
+                            </Link>
+                            <Link href="/nosotros" onClick={() => setIsMenuOpen(false)} className="text-gray-700 hover:text-bee-yellow font-medium pb-3 border-b border-gray-100">
+                                {t('nav_about')}
+                            </Link>
+                            <Link href="/servicios" onClick={() => setIsMenuOpen(false)} className="text-gray-700 hover:text-bee-yellow font-medium pb-3 border-b border-gray-100">
+                                {t('nav_services')}
+                            </Link>
+                            <Link href="/blog" onClick={() => setIsMenuOpen(false)} className="text-bee-yellow font-bold pb-3 border-b border-gray-100">
+                                Blog
+                            </Link>
+                            <div className="flex justify-between items-center mt-2">
+                                <button onClick={toggleLanguage} className="font-bold text-sm text-bee-dark hover:text-bee-yellow transition duration-300">
+                                    {i18n.language === 'es' ? '🇺🇸 EN' : '🇲🇽 ES'}
+                                </button>
+                                <Link href="/contacto" onClick={() => setIsMenuOpen(false)} className="bg-bee-yellow text-bee-dark px-6 py-2.5 rounded-xl font-bold text-sm text-center hover:bg-yellow-400 transition duration-300">
+                                    {t('nav_contact')}
+                                </Link>
+                            </div>
+                        </div>
+                    )}
+                </div>
 
 
                 {/* =====================================================
@@ -429,10 +413,9 @@ export default function Blog() {
                                     text-sm font-semibold
                                     transition-all duration-300
                                     active:scale-95
-                                    ${
-                                        activeCategory === category
-                                            ? 'bg-bee-dark text-white shadow-lg'
-                                            : 'bg-white text-gray-600 hover:bg-bee-yellow hover:text-bee-dark hover:-translate-y-0.5'
+                                    ${activeCategory === category
+                                        ? 'bg-bee-dark text-white shadow-lg'
+                                        : 'bg-white text-gray-600 hover:bg-bee-yellow hover:text-bee-dark hover:-translate-y-0.5'
                                     }
                                 `}
                             >
@@ -457,10 +440,9 @@ export default function Blog() {
                     <div
                         className={`
                             transition-all duration-300 ease-out
-                            ${
-                                isChangingCategory
-                                    ? 'translate-y-3 opacity-0 scale-[0.99]'
-                                    : 'translate-y-0 opacity-100 scale-100'
+                            ${isChangingCategory
+                                ? 'translate-y-3 opacity-0 scale-[0.99]'
+                                : 'translate-y-0 opacity-100 scale-100'
                             }
                         `}
                     >
@@ -1066,61 +1048,96 @@ export default function Blog() {
 
 
                 {/* =====================================================
-                    FOOTER
+                FOOTER CORPORATIVO UNIFICADO
                 ====================================================== */}
+                <footer className="bg-bee-dark text-white pt-16 pb-8 px-6 md:px-8 border-t-4 border-bee-yellow mt-auto">
+                    <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-12 mb-12">
 
-                <footer className="border-t border-gray-200 bg-white">
-
-                    <div
-                        className="
-                            mx-auto
-                            flex
-                            max-w-7xl
-                            flex-col
-                            items-center
-                            justify-between
-                            gap-4
-                            px-6
-                            py-6
-                            text-sm
-                            text-gray-500
-                            md:flex-row
-                        "
-                    >
-
-                        <p className="text-center md:text-left">
-
-                            © {new Date().getFullYear()} BeeNear.{' '}
-
-                            {isSpanish
-                                ? 'Todos los derechos reservados.'
-                                : 'All rights reserved.'
-                            }
-
-                        </p>
-
-
-                        <div className="flex items-center gap-6">
-
-                            <Link
-                                href="/"
-                                className="transition-colors hover:text-bee-dark"
-                            >
-                                {isSpanish ? 'Inicio' : 'Home'}
-                            </Link>
-
-
-                            <Link
-                                href="/contacto"
-                                className="transition-colors hover:text-bee-dark"
-                            >
-                                {isSpanish ? 'Contacto' : 'Contact'}
-                            </Link>
-
+                        {/* Columna 1: Marca */}
+                        <div>
+                            <div className="flex items-center space-x-3 mb-6">
+                                <img
+                                    src="/images/logo.png"
+                                    alt="Bee Near Logo"
+                                    className="h-10 w-10"
+                                />
+                                <div className="text-2xl font-heading font-bold tracking-wider">
+                                    <span className="text-white">Bee</span>
+                                    <span className="text-bee-yellow">Near</span>
+                                </div>
+                            </div>
+                            <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
+                                {t('footer_desc')}
+                            </p>
                         </div>
 
+                        {/* Columna 2: Enlaces Rápidos */}
+                        <div>
+                            <h4 className="text-sm font-bold tracking-[0.15em] uppercase mb-6 text-bee-yellow">
+                                {t('footer_links')}
+                            </h4>
+                            <ul className="space-y-4 text-sm text-gray-400 font-medium">
+                                <li>
+                                    <Link href="/" className="hover:text-bee-yellow transition">
+                                        {t('nav_home')}
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link href="/nosotros" className="hover:text-bee-yellow transition">
+                                        {t('nav_about')}
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link href="/servicios" className="hover:text-bee-yellow transition">
+                                        {t('nav_services')}
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link href="/contacto" className="hover:text-bee-yellow transition">
+                                        {t('nav_contact')}
+                                    </Link>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {/* Columna 3: Contacto */}
+                        <div>
+                            <h4 className="text-sm font-bold tracking-[0.15em] uppercase mb-6 text-bee-yellow">
+                                {t('footer_contact')}
+                            </h4>
+                            <ul className="space-y-4 text-sm text-gray-400">
+                                <li className="flex items-center gap-3">
+                                    <Mail size={18} className="text-bee-yellow flex-shrink-0" />
+                                    <span>moreinfo@beenear.mx</span>
+                                </li>
+                                <li className="flex items-center gap-3">
+                                    <Phone size={18} className="text-bee-yellow flex-shrink-0" />
+                                    <span>+1 (215) 318-0179</span>
+                                </li>
+                                <li className="flex items-start gap-3">
+                                    <MapPin size={18} className="text-bee-yellow flex-shrink-0 mt-1" />
+                                    <span>Ejército Nacional 373, CDMX</span>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
 
+                    {/* Copyright y Políticas */}
+                    <div className="max-w-7xl mx-auto border-t border-gray-700/70 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500 gap-4">
+                        <p>
+                            &copy; {new Date().getFullYear()} Bee Near. {t('footer_rights')}
+                        </p>
+
+                        {/* Enlace Funcional al PDF de Privacidad */}
+                        <a
+                            href="/docs/privacy_policy_for_website.pdf"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:text-bee-yellow transition font-medium"
+                        >
+                            {t('footer_privacy')}
+                        </a>
+                    </div>
                 </footer>
 
             </div>
