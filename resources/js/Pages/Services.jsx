@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 
 import {
-    Menu, 
+    Menu,
     X,
     ArrowRight,
     Headphones,
@@ -142,6 +142,12 @@ export default function Services() {
                                 {t('nav_services')}
                             </Link>
 
+                            {/* Blog */}
+                            <Link href="/blog"
+                            className="text-gray-600 hover:text-bee-dark transition duration-300">
+                                Blog
+                            </Link>
+
                             {/* Idioma y Contacto */}
                             <div className="flex justify-between items-center mt-2">
                                 {/* Cambiar idioma */}
@@ -164,7 +170,6 @@ export default function Services() {
                         </div>
                     )}
                 </div>
-
 
                 {/* =====================================================
                     HERO

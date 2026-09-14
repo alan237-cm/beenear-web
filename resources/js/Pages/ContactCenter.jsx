@@ -58,6 +58,12 @@ export default function ContactCenter() {
                                 <span className="absolute -bottom-2 left-0 w-full h-[2px] bg-bee-yellow rounded-full" />
                             </Link>
 
+                            {/* Blog */}
+                            <Link href="/blog"
+                            className="text-gray-600 hover:text-bee-dark transition duration-300">
+                                Blog
+                            </Link>
+
                             {/* Separador vertical elegante */}
                             <div className="h-7 w-px bg-gray-200" />
 

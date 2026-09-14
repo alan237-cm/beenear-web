@@ -54,3 +54,32 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+Route::get('/blog', function () {
+    return Inertia::render('Blog');
+})->name('blog');
+
+Route::get('/blog/{id}', function ($id) {
+    return Inertia::render('BlogArticle', [
+        'id' => (int) $id,
+    ]);
+})->whereNumber('id');
+
+Route::get('/blog', function () {
+    return Inertia::render('Blog');
+})->name('blog');
+
+
+Route::get('/blog/{slug}', function (string $slug) {
+
+    return Inertia::render('Blog/Show', [
+        'slug' => $slug,
+    ]);
+
+})->whereIn('slug', [
+    'inteligencia-artificial-atencion-cliente',
+    'atencion-cliente-crecimiento',
+    'automatiza-procesos',
+    'cada-contacto-oportunidad',
+    'menos-tareas-repetitivas',
+    'futuro-conversaciones-empresas-clientes',
+])->name('blog.show');

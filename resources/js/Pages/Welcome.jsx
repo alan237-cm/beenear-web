@@ -10,7 +10,7 @@ import 'swiper/css/effect-fade';
 import { useTranslation } from 'react-i18next';
 
 import {
-    Menu, 
+    Menu,
     X,
     ArrowRight,
     CheckCircle2,
@@ -89,6 +89,12 @@ export default function Welcome() {
                                 className="text-gray-600 hover:text-bee-dark transition duration-300"
                             >
                                 {t('nav_services')}
+                            </Link>
+
+                            {/* Blog */}
+                            <Link href="/blog" 
+                            className="text-gray-600 hover:text-bee-dark transition duration-300">
+                                Blog
                             </Link>
 
                             {/* Separador vertical elegante */}

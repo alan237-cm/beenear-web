@@ -39,6 +39,9 @@ export default function About() {
             <Head title={`${t('nav_about')} | Bee Near`} />
 
             <div className="min-h-screen bg-corp-light font-sans text-bee-dark">
+                {/* =====================================================
+    NAVBAR
+====================================================== */}
 
                 {/* =====================================================
                     NAVBAR
@@ -89,6 +92,12 @@ export default function About() {
                                 className="text-gray-600 hover:text-bee-dark transition duration-300"
                             >
                                 {t('nav_services')}
+                            </Link>
+
+                            {/* Blog */}
+                            <Link href="/blog"
+                            className="text-gray-600 hover:text-bee-dark transition duration-300">
+                                Blog
                             </Link>
 
                             {/* Separador vertical elegante */}
