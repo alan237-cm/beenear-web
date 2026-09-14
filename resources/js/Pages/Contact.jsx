@@ -53,6 +53,7 @@ export default function Contact() {
         aria-label="Main navigation"
         className="mx-auto flex h-[72px] max-w-7xl items-center justify-between rounded-2xl border border-white/20 bg-white/95 px-5 shadow-[0_15px_45px_rgba(0,0,0,0.10)] backdrop-blur-xl md:px-7"
     >
+
         {/* Logo */}
         <Link
             href="/"
@@ -77,9 +78,11 @@ export default function Contact() {
             </div>
         </Link>
 
+
         {/* Desktop navigation */}
         <div className="hidden items-center gap-8 lg:flex">
 
+            {/* Inicio */}
             <Link
                 href="/"
                 className="text-sm font-semibold text-gray-500 transition hover:text-bee-dark"
@@ -87,6 +90,8 @@ export default function Contact() {
                 {isSpanish ? 'Inicio' : 'Home'}
             </Link>
 
+
+            {/* Nosotros */}
             <Link
                 href="/nosotros"
                 className="text-sm font-semibold text-gray-500 transition hover:text-bee-dark"
@@ -94,6 +99,8 @@ export default function Contact() {
                 {isSpanish ? 'Nosotros' : 'About'}
             </Link>
 
+
+            {/* Servicios */}
             <Link
                 href="/servicios"
                 className="text-sm font-semibold text-gray-500 transition hover:text-bee-dark"
@@ -101,6 +108,20 @@ export default function Contact() {
                 {isSpanish ? 'Servicios' : 'Services'}
             </Link>
 
+
+            {/* Blog - ACTIVO */}
+            <Link
+                href="/blog"
+                className="relative text-sm font-semibold text-bee-dark transition"
+            >
+                {isSpanish ? 'Blog' : 'Blog'}
+
+                {/* Línea amarilla */}
+                <span className="absolute -bottom-2 left-0 h-[2px] w-full rounded-full bg-bee-yellow" />
+            </Link>
+
+
+            {/* Idioma */}
             <button
                 type="button"
                 onClick={toggleLanguage}
@@ -109,16 +130,22 @@ export default function Contact() {
                 {isSpanish ? 'EN' : 'ES'}
             </button>
 
+
             {/* Contacto */}
-            <div className="group flex items-center gap-2 rounded-xl bg-bee-dark px-5 py-3 text-sm font-bold text-white shadow-sm">
+            <Link
+                href="/contacto"
+                className="group flex items-center gap-2 rounded-xl bg-bee-yellow px-5 py-3 text-sm font-bold text-bee-dark shadow-sm transition hover:bg-yellow-400"
+            >
                 {isSpanish ? 'Contacto' : 'Contact'}
 
                 <ArrowUpRight
                     size={16}
-                    className="text-bee-yellow transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                    className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                 />
-            </div>
+            </Link>
+
         </div>
+
 
         {/* Mobile language */}
         <button
@@ -128,11 +155,9 @@ export default function Contact() {
         >
             {isSpanish ? 'EN' : 'ES'}
         </button>
+
     </nav>
-
-                </header>
-
-                {/* =========================================================
+</header>                {/* =========================================================
                     HERO
                 ========================================================== */}
                 <section className="relative overflow-hidden bg-bee-dark pt-40 pb-28">

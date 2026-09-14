@@ -31,75 +31,81 @@ export default function Welcome() {
             <Head title={`${t('nav_home')} | Bee Near`} />
 
             <div className="min-h-screen bg-corp-light font-sans text-bee-dark">
+{/* =====================================================
+    NAVBAR
+====================================================== */}
 
-                {/* =====================================================
-                    NAVBAR
-                ====================================================== */}
-                {/* Navbar Flotante (Sticky) */}
 <div className="fixed top-4 inset-x-0 z-50 px-4 md:px-8 max-w-7xl mx-auto w-full">
     <nav className="bg-white text-bee-dark px-6 md:px-8 h-[84px] flex justify-between items-center shadow-xl rounded-2xl">
-        
-        {/* Logo Imagotipo (Más grande y con efecto de escala) */}
+
+        {/* Logo */}
         <Link href="/" className="flex items-center cursor-pointer">
-            <img 
-                src="/images/imagotipo.jpeg" 
-                alt="Bee Near Logo" 
-                className="h-14 md:h-16 w-auto object-contain transform hover:scale-105 transition duration-300" 
+            <img
+                src="/images/imagotipo.jpeg"
+                alt="Bee Near Logo"
+                className="h-14 md:h-16 w-auto object-contain transform hover:scale-105 transition duration-300"
             />
         </Link>
-        
-        {/* Menú de navegación con estilos, colores y espaciados originales */}
+
+        {/* Menú */}
         <div className="hidden md:flex items-center gap-7 font-medium text-sm">
-            
+
             {/* Inicio */}
-            <Link 
-                href="/" 
-                className="relative text-bee-dark hover:text-bee-yellow transition duration-300"
+            <Link
+                href="/"
+                className="text-gray-600 hover:text-bee-dark transition duration-300"
             >
                 {t('nav_home')}
-                {/* Línea indicadora de página activa */}
-                <span className="absolute -bottom-2 left-0 w-full h-[2px] bg-bee-yellow rounded-full" />
             </Link>
 
             {/* Nosotros */}
-            <Link 
-                href="/nosotros" 
+            <Link
+                href="/nosotros"
                 className="text-gray-600 hover:text-bee-dark transition duration-300"
             >
                 {t('nav_about')}
             </Link>
 
             {/* Servicios */}
-            <Link 
-                href="/servicios" 
+            <Link
+                href="/servicios"
                 className="text-gray-600 hover:text-bee-dark transition duration-300"
             >
                 {t('nav_services')}
             </Link>
 
-            {/* Separador vertical elegante */}
+            {/* Blog */}
+            <Link
+                href="/blog"
+                className="relative text-gray-600 hover:text-bee-dark transition duration-300"
+            >
+                Blog
+            </Link>
+
+            {/* Separador */}
             <div className="h-7 w-px bg-gray-200" />
 
             {/* Idioma */}
-            <button 
-                onClick={toggleLanguage} 
+            <button
+                onClick={toggleLanguage}
                 className="font-bold text-sm text-bee-dark hover:text-bee-yellow transition duration-300"
             >
                 {i18n.language === 'es' ? '🇺🇸 EN' : '🇲🇽 ES'}
             </button>
 
-            {/* Contacto (Botón con flecha animada y bordes redondeados) */}
-            <Link 
-                href="/contacto" 
+            {/* Contacto */}
+            <Link
+                href="/contacto"
                 className="group flex items-center gap-2 bg-bee-yellow text-bee-dark px-6 py-2.5 rounded-xl font-bold hover:bg-yellow-400 transition duration-300 shadow-sm"
             >
                 {t('nav_contact')}
-                <ArrowRight 
-                    size={17} 
-                    className="transition-transform duration-300 group-hover:translate-x-1" 
+
+                <ArrowRight
+                    size={17}
+                    className="transition-transform duration-300 group-hover:translate-x-1"
                 />
             </Link>
-            
+
         </div>
     </nav>
 </div>
