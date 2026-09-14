@@ -1,4 +1,7 @@
 import { useTranslation } from 'react-i18next';
+import React, { useState } from 'react';
+import { Menu, X, ArrowRight } from 'lucide-react';
+
 import {
     MapPin,
     Phone,
@@ -11,6 +14,9 @@ import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function Contact() {
     const { t, i18n } = useTranslation();
+
+    // Estado para controlar si el menú está abierto o cerrado
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const isSpanish = i18n.language === 'es';
 
@@ -45,92 +51,132 @@ export default function Contact() {
             <Head title={isSpanish ? 'Contacto | Beenear' : 'Contact | Beenear'} />
 
             <div className="min-h-screen bg-corp-light text-bee-dark">
-{/* =========================================================
-    NAVBAR
-========================================================= */}
-<header className="absolute top-5 left-0 right-0 z-50 px-4">
-    <nav
-        aria-label="Main navigation"
-        className="mx-auto flex h-[72px] max-w-7xl items-center justify-between rounded-2xl border border-white/20 bg-white/95 px-5 shadow-[0_15px_45px_rgba(0,0,0,0.10)] backdrop-blur-xl md:px-7"
-    >
-        {/* Logo */}
-        <Link
-            href="/"
-            className="group flex items-center gap-3"
-        >
-            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl">
-                <img
-                    src="/images/logo.png"
-                    alt="Beenear"
-                    className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
-                />
-            </div>
+                {/* =========================================================
+                NAVBAR
+                ========================================================= */}
+                <div className="fixed top-4 inset-x-0 z-50 px-4 md:px-8 max-w-7xl mx-auto w-full">
+                    <nav className="bg-white text-bee-dark px-6 md:px-8 h-[84px] flex justify-between items-center shadow-xl rounded-2xl relative">
+                        {/* Logo Imagotipo */}
+                        <Link href="/" className="flex items-center cursor-pointer">
+                            <img
+                                src="/images/imagotipo.jpeg"
+                                alt="Bee Near Logo"
+                                className="h-14 md:h-16 w-auto object-contain transform hover:scale-105 transition duration-300"
+                            />
+                        </Link>
 
-            <div className="leading-none">
-                <span className="block text-lg font-black tracking-tight text-bee-dark">
-                    BEENEAR
-                </span>
+                        {/* Botón Hamburguesa (Solo Móvil) */}
+                        <button
+                            className="md:hidden text-bee-dark p-2 focus:outline-none hover:text-bee-yellow transition"
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                            aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
+                        >
+                            {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+                        </button>
 
-                <span className="hidden text-[9px] font-semibold uppercase tracking-[0.25em] text-gray-400 sm:block">
-                    Technology & Innovation
-                </span>
-            </div>
-        </Link>
+                        {/* Menú de navegación Desktop */}
+                        <div className="hidden md:flex items-center gap-7 font-medium text-sm">
+                            {/* Inicio (Inactivo) */}
+                            <Link
+                                href="/"
+                                className="text-gray-600 hover:text-bee-dark transition duration-300"
+                            >
+                                {t('nav_home')}
+                            </Link>
 
-        {/* Desktop navigation */}
-        <div className="hidden items-center gap-8 lg:flex">
+                            {/* Nosotros (Inactivo) */}
+                            <Link
+                                href="/nosotros"
+                                className="text-gray-600 hover:text-bee-dark transition duration-300"
+                            >
+                                {t('nav_about')}
+                            </Link>
 
-            <Link
-                href="/"
-                className="text-sm font-semibold text-gray-500 transition hover:text-bee-dark"
-            >
-                {isSpanish ? 'Inicio' : 'Home'}
-            </Link>
+                            {/* Servicios (Inactivo) */}
+                            <Link
+                                href="/servicios"
+                                className="text-gray-600 hover:text-bee-dark transition duration-300"
+                            >
+                                {t('nav_services')}
+                            </Link>
 
-            <Link
-                href="/nosotros"
-                className="text-sm font-semibold text-gray-500 transition hover:text-bee-dark"
-            >
-                {isSpanish ? 'Nosotros' : 'About'}
-            </Link>
+                            {/* Separador vertical elegante */}
+                            <div className="h-7 w-px bg-gray-200" />
 
-            <Link
-                href="/servicios"
-                className="text-sm font-semibold text-gray-500 transition hover:text-bee-dark"
-            >
-                {isSpanish ? 'Servicios' : 'Services'}
-            </Link>
+                            {/* Idioma */}
+                            <button
+                                onClick={toggleLanguage}
+                                className="font-bold text-sm text-bee-dark hover:text-bee-yellow transition duration-300"
+                            >
+                                {i18n.language === 'es' ? '🇺🇸 EN' : '🇲🇽 ES'}
+                            </button>
 
-            <button
-                type="button"
-                onClick={toggleLanguage}
-                className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-bold uppercase tracking-wider text-gray-600 transition hover:border-bee-yellow hover:bg-yellow-50 hover:text-bee-dark"
-            >
-                {isSpanish ? 'EN' : 'ES'}
-            </button>
+                            {/* Contacto (ACTIVO) */}
+                            <Link
+                                href="/contacto"
+                                className="group flex items-center gap-2 bg-yellow-400 text-bee-dark px-6 py-2.5 rounded-xl font-bold shadow-sm cursor-default"
+                            >
+                                {t('nav_contact')}
+                                <ArrowRight
+                                    size={17}
+                                    className="transition-transform duration-300"
+                                />
+                            </Link>
+                        </div>
+                    </nav>
 
-            {/* Contacto */}
-            <div className="group flex items-center gap-2 rounded-xl bg-bee-dark px-5 py-3 text-sm font-bold text-white shadow-sm">
-                {isSpanish ? 'Contacto' : 'Contact'}
+                    {/* Menú desplegable Móvil */}
+                    {isMenuOpen && (
+                        <div className="md:hidden absolute top-[100px] left-4 right-4 bg-white rounded-2xl shadow-2xl p-6 flex flex-col gap-4 border border-gray-100">
+                            {/* Inicio (Inactivo) */}
+                            <Link
+                                href="/"
+                                onClick={() => setIsMenuOpen(false)}
+                                className="text-gray-700 hover:text-bee-yellow font-medium pb-3 border-b border-gray-100"
+                            >
+                                {t('nav_home')}
+                            </Link>
 
-                <ArrowUpRight
-                    size={16}
-                    className="text-bee-yellow transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                />
-            </div>
-        </div>
+                            {/* Nosotros (Inactivo) */}
+                            <Link
+                                href="/nosotros"
+                                onClick={() => setIsMenuOpen(false)}
+                                className="text-gray-700 hover:text-bee-yellow font-medium pb-3 border-b border-gray-100"
+                            >
+                                {t('nav_about')}
+                            </Link>
 
-        {/* Mobile language */}
-        <button
-            type="button"
-            onClick={toggleLanguage}
-            className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-bold uppercase tracking-wider text-gray-600 lg:hidden"
-        >
-            {isSpanish ? 'EN' : 'ES'}
-        </button>
-    </nav>
+                            {/* Servicios (Inactivo) */}
+                            <Link
+                                href="/servicios"
+                                onClick={() => setIsMenuOpen(false)}
+                                className="text-gray-700 hover:text-bee-yellow font-medium pb-3 border-b border-gray-100"
+                            >
+                                {t('nav_services')}
+                            </Link>
 
-                </header>
+                            {/* Idioma y Contacto */}
+                            <div className="flex justify-between items-center mt-2">
+                                {/* Cambiar idioma */}
+                                <button
+                                    onClick={toggleLanguage}
+                                    className="font-bold text-sm text-bee-dark hover:text-bee-yellow transition duration-300"
+                                >
+                                    {i18n.language === 'es' ? '🇺🇸 EN' : '🇲🇽 ES'}
+                                </button>
+
+                                {/* Contacto (ACTIVO en móvil) */}
+                                <Link
+                                    href="/contacto"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="bg-yellow-400 text-bee-dark px-6 py-2.5 rounded-xl font-bold text-sm text-center shadow-sm cursor-default"
+                                >
+                                    {t('nav_contact')}
+                                </Link>
+                            </div>
+                        </div>
+                    )}
+                </div>
 
                 {/* =========================================================
                     HERO
@@ -581,158 +627,96 @@ export default function Contact() {
                     </div>
                 </main>
 
-                {/* =========================================================
-                    FOOTER
-                ========================================================== */}
-                <footer className="border-t-4 border-bee-yellow bg-bee-dark">
-                    <div className="mx-auto max-w-7xl px-6 py-14 lg:px-8">
+                {/* =====================================================
+                FOOTER CORPORATIVO UNIFICADO
+                ====================================================== */}
+                <footer className="bg-bee-dark text-white pt-16 pb-8 px-6 md:px-8 border-t-4 border-bee-yellow mt-auto">
+                    <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-12 mb-12">
 
-                        <div className="grid gap-12 md:grid-cols-[1.4fr_0.8fr_0.8fr]">
-
-                            {/* Brand */}
-                            <div>
-                                <div className="flex items-center gap-3">
-                                    <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl bg-white">
-                                        <img
-                                            src="/images/logo.png"
-                                            alt="Beenear"
-                                            className="h-full w-full object-contain"
-                                        />
-                                    </div>
-
-                                    <span className="text-xl font-black tracking-tight text-white">
-                                        BEENEAR
-                                    </span>
-                                </div>
-
-                                <p className="mt-5 max-w-sm text-sm leading-7 text-gray-400">
-                                    {isSpanish
-                                        ? 'Tecnología, innovación y soluciones digitales diseñadas para transformar negocios.'
-                                        : 'Technology, innovation and digital solutions designed to transform businesses.'}
-                                </p>
-                            </div>
-
-                            {/* Navigation */}
-                            <div>
-                                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-bee-yellow">
-                                    {isSpanish ? 'Navegación' : 'Navigation'}
-                                </h3>
-
-                                <div className="mt-5 space-y-3">
-                                    <Link
-                                        href="/"
-                                        className="block text-sm text-gray-400 transition hover:text-white"
-                                    >
-                                        {isSpanish ? 'Inicio' : 'Home'}
-                                    </Link>
-
-                                    <Link
-                                        href="/about"
-                                        className="block text-sm text-gray-400 transition hover:text-white"
-                                    >
-                                        {isSpanish ? 'Nosotros' : 'About'}
-                                    </Link>
-
-                                    <Link
-                                        href="/services"
-                                        className="block text-sm text-gray-400 transition hover:text-white"
-                                    >
-                                        {isSpanish ? 'Servicios' : 'Services'}
-                                    </Link>
-
-                                    <Link
-                                        href="/contact"
-                                        className="block text-sm text-white"
-                                    >
-                                        {isSpanish ? 'Contacto' : 'Contact'}
-                                    </Link>
+                        {/* Columna 1: Marca */}
+                        <div>
+                            <div className="flex items-center space-x-3 mb-6">
+                                <img
+                                    src="/images/logo.png"
+                                    alt="Bee Near Logo"
+                                    className="h-10 w-10"
+                                />
+                                <div className="text-2xl font-heading font-bold tracking-wider">
+                                    <span className="text-white">Bee</span>
+                                    <span className="text-bee-yellow">Near</span>
                                 </div>
                             </div>
-
-                            {/* Contact */}
-                            <div>
-                                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-bee-yellow">
-                                    {isSpanish ? 'Contacto' : 'Contact'}
-                                </h3>
-
-                                <div className="mt-5 space-y-4">
-
-                                   <a
-    href="https://mail.google.com/mail/?view=cm&fs=1&to=moreinfo@beenear.mx"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="group flex items-center gap-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-bee-yellow hover:shadow-lg"
->
-                                        <Mail
-                                            size={16}
-                                            className="mt-0.5 shrink-0 text-bee-yellow"
-                                        />
-
-                                        <span>moreinfo@beenear.mx</span>
-                                    </a>
-
-                                    <a
-                                        href="tel:+12153180179"
-                                        className="flex items-start gap-3 text-sm text-gray-400 transition hover:text-white"
-                                    >
-                                        <Phone
-                                            size={16}
-                                            className="mt-0.5 shrink-0 text-bee-yellow"
-                                        />
-
-                                        <span>+1 (215) 318-0179</span>
-                                    </a>
-
-                                    <div className="flex items-start gap-3 text-sm leading-6 text-gray-400">
-                                        <MapPin
-                                            size={16}
-                                            className="mt-0.5 shrink-0 text-bee-yellow"
-                                        />
-
-                                        <span>
-                                            Ejército Nacional 373
-                                            <br />
-                                            Granada, Miguel Hidalgo
-                                            <br />
-                                            CDMX, México
-                                        </span>
-                                    </div>
-
-                                </div>
-                            </div>
-
-                        </div>
-
-                        {/* Bottom */}
-                        <div className="mt-12 flex flex-col gap-4 border-t border-white/10 pt-7 text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between">
-                            <p>
-                                © {new Date().getFullYear()} Beenear.{' '}
-                                {isSpanish
-                                    ? 'Todos los derechos reservados.'
-                                    : 'All rights reserved.'}
+                            <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
+                                {t('footer_desc')}
                             </p>
-
-                            <div className="flex gap-5">
-                                <a
-                                    href="#"
-                                    className="transition hover:text-gray-300"
-                                >
-                                    {isSpanish
-                                        ? 'Privacidad'
-                                        : 'Privacy'}
-                                </a>
-
-                                <a
-                                    href="#"
-                                    className="transition hover:text-gray-300"
-                                >
-                                    {isSpanish
-                                        ? 'Términos'
-                                        : 'Terms'}
-                                </a>
-                            </div>
                         </div>
 
+                        {/* Columna 2: Enlaces Rápidos */}
+                        <div>
+                            <h4 className="text-sm font-bold tracking-[0.15em] uppercase mb-6 text-bee-yellow">
+                                {t('footer_links')}
+                            </h4>
+                            <ul className="space-y-4 text-sm text-gray-400 font-medium">
+                                <li>
+                                    <Link href="/" className="hover:text-bee-yellow transition">
+                                        {t('nav_home')}
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link href="/nosotros" className="hover:text-bee-yellow transition">
+                                        {t('nav_about')}
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link href="/servicios" className="hover:text-bee-yellow transition">
+                                        {t('nav_services')}
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link href="/contacto" className="hover:text-bee-yellow transition">
+                                        {t('nav_contact')}
+                                    </Link>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {/* Columna 3: Contacto */}
+                        <div>
+                            <h4 className="text-sm font-bold tracking-[0.15em] uppercase mb-6 text-bee-yellow">
+                                {t('footer_contact')}
+                            </h4>
+                            <ul className="space-y-4 text-sm text-gray-400">
+                                <li className="flex items-center gap-3">
+                                    <Mail size={18} className="text-bee-yellow flex-shrink-0" />
+                                    <span>moreinfo@beenear.mx</span>
+                                </li>
+                                <li className="flex items-center gap-3">
+                                    <Phone size={18} className="text-bee-yellow flex-shrink-0" />
+                                    <span>+1 (215) 318-0179</span>
+                                </li>
+                                <li className="flex items-start gap-3">
+                                    <MapPin size={18} className="text-bee-yellow flex-shrink-0 mt-1" />
+                                    <span>Ejército Nacional 373, CDMX</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    {/* Copyright y Políticas */}
+                    <div className="max-w-7xl mx-auto border-t border-gray-700/70 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500 gap-4">
+                        <p>
+                            &copy; {new Date().getFullYear()} Bee Near. {t('footer_rights')}
+                        </p>
+
+                        {/* Enlace Funcional al PDF de Privacidad */}
+                        <a
+                            href="/docs/privacy_policy_for_website.pdf"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:text-bee-yellow transition font-medium"
+                        >
+                            {t('footer_privacy')}
+                        </a>
                     </div>
                 </footer>
 
