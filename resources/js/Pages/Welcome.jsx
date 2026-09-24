@@ -217,22 +217,6 @@ export default function Welcome() {
                                     style={{ backgroundImage: "url('/images/slide-2.jpg')" }}
                                 />
                             </SwiperSlide>
-
-                            {/* Imagen 3 */}
-                            <SwiperSlide>
-                                <div
-                                    className="h-full w-full bg-cover bg-center"
-                                    style={{ backgroundImage: "url('/images/slide-3.jpg')" }}
-                                />
-                            </SwiperSlide>
-
-                            {/* Imagen 4 */}
-                            <SwiperSlide>
-                                <div
-                                    className="h-full w-full bg-cover bg-center"
-                                    style={{ backgroundImage: "url('/images/slide-4.jpg')" }}
-                                />
-                            </SwiperSlide>
                         </Swiper>
                     </div>
 
