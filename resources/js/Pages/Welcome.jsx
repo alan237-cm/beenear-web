@@ -504,7 +504,7 @@ function InfrastructureSection({ c }) {
                   </div>
                   <div className="bn-infra-signal" aria-hidden="true"><span /></div>
                   <p>{pillar.copy}</p>
-                  <span className="bn-infra-foot">{pillar.foot}<ArrowUpRight size={14} aria-hidden="true" /></span>
+                  <span className="bn-infra-foot">{pillar.foot}<span className="bn-infra-foot-rule" aria-hidden="true" /></span>
                 </article>
               );
             })}
@@ -525,14 +525,17 @@ function SolutionCard({ variant, index, label, title, tag, copy, points, href, a
   return (
     <article className={`bn-solution bn-solution--${variant}`}>
       <div className="bn-solution-shine" aria-hidden="true" />
-      <div className="bn-solution-upper">
-        <div className="bn-solution-num">{index}<span> / 02</span></div>
-        <span className="bn-solution-label">{label}</span>
+      {/* One shared grid row for both service descriptions keeps both diagrams perfectly level. */}
+      <div className="bn-solution-intro">
+        <div className="bn-solution-upper">
+          <div className="bn-solution-num">{index}<span> / 02</span></div>
+          <span className="bn-solution-label">{label}</span>
+        </div>
+        <div className="bn-solution-icon"><Icon size={24} strokeWidth={1.5} /></div>
+        <h3>{title}</h3>
+        <p className="bn-solution-tag">{tag}</p>
+        <p className="bn-solution-description">{copy}</p>
       </div>
-      <div className="bn-solution-icon"><Icon size={24} strokeWidth={1.5} /></div>
-      <h3>{title}</h3>
-      <p className="bn-solution-tag">{tag}</p>
-      <p className="bn-solution-description">{copy}</p>
       <div className={`bn-solution-diagram bn-solution-diagram--${variant}`} aria-hidden="true">
         <div><span>AI</span><i /></div>
         <div className="bn-diagram-track"><span /><span /><span /><span /><span /></div>
@@ -1261,6 +1264,183 @@ const STYLES = `
   .bn-infra-console-foot>span:last-child { max-width:100%; }
 }
 @media (prefers-reduced-motion:reduce) { .bn-infra-pillar:hover { transform:none; } }
+
+
+/* ===============================================================
+   TYPOGRAPHY + GRID QUALITY PASS / REVIEW 2026-10-16
+   Preserve the brand system and motion; improve readability at
+   normal browser zoom and keep the service diagrams in alignment.
+   =============================================================== */
+
+/* The two service cards share the SAME four CSS subgrid rows.
+   This avoids fragile pixel heights that break with long translations,
+   larger browser fonts or a 110% browser zoom. */
+.bn-solutions-grid {
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-auto-rows:auto;
+  align-items:stretch;
+}
+.bn-solution {
+  display:grid;
+  grid-template-rows:subgrid;
+  grid-row:span 4;
+  align-content:stretch;
+  gap:0;
+}
+.bn-solution-intro { position:relative; min-width:0; display:flex; flex-direction:column; }
+.bn-solution-description { min-height:0!important; margin-bottom:0!important; }
+.bn-solution-diagram { margin-top:23px; margin-bottom:25px; height:90px; }
+.bn-solution-points { flex:none; margin-bottom:27px; padding-top:4px; }
+.bn-solution-action { margin-top:0; }
+
+/* Real content must be readable at 100% without relying on browser zoom.
+   Small technical overlines remain small by design; paragraph text does not. */
+.bn-nav-links a { font-size:13px; }
+.bn-intro-right p { font-size:16px; line-height:1.78; }
+.bn-section-head-right h3 { font-size:19px; line-height:1.4; }
+.bn-section-head-right p { font-size:15px; line-height:1.72; }
+.bn-solution h3 { font-size:clamp(25px,2.4vw,34px); line-height:1.19; }
+.bn-solution-tag { font-size:14px; line-height:1.52; }
+.bn-solution-description { font-size:15px; line-height:1.75; opacity:.82; }
+.bn-solution-points { gap:17px; }
+.bn-solution-points strong { font-size:14px; line-height:1.45; font-weight:700; }
+.bn-solution-points p { font-size:13px; line-height:1.62; opacity:.78; }
+.bn-solution-action { font-size:14px; }
+.bn-solution-label { font-size:10px; }
+.bn-solution-diagram>div>span { font-size:11px; }
+.bn-model-head h2 { line-height:1.16; }
+.bn-step-details h3 { font-size:clamp(21px,2vw,27px); }
+.bn-step-details p { font-size:15px; line-height:1.74; }
+.bn-bridge-copy,.bn-cta-copy,.bn-footer-brand p { font-size:15px; }
+.bn-footer-col a,.bn-footer-col span { font-size:13px; }
+
+/* Infrastructure is explanatory content, not a tiny monitoring terminal. */
+.bn-infra-heading p { font-size:16px; line-height:1.75; }
+.bn-infra-pillar { min-height:315px; }
+.bn-infra-pillar-head { margin-bottom:22px; }
+.bn-infra-code { font-size:11px; line-height:1.4; letter-spacing:.6px; }
+.bn-infra-pillar h3 { font-size:16px; line-height:1.45; }
+.bn-infra-pillar p { font-size:15px; line-height:1.65; color:#b4b8b5; }
+.bn-infra-foot { font-size:11px; letter-spacing:.55px; cursor:default; }
+.bn-infra-foot-rule { width:30px; height:1px; flex:none; background:linear-gradient(90deg,rgba(245,190,30,.8),rgba(245,190,30,.08)); }
+.bn-infra-console-head { font-size:11px; }
+.bn-infra-console-head>span:last-child { font-size:10px; }
+.bn-infra-console-foot { font-size:10px; }
+
+/* Graceful fallback for browsers without CSS subgrid. */
+@supports not (grid-template-rows: subgrid) {
+  .bn-solution { display:flex; flex-direction:column; }
+  .bn-solution-intro { min-height:455px; }
+  .bn-solution-points { flex:1; }
+}
+@media (min-width:701px) and (max-width:1100px) {
+  .bn-solution { padding:26px; }
+  .bn-solution h3 { font-size:25px; }
+  .bn-solution-tag { font-size:13px; }
+  .bn-solution-description { font-size:14px; }
+  .bn-solution-points strong { font-size:13px; }
+  .bn-solution-points p { font-size:12.5px; }
+  .bn-infra-pillar p { font-size:14px; }
+}
+@media (max-width:700px) {
+  .bn-solutions-grid { grid-template-columns:minmax(0,1fr); }
+  .bn-solution { padding:25px; }
+  .bn-solution h3 { font-size:27px; }
+  .bn-solution-tag { font-size:14px; }
+  .bn-solution-description { font-size:15px; }
+  .bn-solution-diagram { margin:21px 0 24px; }
+  .bn-solution-points strong { font-size:14px; }
+  .bn-solution-points p { font-size:13px; }
+  .bn-infra-heading p { font-size:15px; }
+  .bn-infra-pillar p { font-size:15px; }
+  .bn-infra-pillar { min-height:0; }
+  .bn-infra-code { font-size:10px; }
+  .bn-infra-foot { font-size:10px; }
+  @supports not (grid-template-rows: subgrid) {
+    .bn-solution-intro { min-height:0; }
+  }
+}
+
+/* ===============================================================
+   FIRST-VIEW HERO / EXECUTIVE FIT
+   Fit the complete introductory message and COMI operating panel
+   into common desktop browser viewports without hiding any module.
+   Tablets and phones retain their natural vertical layout.
+   =============================================================== */
+@media (min-width:961px) {
+  .bn-hero {
+    min-height:100vh;
+    min-height:100svh;
+    padding:clamp(112px,14vh,142px) 0 38px;
+    display:flex;
+    align-items:center;
+  }
+  .bn-hero-content {
+    gap:clamp(26px,3.3vw,53px);
+    align-items:center;
+  }
+  .bn-hero-copy { padding-bottom:0; }
+  .bn-hero h1 {
+    font-size:clamp(39px,3.15vw,53px);
+    line-height:1.095;
+    margin:18px 0 17px;
+  }
+  .bn-hero h1 small { margin-top:10px; font-size:.37em; }
+  .bn-hero-lead { font-size:14px; line-height:1.67; }
+  .bn-hero-buttons { margin-top:22px; }
+  .bn-hero-micro { margin-top:20px; }
+  .bn-hero-bottom { bottom:10px; }
+
+  /* The deck has a compact, readable operational density. */
+  .bn-deck { padding:12px 14px; }
+  .bn-deck-top { padding:0 0 9px; }
+  .bn-deck-visual { height:clamp(115px,18vh,158px); display:flex; align-items:center; justify-content:center; }
+  .bn-orbit { transform:scale(.62); }
+  .bn-deck-metrics .bn-metric { padding:10px 7px 9px; gap:3px; }
+  .bn-metric-number { font-size:clamp(23px,2vw,29px); }
+  .bn-metric-label { font-size:8px; line-height:1.3; min-height:0; }
+  .bn-deck-wave { min-height:40px; margin:8px 0; padding:6px 11px; }
+  .bn-wave--compact { height:32px; }
+  .bn-wave--compact>span { max-height:30px; }
+  .bn-deck-wave .bn-wave { width:44%; }
+
+  /* Four interactive stages and their description remain visible. */
+  .bn-orch { margin-top:10px; }
+  .bn-orch-heading { margin-bottom:7px; }
+  .bn-orch-tab { min-height:48px; padding:7px 8px 9px; }
+  .bn-orch-tab-name { font-size:8px; }
+  .bn-orch-detail { min-height:119px; margin-top:6px; }
+  .bn-orch-detail-copy { padding:11px 13px; }
+  .bn-orch-detail h4 { margin:6px 0 5px; font-size:12px; }
+  .bn-orch-detail p { font-size:9px; line-height:1.43; }
+  .bn-orch-tags { margin-top:8px; gap:4px; }
+  .bn-orch-tags span { min-height:17px; padding:3px 6px; font-size:7px; }
+  .bn-orch-trace { padding:10px; }
+  .bn-orch-trace-nodes { padding:11px 2px 9px; }
+  .bn-deck-disclaimer { padding-top:8px; font-size:8px; }
+}
+
+/* Screens with a shorter browser viewport, e.g. laptops with browser
+   toolbars visible: save vertical space before sacrificing readability. */
+@media (min-width:961px) and (max-height:760px) {
+  .bn-hero { padding-top:105px; padding-bottom:29px; }
+  .bn-hero h1 { font-size:clamp(38px,3.05vw,49px); margin:14px 0; }
+  .bn-hero-lead { font-size:13px; line-height:1.55; }
+  .bn-hero-buttons { margin-top:18px; }
+  .bn-hero-micro { margin-top:15px; }
+  .bn-deck-visual { height:120px; }
+  .bn-orbit { transform:scale(.55); }
+  .bn-orch-detail { min-height:113px; }
+  .bn-deck-wave { margin:6px 0; }
+  .bn-orch-tab { min-height:44px; }
+}
+
+/* If the available desktop height is exceptionally small, avoid cropping:
+   the hero grows naturally and remains scrollable. */
+@media (min-width:961px) and (max-height:590px) {
+  .bn-hero { padding-top:105px; padding-bottom:45px; }
+  .bn-hero-bottom { display:none; }
+}
 
 `;
 
