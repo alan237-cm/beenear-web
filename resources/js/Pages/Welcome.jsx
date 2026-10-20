@@ -21,6 +21,7 @@ import {
 const CONTENT = {
   en: {
     nav: ['Solutions', 'The model', 'About us', 'Insights'],
+    calculatorLink: 'Staffing Calculator',
     contact: 'Let’s talk', language: 'Language',
     eyebrow: 'THE NEW STANDARD IN CUSTOMER OPERATIONS',
     heroA: 'AI-Powered', heroB: 'Contact Center', heroC: '& Intake Sales',
@@ -114,6 +115,7 @@ const CONTENT = {
   },
   es: {
     nav: ['Soluciones', 'El modelo', 'Nosotros', 'Blog'],
+    calculatorLink: 'Calculadora de personal',
     contact: 'Hablemos', language: 'Idioma',
     eyebrow: 'EL NUEVO ESTÁNDAR EN OPERACIONES CON CLIENTES',
     heroA: 'Contact Center', heroB: 'con IA', heroC: 'y ventas inteligentes',
@@ -1507,6 +1509,7 @@ export default function Welcome() {
             <a href="#how-it-works">{c.nav[1]}</a>
             <Link href="/nosotros">{c.nav[2]}</Link>
             <Link href="/blog">{c.nav[3]}</Link>
+            <Link href="/calculadora">{c.calculatorLink}</Link>
           </nav>
           <div className="bn-nav-actions">
             <button className="bn-lang" type="button" onClick={flipLang} aria-label={c.language}>
@@ -1522,6 +1525,7 @@ export default function Welcome() {
             <a href="#how-it-works" onClick={() => setMenuOpen(false)}>{c.nav[1]}<ArrowUpRight size={15} /></a>
             <Link href="/nosotros" onClick={() => setMenuOpen(false)}>{c.nav[2]}<ArrowUpRight size={15} /></Link>
             <Link href="/blog" onClick={() => setMenuOpen(false)}>{c.nav[3]}<ArrowUpRight size={15} /></Link>
+            <Link href="/calculadora" onClick={() => setMenuOpen(false)}>{c.calculatorLink}<ArrowUpRight size={15} /></Link>
             <Link href="/contacto" onClick={() => setMenuOpen(false)}>{c.contact}<ArrowUpRight size={15} /></Link>
             <button type="button" onClick={flipLang}>{spanish ? 'English' : 'Español'}<Globe2 size={15} /></button>
           </nav>
@@ -1553,7 +1557,7 @@ export default function Welcome() {
           <section className="bn-bridge"><div className="bn-shell"><SectionReveal className="bn-bridge-grid"><div className="bn-bridge-signature"><BeeSymbol /><div className="bn-bridge-kicker">{c.bridgeOverline}</div></div><div><h2>{c.bridgeTitle}</h2><p className="bn-bridge-copy">{c.bridgeDesc}</p></div></SectionReveal></div></section>
           <section className="bn-cta"><div className="bn-shell"><SectionReveal className="bn-cta-grid"><div><div className="bn-cta-eyebrow">{c.closingEyebrow}</div><h2><span>{c.closingTitle}</span><em>{c.closingTitle2}</em></h2><p className="bn-cta-copy">{c.closingDesc}</p></div><div className="bn-cta-action"><Link href="/contacto"><span>{c.closingCta}</span><ArrowUpRight size={28} /></Link></div></SectionReveal></div></section>
         </main>
-        <footer className="bn-footer"><div className="bn-shell"><div className="bn-footer-grid"><div className="bn-footer-brand"><Link className="bn-brand" href="/"><BeeSymbol /><span><span className="bn-brand-name">Bee<b>Near</b></span><span className="bn-brand-tag">HUMAN × INTELLIGENCE</span></span></Link><p>{c.footerLine}</p></div><div className="bn-footer-col"><h4 className="bn-footer-heading">{c.footerSolutions}</h4><Link href="/servicios/contact-center">Contact Center</Link><Link href="/servicios/intake-sales">Intake Sales</Link><a href="#how-it-works">{c.nav[1]}</a></div><div className="bn-footer-col"><h4 className="bn-footer-heading">{c.footerCompany}</h4><Link href="/nosotros">{c.nav[2]}</Link><Link href="/blog">{c.nav[3]}</Link><Link href="/contacto">{c.contact}</Link></div><div className="bn-footer-col bn-footer-contact"><h4 className="bn-footer-heading">{c.footerReach}</h4><a href="mailto:moreinfo@beenear.mx">moreinfo@beenear.mx</a><a href="tel:+12153180179">+1 (215) 318-0179</a><span>Ejército Nacional 373, CDMX</span></div></div><div className="bn-footer-bottom"><span>© {new Date().getFullYear()} Bee Near. {c.rights}</span><a href="/docs/privacy_policy_for_website.pdf" target="_blank" rel="noreferrer">{c.privacy}</a><span>DESIGNED FOR CONNECTION.</span></div></div></footer>
+        <footer className="bn-footer"><div className="bn-shell"><div className="bn-footer-grid"><div className="bn-footer-brand"><Link className="bn-brand" href="/"><BeeSymbol /><span><span className="bn-brand-name">Bee<b>Near</b></span><span className="bn-brand-tag">HUMAN × INTELLIGENCE</span></span></Link><p>{c.footerLine}</p></div><div className="bn-footer-col"><h4 className="bn-footer-heading">{c.footerSolutions}</h4><Link href="/servicios/contact-center">Contact Center</Link><Link href="/servicios/intake-sales">Intake Sales</Link><Link href="/calculadora">{c.calculatorLink}</Link><a href="#how-it-works">{c.nav[1]}</a></div><div className="bn-footer-col"><h4 className="bn-footer-heading">{c.footerCompany}</h4><Link href="/nosotros">{c.nav[2]}</Link><Link href="/blog">{c.nav[3]}</Link><Link href="/contacto">{c.contact}</Link></div><div className="bn-footer-col bn-footer-contact"><h4 className="bn-footer-heading">{c.footerReach}</h4><a href="mailto:moreinfo@beenear.mx">moreinfo@beenear.mx</a><a href="tel:+12153180179">+1 (215) 318-0179</a><span>Ejército Nacional 373, CDMX</span></div></div><div className="bn-footer-bottom"><span>© {new Date().getFullYear()} Bee Near. {c.rights}</span><a href="/docs/privacy_policy_for_website.pdf" target="_blank" rel="noreferrer">{c.privacy}</a><span>DESIGNED FOR CONNECTION.</span></div></div></footer>
         {demoOpen && <VoicePreviewModal c={c} onClose={closeDemo} />}
       </div>
     </>

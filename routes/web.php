@@ -83,3 +83,6 @@ Route::get('/blog/{slug}', function (string $slug) {
     'menos-tareas-repetitivas',
     'futuro-conversaciones-empresas-clientes',
 ])->name('blog.show');
+Route::get('/calculadora', function () {
+    return Inertia::render('StaffingCalculator');
+})->name('calculator');
