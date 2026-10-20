@@ -1,32 +1,215 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
+import { Menu, X, Globe2, ArrowLeft, ArrowRight, ArrowDownRight, ArrowUpRight, Bot, Headphones, Zap, BarChart3, Clock3 } from 'lucide-react';
 
-import {
-    ArrowLeft,
-    ArrowUpRight,
-    Bot,
-    Headphones,
-    Zap,
-    BarChart3,
-    Clock3,
-} from 'lucide-react';
+const BLOG_CSS = `
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+.bn-blog { --bk-yellow:#f5be1e; --bk-cream:#f2f0eb; --bk-bg:#101112; --bk-line:#353637; font-family:'DM Sans',Arial,sans-serif; background:var(--bk-bg); color:#f1eee8; overflow-x:hidden; -webkit-font-smoothing:antialiased; }
+.bn-blog *,.bn-blog *::before,.bn-blog *::after { box-sizing:border-box; }
+.bn-blog a { text-decoration:none; }
+.bn-blog button { cursor:pointer; font-family:inherit; }
+.bn-blog h1,.bn-blog h2,.bn-blog h3,.bn-blog h4,.bn-blog p { margin:0; }
+.bn-blog ::selection { background:var(--bk-yellow);color:#141414; }
+.bk-wrap { width:min(1240px,calc(100% - 96px));margin-inline:auto; }
+.bk-logo { display:inline-flex;align-items:center;gap:10px;color:#fff;white-space:nowrap; }
+.bk-logo-mark { display:inline-flex;width:32px;height:34px;color:var(--bk-yellow); }
+.bk-logo-mark svg { width:100%;height:100%; }
+.bk-logo-name { display:block;font:700 18px/1.1 Manrope,Arial,sans-serif;letter-spacing:-.8px; }
+.bk-logo-name b { color:var(--bk-yellow); }
+.bk-logo-sub { display:block;margin-top:4px;font-size:7px;letter-spacing:1.55px;color:#888c87;font-weight:700; }
+.bk-nav { position:fixed;z-index:100;top:18px;left:50%;transform:translateX(-50%);width:min(1252px,calc(100% - 64px));min-height:63px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:9px 14px 9px 21px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(16,17,18,.9);box-shadow:0 12px 40px rgba(0,0,0,.25);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);transition:top .25s,background .25s; }
+.bk-nav.scrolled { top:9px;background:rgba(14,15,16,.97); }
+.bk-nav-links { display:flex;align-items:center;gap:29px; }
+.bk-nav-links a { color:#aeb0aa;font-size:12px;font-weight:500;position:relative;transition:color .2s; }
+.bk-nav-links a:hover,.bk-nav-links a[aria-current='page'] { color:#f1eee8; }
+.bk-nav-links a[aria-current='page']::after { content:'';position:absolute;height:2px;width:100%;left:0;bottom:-11px;background:var(--bk-yellow); }
+.bk-nav-right { display:flex;align-items:center;gap:16px; }
+.bk-lang { display:flex;align-items:center;gap:6px;border:0;background:none;color:#dddcd7;font-weight:700;font-size:11px;padding:9px 1px; }
+.bk-contact { display:flex;gap:15px;align-items:center;justify-content:center;border-radius:6px;background:var(--bk-yellow);padding:12px 15px;color:#171717!important;font-size:11px;font-weight:800;transition:background .2s,transform .2s; }
+.bk-contact:hover { transform:translateY(-2px);background:#ffcd42; }
+.bk-menu-btn { display:none;align-items:center;justify-content:center;width:40px;height:40px;background:#242627;color:#f8f8f8;border:1px solid #424242;border-radius:8px; }
+.bk-mobile { position:fixed;z-index:99;top:83px;left:12px;right:12px;padding:10px;border:1px solid #383a3a;border-radius:10px;background:#1a1c1e;box-shadow:0 22px 60px #000b; }
+.bk-mobile a,.bk-mobile button { width:100%;display:flex;align-items:center;justify-content:space-between;text-align:left;padding:14px 12px;font-size:13px;font-weight:600;color:#e4e4df;background:transparent;border:0;border-bottom:1px solid #383939; }
+.bk-mobile a:last-child { border-bottom:0; }
+.bk-eyebrow { display:flex;align-items:center;gap:10px;font-size:10px;font-weight:700;letter-spacing:1.65px;color:var(--bk-yellow);text-transform:uppercase; }
+.bk-eyebrow::before { content:'';width:23px;height:1px;background:currentColor; }
+.bk-eyebrow.dark { color:#8f7229; }
+.bk-outline-btn,.bk-yellow-btn { min-height:46px;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;gap:15px;border-radius:6px;font-size:12px;font-weight:700;transition:transform .2s,border-color .2s,background .2s; }
+.bk-outline-btn { border:1px solid #565653;color:#f2f0ea; }
+.bk-outline-btn:hover { transform:translateY(-2px);border-color:var(--bk-yellow); }
+.bk-yellow-btn { background:var(--bk-yellow);color:#121212; }
+.bk-yellow-btn:hover { transform:translateY(-2px);background:#ffce4c; }
+.bk-hero { position:relative;isolation:isolate;background:#111213;padding:149px 0 92px;overflow:hidden; }
+.bk-hero::before { content:'';position:absolute;z-index:-1;inset:0;background:radial-gradient(ellipse at 73% 50%,rgba(245,190,30,.065),transparent 37%),radial-gradient(ellipse at 10% 5%,rgba(255,255,255,.022),transparent 45%); }
+.bk-grid { pointer-events:none;position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px);background-size:92px 92px;mask-image:linear-gradient(#000,transparent);opacity:.35; }
+.bk-hero-inner { display:grid;grid-template-columns:minmax(0,1.06fr) minmax(0,.94fr);align-items:center;gap:clamp(28px,5vw,75px); }
+.bk-hero h1 { font:700 clamp(40px,4vw,62px)/1.14 Manrope,Arial,sans-serif;letter-spacing:-.058em;margin:20px 0 20px;max-width:690px; }
+.bk-hero h1 em { color:var(--bk-yellow);font-style:normal; }
+.bk-hero-desc { color:#abb0ab;font-size:15px;line-height:1.8;max-width:530px; }
+.bk-hero-actions { display:flex;gap:11px;flex-wrap:wrap;margin-top:30px; }
+.bk-hero-bottom { margin-top:44px;border-top:1px solid #393c3b;padding-top:19px;display:flex;gap:25px;flex-wrap:wrap;align-items:center;font-size:10px;letter-spacing:1.3px;color:#929590;font-weight:700; }
+.bk-hero-bottom span:first-child { color:#e4c474; }
+.bk-graphic { position:relative;min-height:380px;aspect-ratio:1.18;background:linear-gradient(142deg,#202223,#151718 63%,#111213);border:1px solid #393b3a;border-radius:10px;overflow:hidden;box-shadow:0 22px 60px #0007; }
+.bk-graphic::after { content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,transparent 49%,#ffffff06 50%,transparent 51%),linear-gradient(transparent 49%,#ffffff06 50%,transparent 51%);background-size:30px 30px;mask-image:radial-gradient(ellipse at center,#000,transparent 72%); }
+.bk-graphic-top { position:absolute;z-index:2;left:24px;right:24px;top:21px;display:flex;justify-content:space-between;gap:10px;color:#979992;font-size:9px;letter-spacing:1.4px;font-weight:700; }
+.bk-graphic svg.bk-orbit-art { position:absolute;inset:8% 5%;width:90%;height:85%;animation:bk-float 9s ease-in-out infinite alternate; }
+.bk-graphic-foot { position:absolute;bottom:20px;left:24px;right:24px;display:flex;gap:9px;align-items:center;border-top:1px solid #464744;padding-top:15px;font-size:9px;letter-spacing:1.25px;font-weight:700;color:#beb8a7; }
+.bk-live { width:6px;height:6px;background:var(--bk-yellow);border-radius:50%;box-shadow:0 0 12px #f5be1e80;animation:bk-pulse 2s infinite; }
+.bk-mini-index { margin-left:auto;color:#777b77; }
+.bk-index-section { background:var(--bk-cream);color:#191b1b;padding:84px 0 109px; }
+.bk-section-top { display:flex;align-items:end;justify-content:space-between;gap:30px;margin-bottom:31px; }
+.bk-section-top h2 { font:700 clamp(28px,3vw,43px)/1.19 Manrope,Arial,sans-serif;letter-spacing:-.05em;margin-top:16px;max-width:660px; }
+.bk-count { font-size:11px;letter-spacing:1.4px;font-weight:800;color:#74766f;white-space:nowrap; }
+.bk-filters { display:flex;flex-wrap:wrap;gap:8px;padding:0 0 29px;border-bottom:1px solid #d7d5d0; }
+.bk-filter { border:1px solid #d9d8d2;background:transparent;color:#555a57;padding:10px 14px;border-radius:5px;font-size:12px;font-weight:700;transition:background .2s,color .2s,border .2s; }
+.bk-filter:hover { color:#141515;border-color:#a3a09a; }
+.bk-filter[aria-pressed='true'] { background:#1c1e1e;color:#f5be1e;border-color:#1c1e1e; }
+.bk-cards { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px; }
+.bk-card { display:flex;flex-direction:column;border:1px solid #d8d6d0;background:#fbfaf7;border-radius:8px;min-width:0;overflow:hidden;transition:transform .25s,border .25s,box-shadow .25s; }
+.bk-card:hover { transform:translateY(-5px);border-color:#c2a65c;box-shadow:0 22px 35px #27231b12; }
+.bk-cover { display:flex;flex-direction:column;position:relative;justify-content:space-between;min-height:184px;padding:18px 20px;overflow:hidden;background:#1c1e1e;color:#b3b5ae; }
+.bk-cover::before { content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 72% 35%,rgba(245,190,30,.10),transparent 44%);pointer-events:none; }
+.bk-cover::after { content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0,transparent 45px,#ffffff07 46px),repeating-linear-gradient(0deg,transparent 0,transparent 45px,#ffffff07 46px);opacity:.6;pointer-events:none; }
+.bk-cover-top,.bk-cover-footer { z-index:1;display:flex;align-items:center;justify-content:space-between;font-size:9px;font-weight:700;letter-spacing:1.3px; }
+.bk-cover-mid { z-index:1;display:flex;align-items:center;gap:20px;margin:auto 0;color:#f1ead6; }
+.bk-cover-icon { width:73px;height:73px;border:1px solid #6b613e;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--bk-yellow);box-shadow:0 0 0 21px #f5be1e0b;flex:none; }
+.bk-cover-mid b { font:700 clamp(33px,3.2vw,44px)/1 Manrope,Arial,sans-serif;letter-spacing:-.06em;color:#e3d8ba; }
+.bk-cover[data-kind='Automation'] .bk-cover-icon,.bk-cover[data-kind='Automatización'] .bk-cover-icon { border-radius:8px;transform:rotate(7deg); }
+.bk-card-body { padding:24px 22px 21px;display:flex;flex-direction:column;flex:1;gap:12px; }
+.bk-meta { font-size:10px;letter-spacing:.2px;font-weight:700;color:#8c7040;display:flex;gap:8px;align-items:center;flex-wrap:wrap; }
+.bk-meta i { width:3px;height:3px;background:#aaa;display:inline-block;border-radius:50%; }
+.bk-card h3 { font:700 clamp(17px,1.55vw,21px)/1.32 Manrope,Arial,sans-serif;letter-spacing:-.036em; }
+.bk-card-desc { font-size:13px;line-height:1.7;color:#656861;flex:1; }
+.bk-card-link { margin-top:12px;border-top:1px solid #dedcd5;padding-top:17px;display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:800;color:#202221; }
+.bk-card-link svg { transition:transform .25s;color:#8c6c22; }
+.bk-card:hover .bk-card-link svg { transform:translate(3px,-3px); }
+.bk-featured { background:#1d1f20;color:#f3f1eb;display:grid;grid-template-columns:44% 56%;border-radius:8px;overflow:hidden;margin:29px 0 23px;border:1px solid #343634; }
+.bk-featured .bk-cover { min-height:370px;background:#181b1c; }
+.bk-featured .bk-cover-mid { flex-direction:column;gap:27px; }
+.bk-featured .bk-cover-icon { width:104px;height:104px; }
+.bk-featured .bk-cover-mid b { font-size:64px; }
+.bk-featured-body { padding:clamp(27px,3.8vw,55px);display:flex;flex-direction:column;justify-content:center;align-items:start;gap:19px; }
+.bk-featured-tag { border:1px solid #63552e;border-radius:3px;padding:7px 10px;color:#f5be1e;font-size:9px;font-weight:800;letter-spacing:1.15px; }
+.bk-featured h3 { font:700 clamp(26px,2.7vw,40px)/1.22 Manrope,Arial,sans-serif;letter-spacing:-.05em; }
+.bk-featured p { color:#b0b3ac;font-size:14px;line-height:1.75; }
+.bk-featured a { color:#f5be1e;display:inline-flex;gap:15px;align-items:center;font-size:12px;font-weight:800;border-bottom:1px solid #f5be1e55;padding-bottom:8px; }
+.bk-empty { margin:25px 0;text-align:center;border:1px dashed #c8c6bf;border-radius:8px;padding:65px 20px;color:#666; }
+.bk-close { background:#191b1c;color:#f2f0eb;padding:84px 0; }
+.bk-close-row { display:flex;gap:32px;justify-content:space-between;align-items:center; }
+.bk-close h2 { font:700 clamp(29px,3.1vw,45px)/1.2 Manrope,Arial,sans-serif;letter-spacing:-.055em;margin:17px 0 15px;max-width:700px; }
+.bk-close p { color:#a6aaa3;font-size:14px;line-height:1.7;max-width:560px; }
+.bk-close-link { width:94px;height:94px;display:flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid #817046;color:var(--bk-yellow);flex:none;transition:transform .25s,background .25s; }
+.bk-close-link:hover { transform:rotate(45deg);background:#29251a; }
+.bk-footer { background:#101112;border-top:1px solid #343534;padding:61px 0 28px; }
+.bk-footer-cols { display:grid;grid-template-columns:1.5fr repeat(3,1fr);gap:39px;padding-bottom:58px; }
+.bk-footer-cols h4 { font-size:10px;letter-spacing:1.5px;color:#deb947;margin-bottom:20px;font-weight:800; }
+.bk-footer-cols p,.bk-footer-cols a,.bk-footer-cols span:not(.bk-logo-name):not(.bk-logo-sub):not(.bk-logo-mark) { color:#9ca09a;font-size:12px;line-height:1.8; }
+.bk-footer-cols a { display:block;margin-bottom:9px; }
+.bk-footer-cols a:hover { color:#f5be1e; }
+.bk-footer-brand p { max-width:250px;margin-top:18px; }
+.bk-footer-bottom { border-top:1px solid #343534;padding-top:24px;display:flex;justify-content:space-between;gap:18px;color:#81837e;font-size:11px; }
+.bk-footer-bottom a { color:#bbb6a5; }
+.bk-reveal { opacity:0;transform:translateY(17px);transition:opacity .65s,transform .65s; }
+.bk-reveal.in { opacity:1;transform:none; }
+.bk-reader-hero { position:relative;overflow:hidden;padding:157px 0 77px;background:#131516;isolation:isolate; }
+.bk-reader-hero::before { content:'';position:absolute;z-index:-1;inset:0;background:radial-gradient(ellipse at 85% 45%,rgba(245,190,30,.085),transparent 42%); }
+.bk-reader-hero-layout { display:grid;grid-template-columns:1fr 300px;align-items:center;gap:55px; }
+.bk-back { display:inline-flex;gap:10px;align-items:center;color:#c4bfaf;font-size:11px;font-weight:700;margin-bottom:34px; }
+.bk-back:hover { color:var(--bk-yellow); }
+.bk-reader-hero h1 { font:700 clamp(34px,4.1vw,61px)/1.15 Manrope,Arial,sans-serif;letter-spacing:-.058em;max-width:830px;margin:18px 0 18px; }
+.bk-reader-intro { color:#b1b5af;line-height:1.8;font-size:15px;max-width:820px; }
+.bk-reader-graphic { position:relative;aspect-ratio:1;border:1px solid #41423c;border-radius:8px;background:linear-gradient(135deg,#202223,#141616);display:flex;align-items:center;justify-content:center; }
+.bk-reader-graphic::before,.bk-reader-graphic::after { content:'';position:absolute;width:77%;height:77%;border:1px solid #5c5137;border-radius:50%; }
+.bk-reader-graphic::after { width:55%;height:55%;border-color:#34393a;border-style:dashed;animation:bk-spin 42s linear infinite; }
+.bk-reader-graphic-icon { color:var(--bk-yellow); }
+.bk-reader-bar { display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin-top:27px;color:#b3ab92;font-size:11px;font-weight:700;letter-spacing:.3px; }
+.bk-reader { background:var(--bk-cream);color:#1b1c1b;padding:81px 0 90px; }
+.bk-reader-layout { display:grid;grid-template-columns:minmax(0,760px) minmax(0,270px);justify-content:space-between;gap:50px; }
+.bk-prose-lead { font:500 clamp(18px,1.7vw,22px)/1.75 'DM Sans',sans-serif;color:#333532;margin-bottom:43px; }
+.bk-prose-section { border-top:1px solid #d1d0ca;padding:34px 0 38px; }
+.bk-prose-n { display:flex;gap:15px;align-items:center;color:#9c782d;font:800 10px Manrope,Arial,sans-serif;letter-spacing:1.4px;margin-bottom:16px; }
+.bk-prose-n:after { content:'';height:1px;width:36px;background:#b69b5d; }
+.bk-prose-section h2 { font:700 clamp(23px,2.4vw,33px)/1.3 Manrope,Arial,sans-serif;letter-spacing:-.038em;margin:0 0 16px; }
+.bk-prose-section p { color:#5b605a;font-size:16px;line-height:1.9; }
+.bk-pullquote { border-left:3px solid #c2a04d;padding:18px 24px;background:#e8e4d9;margin:16px 0 30px;font-size:15px;font-weight:600;line-height:1.9;color:#3a3a35; }
+.bk-side { position:relative; }
+.bk-side-inner { position:sticky;top:105px;border:1px solid #d3d0c8;background:#ebe8df;padding:25px;border-radius:7px; }
+.bk-side-label { color:#806a40;font-weight:800;font-size:10px;letter-spacing:1.2px;margin-bottom:15px; }
+.bk-side a { display:flex;gap:11px;align-items:start;color:#51544e;border-top:1px solid #d2cfc7;padding:15px 0;font-size:12px;line-height:1.5; }
+.bk-side a:hover { color:#a2781d; }
+.bk-side a span { color:#aa8834;font-weight:800; }
+.bk-side-note { margin-top:19px;color:#72776e;font-size:11px;line-height:1.65; }
+.bk-more { border-top:1px solid #d1d0ca;padding-top:36px;margin-top:20px; }
+.bk-more h3 { font:700 20px Manrope,Arial,sans-serif;letter-spacing:-.03em;margin-bottom:21px; }
+.bk-more-link { display:inline-flex;align-items:center;gap:15px;font-size:12px;font-weight:800;color:#1b1c1b;border-bottom:1px solid #c9a246;padding-bottom:8px; }
+.bk-progress { position:fixed;z-index:110;top:0;left:0;height:2px;background:var(--bk-yellow);transition:width .15s; }
+@keyframes bk-float { from {transform:translateY(-5px)} to {transform:translateY(7px)} }
+@keyframes bk-pulse { 50% { opacity:.45; } }
+@keyframes bk-spin { to { transform:rotate(360deg); } }
+@media(max-width:1050px) { .bk-nav-links {gap:16px} .bk-reader-hero-layout {grid-template-columns:minmax(0,1fr) 230px} .bk-reader-layout {grid-template-columns:1fr 230px;gap:30px} .bk-footer-cols {gap:22px} }
+@media(max-width:920px) { .bk-nav-links {display:none} .bk-menu-btn {display:flex} .bk-hero-inner {grid-template-columns:1fr} .bk-hero {padding:132px 0 70px} .bk-graphic {max-width:600px;width:100%;min-height:330px;margin-inline:auto} .bk-featured {grid-template-columns:1fr 1fr} .bk-reader-hero-layout {grid-template-columns:1fr 190px;gap:26px} .bk-reader-layout {grid-template-columns:1fr} .bk-side {display:none} .bk-footer-cols {grid-template-columns:repeat(2,1fr)} }
+@media(max-width:700px) { .bk-wrap {width:calc(100% - 36px)} .bk-nav {top:10px;width:calc(100% - 24px);min-height:59px;padding:8px 11px} .bk-contact {display:none} .bk-logo-name {font-size:17px} .bk-hero {padding:120px 0 60px} .bk-hero h1 {font-size:clamp(34px,9.5vw,47px)} .bk-hero-desc {font-size:14px} .bk-hero-bottom {margin-top:30px} .bk-graphic {min-height:280px} .bk-index-section {padding:64px 0 75px} .bk-section-top {align-items:start} .bk-cards {grid-template-columns:1fr} .bk-featured {display:flex;flex-direction:column} .bk-featured .bk-cover {min-height:240px} .bk-featured .bk-cover-mid {flex-direction:row} .bk-featured .bk-cover-icon {width:76px;height:76px} .bk-featured .bk-cover-mid b {font-size:45px} .bk-featured-body {padding:26px} .bk-close {padding:66px 0} .bk-close-row {align-items:start} .bk-close-link {width:67px;height:67px} .bk-footer-cols {grid-template-columns:1fr 1fr;gap:33px} .bk-footer-brand {grid-column:1/-1} .bk-footer-bottom {flex-direction:column} .bk-reader-hero {padding:127px 0 58px} .bk-reader-hero-layout {grid-template-columns:1fr} .bk-reader-graphic {display:none} .bk-reader-hero h1 {font-size:clamp(32px,8.3vw,49px)} .bk-reader {padding:57px 0 72px} .bk-prose-section p {font-size:15px} }
+@media(max-width:390px) { .bk-nav-right {gap:7px} .bk-filters {gap:6px} .bk-filter {padding:9px;font-size:11px} .bk-hero h1 {font-size:33px} }
+@media(prefers-reduced-motion:reduce) { .bk-reveal {opacity:1;transform:none} .bk-reader-graphic::after,.bk-graphic svg.bk-orbit-art,.bk-live {animation:none} }
+`;
 
-export default function BlogArticle({ id }) {
+function BeeLogo() {
+  return <span className="bk-logo"><span className="bk-logo-mark"><svg viewBox="0 0 38 40" fill="none" aria-hidden="true"><path d="M18.9 2 3 11.1v17.8L18.9 38 35 28.9V11.1L18.9 2Z" stroke="currentColor" strokeWidth="1.7"/><path d="M19 3v34M3.5 11.5 35 29M35 11.5 3.5 29" stroke="currentColor" strokeWidth="1.3" opacity=".7"/><circle cx="19" cy="20" r="5.2" fill="currentColor"/></svg></span><span><span className="bk-logo-name">Bee<b>Near</b></span><span className="bk-logo-sub">HUMAN × INTELLIGENCE</span></span></span>;
+}
+function BlogNav({ t, i18n, spanish }) {
+  const [menu, setMenu] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll(); window.addEventListener('scroll',onScroll,{passive:true});
+    return () => window.removeEventListener('scroll',onScroll);
+  },[]);
+  const links = [{href:'/',name:t('nav_home')},{href:'/nosotros',name:t('nav_about')},{href:'/servicios',name:t('nav_services')},{href:'/blog',name:'Blog'}];
+  return <>
+    <header className={`bk-nav${scrolled?' scrolled':''}`}>
+      <Link href="/" aria-label="Bee Near — Inicio"><BeeLogo/></Link>
+      <nav className="bk-nav-links" aria-label={spanish?'Menú principal':'Main navigation'}>{links.map(x=><Link key={x.href} href={x.href} aria-current={x.href==='/blog'?'page':undefined}>{x.name}</Link>)}</nav>
+      <div className="bk-nav-right"><button className="bk-lang" type="button" onClick={()=>i18n.changeLanguage(spanish?'en':'es')} aria-label={spanish?'Switch to English':'Cambiar a español'}><Globe2 size={14}/>{spanish?'EN':'ES'}</button><Link className="bk-contact" href="/contacto">{t('nav_contact')}<ArrowUpRight size={15}/></Link><button type="button" className="bk-menu-btn" onClick={()=>setMenu(!menu)} aria-label={menu?(spanish?'Cerrar menú':'Close menu'):(spanish?'Abrir menú':'Open menu')} aria-expanded={menu}>{menu?<X size={20}/>:<Menu size={20}/>}</button></div>
+    </header>
+    {menu&&<nav className="bk-mobile" aria-label={spanish?'Navegación móvil':'Mobile navigation'}>{links.map(x=><Link key={x.href} href={x.href} onClick={()=>setMenu(false)}>{x.name}<ArrowUpRight size={15}/></Link>)}<Link href="/contacto" onClick={()=>setMenu(false)}>{t('nav_contact')}<ArrowUpRight size={15}/></Link></nav>}
+  </>;
+}
+function BlogFooter({t,spanish}) {
+  return <footer className="bk-footer"><div className="bk-wrap"><div className="bk-footer-cols">
+      <div className="bk-footer-brand"><Link href="/"><BeeLogo/></Link><p>{t('footer_desc')}</p></div>
+      <div><h4>{t('footer_links')}</h4><Link href="/">{t('nav_home')}</Link><Link href="/nosotros">{t('nav_about')}</Link><Link href="/servicios">{t('nav_services')}</Link></div>
+      <div><h4>{spanish?'EXPLORAR':'EXPLORE'}</h4><Link href="/blog">Blog</Link><Link href="/contacto">{t('nav_contact')}</Link><a href="/docs/privacy_policy_for_website.pdf" target="_blank" rel="noopener noreferrer">{t('footer_privacy')}</a></div>
+      <div><h4>{t('footer_contact')}</h4><a href="mailto:moreinfo@beenear.mx">moreinfo@beenear.mx</a><a href="tel:+12153180179">+1 (215) 318-0179</a><span>Ejército Nacional 373, CDMX</span></div>
+    </div><div className="bk-footer-bottom"><span>© {new Date().getFullYear()} Bee Near. {t('footer_rights')}</span><span>HUMAN × INTELLIGENCE</span></div></div></footer>;
+}
+function Eyebrow({children,dark=false}) { return <div className={`bk-eyebrow${dark?' dark':''}`}>{children}</div>; }
+function BlogCover({article,featured=false}) {
+  const Icon=article.icon;
+  return <div className="bk-cover" data-kind={article.category} aria-hidden="true"><div className="bk-cover-top"><span>BEE NEAR / INSIGHTS</span><span>2026</span></div><div className="bk-cover-mid"><span className="bk-cover-icon"><Icon size={featured?48:35} strokeWidth={1.45}/></span><b>{String(article.id).padStart(2,'0')}</b></div><div className="bk-cover-footer"><span>HUMAN × INTELLIGENCE</span><span>↗</span></div></div>;
+}
+function ContactClose({spanish}) {
+  return <section className="bk-close"><div className="bk-wrap bk-close-row"><div><Eyebrow>{spanish?'EL SIGUIENTE PASO':'THE NEXT STEP'}</Eyebrow><h2>{spanish?'Conversemos sobre lo que viene.':'Let’s talk about what comes next.'}</h2><p>{spanish?'Conoce cómo podemos ayudarte a conectar tecnología, operación y experiencia humana.':'See how we can help connect technology, operations, and human experience.'}</p></div><Link className="bk-close-link" href="/contacto" aria-label={spanish?'Ir a contacto':'Go to contact'}><ArrowUpRight size={34}/></Link></div></section>;
+}
+function useReveal(dependency = null) {
+  useEffect(()=>{
+    const nodes=[...document.querySelectorAll('.bk-reveal')];
+    if (!('IntersectionObserver' in window)||window.matchMedia('(prefers-reduced-motion: reduce)').matches) {nodes.forEach(n=>n.classList.add('in'));return;}
+    const ob=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');ob.unobserve(e.target)}}),{threshold:.05,rootMargin:'0px 0px -26px 0px'});
+    nodes.forEach(n=>ob.observe(n));return ()=>ob.disconnect();
+  },[dependency]);
+}
 
-    const { i18n } = useTranslation();
-    const isSpanish = i18n.language === 'es';
-
-    const toggleLanguage = () => {
-        i18n.changeLanguage(isSpanish ? 'en' : 'es');
-    };
-
-    /*
-    |--------------------------------------------------------------------------
-    | ARTÍCULOS
-    |--------------------------------------------------------------------------
-    */
-
+export default function BlogArticle({id}) {
+  const {t,i18n}=useTranslation();
+  const isSpanish=i18n.language?.toLowerCase().startsWith('es');
+  const [progress,setProgress]=useState(0);
+  useReveal();
+  useEffect(()=>{
+    const update=()=>{const doc=document.documentElement;const d=Math.max(1,doc.scrollHeight-window.innerHeight);setProgress(Math.min(100,Math.max(0,window.scrollY/d*100)));};
+    update();window.addEventListener('scroll',update,{passive:true});window.addEventListener('resize',update);
+    return()=>{window.removeEventListener('scroll',update);window.removeEventListener('resize',update);};
+  },[]);
     const articles = {
 
         1: {
@@ -319,637 +502,16 @@ export default function BlogArticle({ id }) {
     };
 
 
-    const article = articles[id] || articles[1];
-    const Icon = article.icon;
 
-
-    return (
-        <>
-            <Head title={`${article.title} | BeeNear`} />
-
-            <div className="min-h-screen bg-[#f8f8f6] text-bee-dark">
-
-                {/* =====================================================
-                    NAVBAR
-                ====================================================== */}
-
-                <header className="absolute left-0 right-0 top-5 z-50 px-4">
-
-                    <nav className="
-                        mx-auto
-                        flex
-                        h-[72px]
-                        max-w-7xl
-                        items-center
-                        justify-between
-                        rounded-2xl
-                        border
-                        border-white/20
-                        bg-white/95
-                        px-5
-                        shadow-[0_15px_45px_rgba(0,0,0,0.10)]
-                        backdrop-blur-xl
-                        md:px-7
-                    ">
-
-                        {/* LOGO */}
-
-                        <Link
-                            href="/"
-                            className="group flex items-center gap-3"
-                        >
-
-                            <div className="
-                                flex
-                                h-10
-                                w-10
-                                items-center
-                                justify-center
-                                overflow-hidden
-                                rounded-xl
-                            ">
-                                <img
-                                    src="/images/logo.png"
-                                    alt="BeeNear"
-                                    className="
-                                        h-full
-                                        w-full
-                                        object-contain
-                                        transition-transform
-                                        duration-300
-                                        group-hover:scale-105
-                                    "
-                                />
-                            </div>
-
-                            <div className="leading-none">
-
-                                <span className="
-                                    block
-                                    text-lg
-                                    font-black
-                                    tracking-tight
-                                    text-bee-dark
-                                ">
-                                    BEENEAR
-                                </span>
-
-                                <span className="
-                                    hidden
-                                    text-[9px]
-                                    font-semibold
-                                    uppercase
-                                    tracking-[0.25em]
-                                    text-gray-400
-                                    sm:block
-                                ">
-                                    Technology & Innovation
-                                </span>
-
-                            </div>
-
-                        </Link>
-
-
-                        {/* DESKTOP */}
-
-                        <div className="hidden items-center gap-8 lg:flex">
-
-                            <Link
-                                href="/"
-                                className="text-sm font-semibold text-gray-500 transition hover:text-bee-dark"
-                            >
-                                {isSpanish ? 'Inicio' : 'Home'}
-                            </Link>
-
-                            <Link
-                                href="/nosotros"
-                                className="text-sm font-semibold text-gray-500 transition hover:text-bee-dark"
-                            >
-                                {isSpanish ? 'Nosotros' : 'About'}
-                            </Link>
-
-                            <Link
-                                href="/servicios"
-                                className="text-sm font-semibold text-gray-500 transition hover:text-bee-dark"
-                            >
-                                {isSpanish ? 'Servicios' : 'Services'}
-                            </Link>
-
-                            <Link
-                                href="/blog"
-                                className="relative text-sm font-semibold text-bee-dark"
-                            >
-                                Blog
-
-                                <span className="
-                                    absolute
-                                    -bottom-2
-                                    left-0
-                                    h-[2px]
-                                    w-full
-                                    rounded-full
-                                    bg-bee-yellow
-                                " />
-                            </Link>
-
-                            <div className="h-7 w-px bg-gray-200" />
-
-                            <button
-                                type="button"
-                                onClick={toggleLanguage}
-                                className="
-                                    rounded-lg
-                                    border
-                                    border-gray-200
-                                    px-3
-                                    py-2
-                                    text-xs
-                                    font-bold
-                                    uppercase
-                                    tracking-wider
-                                    text-gray-600
-                                    transition
-                                    hover:border-bee-yellow
-                                    hover:bg-yellow-50
-                                "
-                            >
-                                {isSpanish ? 'EN' : 'ES'}
-                            </button>
-
-                            <Link
-                                href="/contacto"
-                                className="
-                                    group
-                                    flex
-                                    items-center
-                                    gap-2
-                                    rounded-xl
-                                    bg-bee-yellow
-                                    px-5
-                                    py-3
-                                    text-sm
-                                    font-bold
-                                    text-bee-dark
-                                    shadow-sm
-                                    transition
-                                    hover:bg-yellow-400
-                                "
-                            >
-                                {isSpanish ? 'Contacto' : 'Contact'}
-
-                                <ArrowUpRight
-                                    size={16}
-                                    className="
-                                        transition-transform
-                                        duration-300
-                                        group-hover:translate-x-0.5
-                                        group-hover:-translate-y-0.5
-                                    "
-                                />
-                            </Link>
-
-                        </div>
-
-                    </nav>
-
-                </header>
-
-
-                {/* =====================================================
-                    HERO DEL ARTÍCULO
-                ====================================================== */}
-
-                <section className="
-                    relative
-                    overflow-hidden
-                    bg-bee-dark
-                    pb-20
-                    pt-44
-                ">
-
-                    <div className="
-                        absolute
-                        -right-32
-                        -top-32
-                        h-96
-                        w-96
-                        rounded-full
-                        bg-bee-yellow/10
-                        blur-3xl
-                    " />
-
-                    <div className="
-                        absolute
-                        -bottom-40
-                        -left-40
-                        h-96
-                        w-96
-                        rounded-full
-                        bg-bee-yellow/10
-                        blur-3xl
-                    " />
-
-
-                    <div className="
-                        relative
-                        mx-auto
-                        max-w-5xl
-                        px-6
-                    ">
-
-                        <Link
-                            href="/blog"
-                            className="
-                                mb-8
-                                inline-flex
-                                items-center
-                                gap-2
-                                text-sm
-                                font-semibold
-                                text-gray-300
-                                transition
-                                hover:text-bee-yellow
-                            "
-                        >
-                            <ArrowLeft size={17} />
-
-                            {isSpanish
-                                ? 'Volver al blog'
-                                : 'Back to blog'
-                            }
-                        </Link>
-
-
-                        <div className="mb-6 flex items-center gap-3">
-
-                            <span className="
-                                rounded-full
-                                bg-bee-yellow
-                                px-4
-                                py-2
-                                text-xs
-                                font-black
-                                text-bee-dark
-                            ">
-                                {article.category}
-                            </span>
-
-                            <span className="
-                                text-xs
-                                font-medium
-                                text-gray-400
-                            ">
-                                {article.date}
-                            </span>
-
-                        </div>
-
-
-                        <h1 className="
-                            max-w-4xl
-                            text-4xl
-                            font-black
-                            leading-[1.08]
-                            tracking-tight
-                            text-white
-                            md:text-6xl
-                        ">
-                            {article.title}
-                        </h1>
-
-
-                        <p className="
-                            mt-7
-                            max-w-3xl
-                            text-lg
-                            leading-relaxed
-                            text-gray-300
-                            md:text-xl
-                        ">
-                            {article.intro}
-                        </p>
-
-
-                        {/* ICONO */}
-
-                        <div className="
-                            mt-10
-                            flex
-                            h-20
-                            w-20
-                            items-center
-                            justify-center
-                            rounded-2xl
-                            border
-                            border-white/10
-                            bg-white/10
-                            backdrop-blur-md
-                        ">
-                            <Icon
-                                size={38}
-                                strokeWidth={1.5}
-                                className="text-bee-yellow"
-                            />
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-                {/* =====================================================
-                    CONTENIDO
-                ====================================================== */}
-
-                <main className="
-                    mx-auto
-                    max-w-4xl
-                    px-6
-                    py-16
-                ">
-
-                    <article className="
-                        rounded-[1.75rem]
-                        border
-                        border-gray-200
-                        bg-white
-                        p-8
-                        shadow-[0_10px_40px_rgba(35,31,32,0.06)]
-                        md:p-12
-                    ">
-
-                        {article.sections.map((section, index) => (
-
-                            <section
-                                key={index}
-                                className={`
-                                    ${index !== 0 ? 'mt-12 border-t border-gray-100 pt-12' : ''}
-                                `}
-                            >
-
-                                <div className="flex gap-5">
-
-                                    <div className="
-                                        hidden
-                                        h-10
-                                        w-10
-                                        shrink-0
-                                        items-center
-                                        justify-center
-                                        rounded-full
-                                        bg-bee-yellow
-                                        text-sm
-                                        font-black
-                                        text-bee-dark
-                                        sm:flex
-                                    ">
-                                        {index + 1}
-                                    </div>
-
-
-                                    <div>
-
-                                        <h2 className="
-                                            text-2xl
-                                            font-black
-                                            leading-tight
-                                            text-bee-dark
-                                            md:text-3xl
-                                        ">
-                                            {section.title}
-                                        </h2>
-
-                                        <p className="
-                                            mt-4
-                                            text-base
-                                            leading-8
-                                            text-gray-600
-                                        ">
-                                            {section.text}
-                                        </p>
-
-                                    </div>
-
-                                </div>
-
-                            </section>
-
-                        ))}
-
-
-                        {/* CIERRE */}
-
-                        <div className="
-                            mt-14
-                            rounded-2xl
-                            bg-[#fff8dc]
-                            p-6
-                        ">
-
-                            <p className="
-                                text-sm
-                                font-semibold
-                                leading-7
-                                text-bee-dark
-                            ">
-                                {isSpanish
-                                    ? 'En BeeNear creemos que la tecnología debe ayudar a las empresas a conectar mejor con sus clientes y a construir relaciones más eficientes.'
-                                    : 'At BeeNear, we believe technology should help companies connect better with their customers and build more efficient relationships.'
-                                }
-                            </p>
-
-                        </div>
-
-                    </article>
-
-
-                    {/* VOLVER */}
-
-                    <div className="mt-10 text-center">
-
-                        <Link
-                            href="/blog"
-                            className="
-                                inline-flex
-                                items-center
-                                gap-2
-                                rounded-xl
-                                bg-bee-dark
-                                px-6
-                                py-3
-                                text-sm
-                                font-bold
-                                text-white
-                                transition
-                                hover:-translate-y-0.5
-                                hover:bg-black
-                            "
-                        >
-                            <ArrowLeft size={16} />
-
-                            {isSpanish
-                                ? 'Ver todos los artículos'
-                                : 'View all articles'
-                            }
-                        </Link>
-
-                    </div>
-
-                </main>
-
-
-                {/* =====================================================
-                    CTA
-                ====================================================== */}
-
-                <section className="px-6 pb-16 pt-2">
-
-                    <div className="
-                        mx-auto
-                        flex
-                        max-w-6xl
-                        flex-col
-                        items-center
-                        justify-between
-                        gap-6
-                        rounded-[1.75rem]
-                        bg-bee-yellow
-                        px-7
-                        py-8
-                        md:flex-row
-                        md:px-10
-                    ">
-
-                        <div>
-
-                            <p className="
-                                text-xs
-                                font-black
-                                uppercase
-                                tracking-[0.25em]
-                                text-bee-dark/60
-                            ">
-                                BeeNear
-                            </p>
-
-                            <h2 className="
-                                mt-2
-                                text-2xl
-                                font-black
-                                text-bee-dark
-                                md:text-3xl
-                            ">
-                                {isSpanish
-                                    ? '¿Quieres transformar la forma en que conectas con tus clientes?'
-                                    : 'Want to transform the way you connect with your customers?'
-                                }
-                            </h2>
-
-                        </div>
-
-
-                        <Link
-                            href="/contacto"
-                            className="
-                                group
-                                flex
-                                shrink-0
-                                items-center
-                                gap-3
-                                rounded-xl
-                                bg-bee-dark
-                                px-7
-                                py-4
-                                text-sm
-                                font-bold
-                                text-white
-                                transition
-                                hover:-translate-y-1
-                                hover:bg-black
-                            "
-                        >
-                            {isSpanish ? 'Hablemos' : "Let's talk"}
-
-                            <ArrowUpRight
-                                size={18}
-                                className="
-                                    transition-transform
-                                    duration-300
-                                    group-hover:translate-x-1
-                                    group-hover:-translate-y-1
-                                "
-                            />
-                        </Link>
-
-                    </div>
-
-                </section>
-
-
-                {/* =====================================================
-                    FOOTER
-                ====================================================== */}
-
-                <footer className="
-                    border-t
-                    border-gray-200
-                    bg-white
-                ">
-
-                    <div className="
-                        mx-auto
-                        flex
-                        max-w-7xl
-                        flex-col
-                        items-center
-                        justify-between
-                        gap-4
-                        px-6
-                        py-6
-                        text-sm
-                        text-gray-500
-                        md:flex-row
-                    ">
-
-                        <p>
-                            © {new Date().getFullYear()} BeeNear.{' '}
-                            {isSpanish
-                                ? 'Todos los derechos reservados.'
-                                : 'All rights reserved.'
-                            }
-                        </p>
-
-                        <div className="flex gap-6">
-
-                            <Link
-                                href="/"
-                                className="transition hover:text-bee-dark"
-                            >
-                                {isSpanish ? 'Inicio' : 'Home'}
-                            </Link>
-
-                            <Link
-                                href="/blog"
-                                className="transition hover:text-bee-dark"
-                            >
-                                Blog
-                            </Link>
-
-                            <Link
-                                href="/contacto"
-                                className="transition hover:text-bee-dark"
-                            >
-                                {isSpanish ? 'Contacto' : 'Contact'}
-                            </Link>
-
-                        </div>
-
-                    </div>
-
-                </footer>
-
-            </div>
-        </>
-    );
+  const article=articles[id]||articles[1];
+  const Icon=article.icon;
+  const topicLabel=isSpanish?'PERSPECTIVAS / LECTURA':'PERSPECTIVES / READING';
+  return <>
+    <Head title={`${article.title} | Bee Near`}><meta name="description" content={article.intro}/></Head>
+    <div className="bn-blog"><style>{BLOG_CSS}</style><div className="bk-progress" style={{width:`${progress}%`}} aria-hidden="true"/><BlogNav t={t} i18n={i18n} spanish={isSpanish}/>
+      <header className="bk-reader-hero"><div className="bk-grid" aria-hidden="true"/><div className="bk-wrap bk-reader-hero-layout"><div><Link className="bk-back" href="/blog"><ArrowLeft size={16}/>{isSpanish?'Volver al blog':'Back to the journal'}</Link><Eyebrow>04 / BEE NEAR JOURNAL</Eyebrow><h1>{article.title}</h1><p className="bk-reader-intro">{article.intro}</p><div className="bk-reader-bar"><span>{article.category}</span><span>·</span><span>{article.date}</span><span>·</span><span>BEENEAR INSIGHTS</span></div></div><div className="bk-reader-graphic" aria-hidden="true"><span className="bk-reader-graphic-icon"><Icon size={76} strokeWidth={1.1}/></span><span style={{position:'absolute',bottom:22,left:22,fontSize:9,letterSpacing:1.4,color:'#8e918b',fontWeight:700}}>BN / {String(id).padStart(2,'0')}</span></div></div></header>
+      <main className="bk-reader"><div className="bk-wrap bk-reader-layout"><article><div className="bk-reveal"><div className="bk-eyebrow dark" style={{marginBottom:21}}>{topicLabel}</div><p className="bk-prose-lead">{article.intro}</p></div>{article.sections.map((section,index)=><section className="bk-prose-section bk-reveal" id={`seccion-${index+1}`} key={index}><div className="bk-prose-n">{String(index+1).padStart(2,'0')} / 03</div><h2>{section.title}</h2><p>{section.text}</p></section>)}<div className="bk-pullquote bk-reveal">{isSpanish?'En Bee Near creemos que la tecnología debe ayudar a las empresas a conectar mejor con sus clientes y construir relaciones más eficientes.':'At Bee Near, we believe technology should help businesses connect with their customers and build more effective relationships.'}</div><div className="bk-more bk-reveal"><h3>{isSpanish?'Sigue explorando':'Keep exploring'}</h3><Link href="/blog" className="bk-more-link"><ArrowLeft size={15}/>{isSpanish?'Ver todos los artículos':'See all articles'}</Link></div></article><aside className="bk-side"><div className="bk-side-inner"><div className="bk-side-label">{isSpanish?'EN ESTE ARTÍCULO':'IN THIS ARTICLE'}</div>{article.sections.map((section,index)=><a key={index} href={`#seccion-${index+1}`}><span>{String(index+1).padStart(2,'0')}</span>{section.title}</a>)}<p className="bk-side-note">{isSpanish?'Contenido editorial de Bee Near sobre tecnología y experiencia humana.':'Bee Near editorial content on technology and human experience.'}</p></div></aside></div></main>
+      <ContactClose spanish={isSpanish}/><BlogFooter t={t} spanish={isSpanish}/>
+    </div>
+  </>;
 }
