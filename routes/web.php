@@ -86,3 +86,14 @@ Route::get('/blog/{slug}', function (string $slug) {
 Route::get('/calculadora', function () {
     return Inertia::render('StaffingCalculator');
 })->name('calculator');
+// Agregar al INICIO de routes/web.php junto con los demas imports:
+use App\Http\Controllers\StaffingAdminController;
+
+// Agregar las siguientes rutas en routes/web.php, fuera de grupos auth.
+// La ruta publica /calculadora debe seguir existiendo (no duplicarla).
+Route::prefix('calculadora/admin')->group(function () {
+    Route::get('/status', [StaffingAdminController::class, 'status'])->name('staffing.admin.status');
+    Route::post('/unlock', [StaffingAdminController::class, 'unlock'])
+        ->middleware('throttle:5,1')->name('staffing.admin.unlock');
+    Route::post('/lock', [StaffingAdminController::class, 'lock'])->name('staffing.admin.lock');
+});
