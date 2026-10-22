@@ -12,7 +12,11 @@ const BLOG_CSS = `
 .bn-blog h1,.bn-blog h2,.bn-blog h3,.bn-blog h4,.bn-blog p { margin:0; }
 .bn-blog ::selection { background:var(--bk-yellow);color:#141414; }
 .bk-wrap { width:min(1240px,calc(100% - 96px));margin-inline:auto; }
-.bk-logo { display:inline-flex;align-items:center;gap:10px;color:#fff;white-space:nowrap; }
+.bk-logo { display:inline-flex;align-items:center;flex:none;gap:10px;color:#fff;white-space:nowrap;max-width:160px;max-height:62px;overflow:hidden; }
+.bk-logo img { display:block !important; width:160px !important; height:62px !important; max-width:160px !important; max-height:62px !important; object-fit:contain;object-position:left center; }
+.bk-nav > a:first-child { display:flex;align-items:center;flex:0 0 160px;max-width:160px;height:62px;overflow:hidden; }
+.bk-footer-brand > a:first-child { display:inline-flex;max-width:160px;overflow:hidden; }
+@media(max-width:700px) { .bk-logo,.bk-nav>a:first-child { max-width:132px; } .bk-nav>a:first-child { flex-basis:132px;height:54px; } .bk-logo img { width:132px !important;height:54px !important;max-width:132px !important;max-height:54px !important; } }
 .bk-logo-mark { display:inline-flex;width:32px;height:34px;color:var(--bk-yellow); }
 .bk-logo-mark svg { width:100%;height:100%; }
 .bk-logo-name { display:block;font:700 18px/1.1 Manrope,Arial,sans-serif;letter-spacing:-.8px; }
@@ -155,7 +159,17 @@ const BLOG_CSS = `
 `;
 
 function BeeLogo() {
-  return <span className="bk-logo"><span className="bk-logo-mark"><svg viewBox="0 0 38 40" fill="none" aria-hidden="true"><path d="M18.9 2 3 11.1v17.8L18.9 38 35 28.9V11.1L18.9 2Z" stroke="currentColor" strokeWidth="1.7"/><path d="M19 3v34M3.5 11.5 35 29M35 11.5 3.5 29" stroke="currentColor" strokeWidth="1.3" opacity=".7"/><circle cx="19" cy="20" r="5.2" fill="currentColor"/></svg></span><span><span className="bk-logo-name">Bee<b>Near</b></span><span className="bk-logo-sub">HUMAN × INTELLIGENCE</span></span></span>;
+  return (
+    <span className="bk-logo" >
+      <img
+        src="/images/beenear-imagotipo-dark.png"
+        alt="Bee Near"
+        width="160"
+        height="62"
+        style={{ objectFit: 'contain', objectPosition: 'left center', flexShrink: 0 }}
+      />
+    </span>
+  );
 }
 function BlogNav({ t, i18n, spanish }) {
   const [menu, setMenu] = useState(false);

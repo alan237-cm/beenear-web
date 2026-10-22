@@ -604,6 +604,8 @@ const STYLES = `
 .bn-divider { height:1px; background:rgba(255,255,255,.11); }
 .bn-nav { z-index:100; position:fixed; top:22px; left:50%; transform:translateX(-50%); width:min(1370px,calc(100% - 48px)); padding:10px 12px 10px 24px; border:1px solid rgba(255,255,255,.16); border-radius:19px; background:rgba(12,13,14,.77); box-shadow:0 14px 70px rgba(0,0,0,.35); backdrop-filter:blur(28px); -webkit-backdrop-filter:blur(28px); display:flex; align-items:center; justify-content:space-between; gap:20px; transition:background .3s,border-color .3s,top .3s; }
 .bn-nav--scrolled { top:10px; background:rgba(8,9,10,.95); border-color:rgba(255,255,255,.2); }
+.bn-brand-img { display:block; height:62px; max-width:160px; width:auto; object-fit:contain; object-position:left center; }
+.bn-brand-img--footer { height:69px; max-width:178px; }
 .bn-brand { display:flex; align-items:center; gap:10px; min-width:165px; color:#f3f3ef; }
 .bn-symbol { width:35px; height:38px; display:inline-flex; align-items:center; justify-content:center; color:var(--yellow); flex:none; }
 .bn-symbol svg { display:block; width:100%; height:100%; }
@@ -1444,6 +1446,8 @@ const STYLES = `
   .bn-hero-bottom { display:none; }
 }
 
+
+@media(max-width:700px){.bn-brand-img{height:48px;max-width:124px}}
 `;
 
 export default function Welcome() {
@@ -1500,9 +1504,8 @@ export default function Welcome() {
       <div className="bn" id="top">
         <div className="bn-progress" style={{ width: `${progress * 100}%` }} aria-hidden="true" />
         <header className={`bn-nav ${scrolled ? 'bn-nav--scrolled' : ''}`}>
-          <Link className="bn-brand" href="/" aria-label="Bee Near home">
-            <BeeSymbol />
-            <span><span className="bn-brand-name">Bee<b>Near</b></span><span className="bn-brand-tag">HUMAN × INTELLIGENCE</span></span>
+          <Link className="bn-brand" href="/" aria-label="Bee Near — Inicio">
+            <img className="bn-brand-img" src="/images/beenear-imagotipo-dark.png" alt="Bee Near" />
           </Link>
           <nav className="bn-nav-links" aria-label="Main navigation">
             <a href="#solutions">{c.nav[0]}</a>
@@ -1557,7 +1560,7 @@ export default function Welcome() {
           <section className="bn-bridge"><div className="bn-shell"><SectionReveal className="bn-bridge-grid"><div className="bn-bridge-signature"><BeeSymbol /><div className="bn-bridge-kicker">{c.bridgeOverline}</div></div><div><h2>{c.bridgeTitle}</h2><p className="bn-bridge-copy">{c.bridgeDesc}</p></div></SectionReveal></div></section>
           <section className="bn-cta"><div className="bn-shell"><SectionReveal className="bn-cta-grid"><div><div className="bn-cta-eyebrow">{c.closingEyebrow}</div><h2><span>{c.closingTitle}</span><em>{c.closingTitle2}</em></h2><p className="bn-cta-copy">{c.closingDesc}</p></div><div className="bn-cta-action"><Link href="/contacto"><span>{c.closingCta}</span><ArrowUpRight size={28} /></Link></div></SectionReveal></div></section>
         </main>
-        <footer className="bn-footer"><div className="bn-shell"><div className="bn-footer-grid"><div className="bn-footer-brand"><Link className="bn-brand" href="/"><BeeSymbol /><span><span className="bn-brand-name">Bee<b>Near</b></span><span className="bn-brand-tag">HUMAN × INTELLIGENCE</span></span></Link><p>{c.footerLine}</p></div><div className="bn-footer-col"><h4 className="bn-footer-heading">{c.footerSolutions}</h4><Link href="/servicios/contact-center">Contact Center</Link><Link href="/servicios/intake-sales">Intake Sales</Link><Link href="/calculadora">{c.calculatorLink}</Link><a href="#how-it-works">{c.nav[1]}</a></div><div className="bn-footer-col"><h4 className="bn-footer-heading">{c.footerCompany}</h4><Link href="/nosotros">{c.nav[2]}</Link><Link href="/blog">{c.nav[3]}</Link><Link href="/contacto">{c.contact}</Link></div><div className="bn-footer-col bn-footer-contact"><h4 className="bn-footer-heading">{c.footerReach}</h4><a href="mailto:moreinfo@beenear.mx">moreinfo@beenear.mx</a><a href="tel:+12153180179">+1 (215) 318-0179</a><span>Ejército Nacional 373, CDMX</span></div></div><div className="bn-footer-bottom"><span>© {new Date().getFullYear()} Bee Near. {c.rights}</span><a href="/docs/privacy_policy_for_website.pdf" target="_blank" rel="noreferrer">{c.privacy}</a><span>DESIGNED FOR CONNECTION.</span></div></div></footer>
+        <footer className="bn-footer"><div className="bn-shell"><div className="bn-footer-grid"><div className="bn-footer-brand"><Link className="bn-brand" href="/"><img className="bn-brand-img bn-brand-img--footer" src="/images/beenear-imagotipo-dark.png" alt="Bee Near" /></Link><p>{c.footerLine}</p></div><div className="bn-footer-col"><h4 className="bn-footer-heading">{c.footerSolutions}</h4><Link href="/servicios/contact-center">Contact Center</Link><Link href="/servicios/intake-sales">Intake Sales</Link><Link href="/calculadora">{c.calculatorLink}</Link><a href="#how-it-works">{c.nav[1]}</a></div><div className="bn-footer-col"><h4 className="bn-footer-heading">{c.footerCompany}</h4><Link href="/nosotros">{c.nav[2]}</Link><Link href="/blog">{c.nav[3]}</Link><Link href="/contacto">{c.contact}</Link></div><div className="bn-footer-col bn-footer-contact"><h4 className="bn-footer-heading">{c.footerReach}</h4><a href="mailto:moreinfo@beenear.mx">moreinfo@beenear.mx</a><a href="tel:+12153180179">+1 (215) 318-0179</a><span>Ejército Nacional 373, CDMX</span></div></div><div className="bn-footer-bottom"><span>© {new Date().getFullYear()} Bee Near. {c.rights}</span><a href="/docs/privacy_policy_for_website.pdf" target="_blank" rel="noreferrer">{c.privacy}</a><span>DESIGNED FOR CONNECTION.</span></div></div></footer>
         {demoOpen && <VoicePreviewModal c={c} onClose={closeDemo} />}
       </div>
     </>

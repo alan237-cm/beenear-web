@@ -466,7 +466,8 @@ const CSS = `
 .bc button:focus-visible,.bc input:focus-visible,.bc a:focus-visible,.bc summary:focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
 .bc-layout { width:min(1370px,calc(100% - 80px)); margin:auto; }
 .bc-header { height:88px; display:flex; align-items:center; justify-content:space-between; gap:20px; border-bottom:1px solid rgba(255,255,255,.09); }
-.bc-logo { display:flex; align-items:center; gap:10px; }
+.bc-logo { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.bc-logo-official { display:block; height:63px; width:auto; max-width:165px; object-fit:contain; }
 .bc-mark { width:34px; height:35px; display:inline-flex; color:var(--gold); }
 .bc-mark svg { width:100%; height:100%; }
 .bc-logo strong { font-size:19px; letter-spacing:-.8px; font-family:Manrope,sans-serif; }
@@ -588,7 +589,7 @@ const CSS = `
 .bc-faq p { padding:12px 0 0; color:#a3a7a3; font-size:12px; line-height:1.9; }
 .bc-footer { border-top:1px solid rgba(255,255,255,.1); padding:28px 0 45px; display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap; color:#868a86; font-size:11px; }
 @media(max-width:1050px){ .bc-layout{width:calc(100% - 48px)} .bc-columns{grid-template-columns:1fr} .bc-report{position:static} .bc-intro{margin-top:45px} }
-@media(max-width:630px){ .bc-layout{width:calc(100% - 28px)} .bc-header{height:76px} .bc-back{font-size:0!important;gap:0} .bc-back svg{width:20px;height:20px} .bc-logo strong{font-size:17px} .bc-intro{margin:40px 0 25px} .bc-intro h1{font-size:35px} .bc-intro p{font-size:13px} .bc-tab{flex:1;justify-content:center;padding:12px 9px;font-size:10px} .bc-panel{padding:19px 15px} .bc-form-grid--three,.bc-factor-grid{grid-template-columns:1fr 1fr} .bc-choice-grid{grid-template-columns:1fr} .bc-roles{gap:6px} .bc-role{padding:11px 7px} .bc-role strong{font-size:24px} .bc-role span{font-size:9px} .bc-details{gap:7px} .bc-metric{padding:10px} .bc-metric strong{font-size:21px} .bc-table-header{align-items:start;flex-direction:column} .bc-chart{padding:20px 12px} .bc-chart-bars{gap:3px;height:112px} .bc-chart-bar::after{display:none} }
+@media(max-width:630px){ .bc-layout{width:calc(100% - 28px)} .bc-header{height:76px} .bc-back{font-size:0!important;gap:0} .bc-back svg{width:20px;height:20px} .bc-logo-official{height:50px;max-width:133px}.bc-logo strong{font-size:17px} .bc-intro{margin:40px 0 25px} .bc-intro h1{font-size:35px} .bc-intro p{font-size:13px} .bc-tab{flex:1;justify-content:center;padding:12px 9px;font-size:10px} .bc-panel{padding:19px 15px} .bc-form-grid--three,.bc-factor-grid{grid-template-columns:1fr 1fr} .bc-choice-grid{grid-template-columns:1fr} .bc-roles{gap:6px} .bc-role{padding:11px 7px} .bc-role strong{font-size:24px} .bc-role span{font-size:9px} .bc-details{gap:7px} .bc-metric{padding:10px} .bc-metric strong{font-size:21px} .bc-table-header{align-items:start;flex-direction:column} .bc-chart{padding:20px 12px} .bc-chart-bars{gap:3px;height:112px} .bc-chart-bar::after{display:none} }
 /* Campos corporativos de solo lectura */
 .bc-input-shell--locked { background:#242526; border-color:#343636; padding:0 11px 0 13px; gap:8px; }
 .bc-locked-number { font:750 15px Manrope,sans-serif; color:#e8dcc0; flex:1; }
@@ -868,7 +869,7 @@ export default function StaffingCalculator() {
     <div className="bc">
       <div className="bc-layout">
         <header className="bc-header">
-          <Link href="/" className="bc-logo" aria-label="Bee Near"><BeeMark/><span><strong>Bee<em>Near</em></strong><small>HUMAN × INTELLIGENCE</small></span></Link>
+          <Link href="/" className="bc-logo" aria-label="Bee Near"><img className="bc-logo-official" src="/images/beenear-imagotipo-dark.png" alt="Bee Near" /></Link>
           <div className="bc-header-actions"><Link href="/" className="bc-back"><ArrowLeft size={16}/>{t.back}</Link><button type="button" className="bc-lang" onClick={flipLang}><Globe2 size={15}/>{spanish?'EN':'ES'}</button></div>
         </header>
         <div className="bc-intro"><div className="bc-eyebrow">{t.eyebrow}</div><h1>{t.title1}<br/><span>{t.title2}</span></h1><p>{t.lead}</p></div>
