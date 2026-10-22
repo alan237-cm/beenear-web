@@ -117,7 +117,7 @@ const WORDS = {
     title1: 'Capacidad inteligente.', title2: 'Personal preciso.',
     lead: 'Calcula la capacidad operativa con Erlang C y construye una plantilla con la estructura de coordinación definida por Bee Near.',
     b1: 'Dimensionamiento por demanda', b2: 'Plantilla de tamaño fijo',
-    b1Help: 'Erlang C calcula el mínimo de agentes simultáneos requerido por cada hora. El total de referencia es el pico de personal programado.',
+    b1Help: 'Erlang C determina los operadores simultáneos; después se calcula cuántos deben programarse según la disponibilidad y se suma el personal de apoyo.',
     b2Help: 'Indica cuántas personas necesitas; la estructura de gerente, supervisión, calidad y capacitación se calcula automáticamente.',
     demanded: 'Personas solicitadas', demandDetail: 'Agentes programados / plantilla total, según la opción elegida',
     needs: 'Proyección de llamadas', preset: 'Ejemplo del Excel', reset: 'Restablecer valores',
@@ -128,13 +128,13 @@ const WORDS = {
     fine: 'La disponibilidad se calcula automáticamente a partir de los porcentajes configurados. Las reglas de personal de apoyo siguen siendo obligatorias.',
     staffing: 'Estructura organizacional', structure: 'Reglas de coordinación de Bee Near',
     auto: 'Cálculo automático', automaticDetail: 'El personal de apoyo se determina por las reglas internas de Bee Near. Esta configuración es obligatoria y no se puede modificar.',
-    operators: 'operadores', inclusion: '¿Cómo contabilizar al personal de apoyo?',
+    operators: 'operadores', inclusion: '¿Cómo contabilizar al personal de apoyo?', demandRule: 'Dimensionamiento por demanda: primero calculamos los operadores programados y después sumamos gerente, supervisión, calidad y capacitación. No se descuentan operadores para cubrir esos puestos.',
     additional: 'Sumarlo al total', additionalDesc: 'Operadores más gerente, supervisores, calidad y capacitadores',
     included: 'Incluirlo en el total', includedDesc: 'Plantilla total, contando también al personal de apoyo',
     report: 'RESUMEN DEL DIMENSIONAMIENTO', summary: 'Tu plantilla recomendada',
     estimated: 'Estimación basada en el modelo', requested: 'Plantilla configurada',
     staff: 'personas', agents: 'Operadores', supervisors: 'Supervisores', manager: 'Gerente', quality: 'Calidad', trainers: 'Capacitadores', reserve: 'Reserva sin asignar',
-    total: 'Total de la plantilla', required: 'Operadores requeridos en hora pico', headcount: 'Agentes programados para la hora pico',
+    total: 'Total de la plantilla', required: 'Operadores simultáneos en hora pico (Erlang C)', headcount: 'Operadores programados (con disponibilidad)',
     callsDay: 'Llamadas previstas / día', peak: 'Hora de máxima demanda', capacity: 'Cobertura de la demanda',
     shortage: 'Faltan operadores para cubrir el pico calculado con Erlang C. Ajusta tu plantilla o suma al personal administrativo por separado.',
     enough: 'La plantilla operativa configurada cubre la necesidad estimada en la hora de mayor demanda.',
@@ -160,7 +160,7 @@ const WORDS = {
     title1: 'Intelligent capacity.', title2: 'Precise staffing.',
     lead: 'Estimate operational capacity with Erlang C and organize the workforce using Bee Near’s predefined management structure.',
     b1: 'Demand-based staffing', b2: 'Fixed-size workforce',
-    b1Help: 'Erlang C calculates simultaneous online agents needed per hour. The staffing reference is the highest scheduled-agent demand.',
+    b1Help: 'Erlang C estimates simultaneous online agents. Scheduled headcount is adjusted for availability, then support staff is added to the total.',
     b2Help: 'Set the requested workforce size. Management, supervision, quality and training roles are calculated automatically.',
     demanded: 'Requested workforce', demandDetail: 'Scheduled agents or total staff, according to allocation',
     needs: 'Call volume forecast', preset: 'Excel example', reset: 'Reset values',
@@ -171,13 +171,13 @@ const WORDS = {
     fine: 'Availability is calculated automatically from the selected percentages. Support staffing rules always remain mandatory.',
     staffing: 'Workforce structure', structure: 'Bee Near support staffing rules',
     auto: 'Automatic staffing', automaticDetail: 'Support staff is assigned under Bee Near’s internal policies. This setting is mandatory and cannot be changed.',
-    operators: 'agents', inclusion: 'How do you count support staff?',
+    operators: 'agents', inclusion: 'How do you count support staff?', demandRule: 'Demand-based staffing: scheduled agents are calculated first, then management, supervision, quality and training staff are added. Required agents are never deducted to fill support roles.',
     additional: 'Add them on top', additionalDesc: 'Agents plus manager, supervisors, quality and trainers',
     included: 'Include within total', includedDesc: 'A fixed total including all support roles',
     report: 'STAFFING ANALYSIS', summary: 'Your staffing estimate',
     estimated: 'Model estimate', requested: 'Configured workforce',
     staff: 'people', agents: 'Agents', supervisors: 'Supervisors', manager: 'Manager', quality: 'Quality', trainers: 'Trainers', reserve: 'Unassigned reserve',
-    total: 'Total workforce', required: 'Peak online agents required', headcount: 'Peak scheduled agents',
+    total: 'Total workforce', required: 'Simultaneous peak agents (Erlang C)', headcount: 'Scheduled agents (availability adjusted)',
     callsDay: 'Forecast calls / day', peak: 'Peak hour', capacity: 'Demand coverage',
     shortage: 'Not enough agents to meet peak demand under Erlang C. Increase the workforce or add administration separately.',
     enough: 'The configured operator team covers the estimated peak-hour demand.',
@@ -798,7 +798,11 @@ export default function StaffingCalculator() {
   const peakScheduled = peak?.scheduled || 0;
   const peakOnline = peak?.agents || 0;
   const referenceCount = basis === 'demand' ? peakScheduled : Math.trunc(bounded(headcount, 0, 5000, 100));
-  const roles = allocateRoles(referenceCount, inclusion);
+  // Por demanda, peakScheduled YA es el minimo de OPERADORES necesarios, no el total
+  // de la plantilla. El personal de apoyo se agrega despues. Solo en plantilla fija
+  // tiene sentido descontar apoyo del cupo cuando el usuario elige 'included'.
+  const effectiveInclusion = basis === 'demand' ? 'additional' : inclusion;
+  const roles = allocateRoles(referenceCount, effectiveInclusion);
   const shortage = Math.max(0, peakScheduled - roles.agents);
   const dailyCalls = hourly.reduce((sum, row) => sum + row.calls, 0);
   const maxScheduled = Math.max(1, ...hourly.map((row) => row.scheduled || 0));
@@ -814,7 +818,7 @@ export default function StaffingCalculator() {
   const printReport = () => { setExpandedHourly(true); window.setTimeout(() => window.print(), 150); };
   const flipLang = () => i18n.changeLanguage(spanish ? 'en' : 'es');
   const saveExcel = () => exportStyledWorkbook({
-    basis, inclusion, roles, hourly, dailyCalls, peak, peakOnline, peakScheduled,
+    basis, inclusion: effectiveInclusion, roles, hourly, dailyCalls, peak, peakOnline, peakScheduled,
     shrinkage, shortage, invalidCalc, policy: activePolicy, adminCustomized,
   }, spanish ? 'es' : 'en', t.csvName);
 
@@ -823,7 +827,7 @@ export default function StaffingCalculator() {
     const lines = [
       ['Bee Near', spanish ? 'Dimensionamiento de personal' : 'Staffing Report'],
       [spanish ? 'Modalidad' : 'Mode', basis],
-      [spanish ? 'Personal incluido' : 'Staff inclusion', inclusion],
+      [spanish ? 'Personal incluido' : 'Staff inclusion', effectiveInclusion],
       [spanish ? 'Operadores' : 'Agents', roles.agents],
       [spanish ? 'Gerente' : 'Manager', roles.manager],
       [spanish ? 'Supervisores' : 'Supervisors', roles.supervisors],
@@ -905,11 +909,13 @@ export default function StaffingCalculator() {
             </section>
             <section className="bc-panel" aria-label={t.staffing}>
               <div className="bc-panel-head"><h2><UserRoundCog size={19}/>{t.staffing}</h2><small>02 / 03</small></div>
-              <h3 className="bc-subhead" style={{marginTop:0}}>{t.inclusion}</h3>
-              <div className="bc-choice-grid">
-                <RadioCard active={inclusion==='additional'} onClick={()=>setInclusion('additional')} title={t.additional} description={t.additionalDesc}/>
-                <RadioCard active={inclusion==='included'} onClick={()=>setInclusion('included')} title={t.included} description={t.includedDesc}/>
-              </div>
+              {basis === 'fixed' ? <>
+                <h3 className="bc-subhead" style={{marginTop:0}}>{t.inclusion}</h3>
+                <div className="bc-choice-grid">
+                  <RadioCard active={inclusion==='additional'} onClick={()=>setInclusion('additional')} title={t.additional} description={t.additionalDesc}/>
+                  <RadioCard active={inclusion==='included'} onClick={()=>setInclusion('included')} title={t.included} description={t.includedDesc}/>
+                </div>
+              </> : <div className="bc-policy-strip" role="note" style={{marginBottom:18}}><Info size={17} style={{flexShrink:0}}/>{t.demandRule}</div>}
               <h3 className="bc-subhead">{t.structure}</h3>
               {/* Política institucional: el cálculo automático es la única modalidad disponible. */}
               <div className="bc-auto-fixed" role="note" aria-label={t.auto}>
@@ -947,6 +953,7 @@ export default function StaffingCalculator() {
               <Metric label={t.required} value={format(peakOnline,0,locale)}/>
               <Metric label={t.headcount} value={format(peakScheduled,0,locale)} highlight/>
             </div>
+            {basis === 'demand' && roles.total > 0 && <p className="bc-note"><Info size={14}/>{spanish ? `Desglose: ${peakScheduled} operadores programados + ${roles.supportTotal} puestos de apoyo = ${roles.total} personas.` : `Breakdown: ${peakScheduled} scheduled agents + ${roles.supportTotal} support roles = ${roles.total} people.`}</p>}
             {!roles.valid ? <div className="bc-alert"><AlertTriangle size={17}/>{t.invalid}</div> : invalidCalc ? <div className="bc-alert"><AlertTriangle size={17}/>{t.occupancyWarn}</div> : shortage>0 ? <div className="bc-alert"><AlertTriangle size={17}/>{t.shortage} <strong>{spanish?'Déficit:':'Shortfall:'} {shortage}.</strong></div> : <div className="bc-success"><CheckCircle2 size={18}/>{t.enough}</div>}
             <div className="bc-actions">
               <button type="button" className="bc-action bc-action--primary" onClick={saveExcel}><FileSpreadsheet size={18}/>{t.download} (.xlsx)</button>
