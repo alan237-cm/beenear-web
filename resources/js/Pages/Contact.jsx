@@ -6,10 +6,7 @@ import {
   Globe2, Mail, MapPin, Menu, Phone, Send, ShieldCheck, X,
 } from 'lucide-react';
 
-/* BEE NEAR / CONTACTO — EDITORIAL EDITION
- * Conservar POST /contacto, traducciones existentes y enlaces de navegación.
- * Requiere solamente React, Inertia, react-i18next y lucide-react.
- */
+/* BEE NEAR / CONTACTO — EDITORIAL EDITION */
 
 const MAP_EMBED = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3762.534887756185!2d-99.18663242491122!3d19.43250918184643!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1f8a8fa3d5089%3A0xc54deed0a52fbd1e!2sAv.%20Ej%C3%A9rcito%20Nacional%20Mexicano%20373%2C%20Granada%2C%20Miguel%20Hidalgo%2C%2011520%20Ciudad%20de%20M%C3%A9xico%2C%20CDMX!5e0!3m2!1sen!2smx!4v1700000000000!5m2!1sen!2smx';
 const MAP_URL = 'https://maps.google.com/?q=Ejercito+Nacional+373,+Granada,+Miguel+Hidalgo,+Ciudad+de+Mexico';
@@ -24,23 +21,23 @@ const CSS = `
 .bn-contact button {cursor:pointer;}
 .bn-contact ::selection {background:var(--ct-gold);color:#171819;}
 .ct-shell {width:min(1240px,calc(100% - 96px));margin:0 auto;}
-.ct-nav {position:fixed;z-index:120;top:18px;left:50%;transform:translateX(-50%);width:min(1252px,calc(100% - 64px));min-height:78px;display:grid;grid-template-columns:180px 1fr auto;align-items:center;column-gap:24px;padding:8px 16px 8px 23px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(16,17,18,.92);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);box-shadow:0 12px 45px #0005;transition:top .2s,background .2s;}
+.ct-nav {position:fixed;z-index:120;top:18px;left:50%;transform:translateX(-50%);width:min(1252px,calc(100% - 64px));min-height:63px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:9px 14px 9px 21px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(16,17,18,.92);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);box-shadow:0 12px 45px #0005;transition:top .2s,background .2s;}
 .ct-nav.scrolled {top:9px;background:rgba(13,15,16,.98);}
-.ct-brand {width:164px;height:64px;display:flex;align-items:center;overflow:hidden;}
+.ct-brand {width:164px;height:62px;display:flex;align-items:center;overflow:hidden;}
 .ct-brand img {width:160px;height:62px;max-width:160px;max-height:62px;display:block;object-fit:contain;object-position:left center;}
-.ct-nav-links {display:flex;justify-content:center;gap:clamp(14px,2vw,29px);align-items:center;white-space:nowrap;}
-.ct-nav-links a {color:#b3b5b0;font-size:12px;font-weight:600;position:relative;transition:color .2s;}
+.ct-nav-links {display:flex;align-items:center;gap:24px;white-space:nowrap;}
+.ct-nav-links a {color:#b3b5b0;font-size:12px;font-weight:500;position:relative;transition:color .2s;}
 .ct-nav-links a:hover,.ct-nav-links a[aria-current="page"] {color:#f1efe8;}
-.ct-nav-links a[aria-current="page"]::after {content:'';position:absolute;bottom:-12px;left:0;right:0;height:2px;background:var(--ct-gold);}
-.ct-nav-right {display:flex;align-items:center;gap:17px;}
-.ct-lang {display:inline-flex;gap:8px;align-items:center;border:0;background:transparent;color:#dddcd8;font-size:12px;font-weight:700;padding:10px 2px;}
+.ct-nav-links a[aria-current="page"]::after {content:'';position:absolute;bottom:-11px;left:0;right:0;height:2px;background:var(--ct-gold);}
+.ct-nav-right {display:flex;align-items:center;gap:16px;}
+.ct-lang {display:inline-flex;gap:6px;align-items:center;border:0;background:transparent;color:#dddcd8;font-size:11px;font-weight:700;padding:9px 1px;}
 .ct-lang:hover {color:var(--ct-gold);}
-.ct-nav-cta,.ct-primary {display:inline-flex;align-items:center;justify-content:center;gap:15px;border:0;border-radius:6px;background:var(--ct-gold);color:#121313;font-size:12px;font-weight:800;transition:background .2s,transform .2s;}
-.ct-nav-cta {padding:13px 17px;white-space:nowrap;}
+.ct-nav-cta,.ct-primary {display:inline-flex;align-items:center;justify-content:center;gap:12px;border:0;border-radius:6px;background:var(--ct-gold);color:#121313;font-size:12px;font-weight:800;transition:background .2s,transform .2s;}
+.ct-nav-cta {padding:11px 20px;white-space:nowrap;}
 .ct-primary {min-height:50px;padding:0 20px;}
 .ct-nav-cta:hover,.ct-primary:hover {background:#ffd44d;transform:translateY(-2px);}
-.ct-menu {display:none;align-items:center;justify-content:center;width:41px;height:41px;background:#242627;color:#fff;border:1px solid #414441;border-radius:7px;}
-.ct-mobile {position:fixed;z-index:119;top:90px;left:12px;right:12px;padding:10px;background:#1a1c1d;border:1px solid #3c3d3b;border-radius:10px;box-shadow:0 25px 45px #0009;}
+.ct-menu {display:none;align-items:center;justify-content:center;width:40px;height:40px;background:#242627;color:#fff;border:1px solid #414441;border-radius:8px;}
+.ct-mobile {position:fixed;z-index:119;top:83px;left:12px;right:12px;padding:10px;background:#1a1c1d;border:1px solid #3c3d3b;border-radius:10px;box-shadow:0 25px 45px #0009;}
 .ct-mobile a {display:flex;align-items:center;justify-content:space-between;padding:14px 12px;border-bottom:1px solid #353735;color:#ededeb;font-size:13px;font-weight:600;}
 .ct-mobile a:last-child {border-bottom:0;}
 .ct-hero {position:relative;isolation:isolate;min-height:660px;padding:178px 0 105px;overflow:hidden;background:#111213;}
@@ -122,9 +119,10 @@ const CSS = `
 .ct-footer-bottom {display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;border-top:1px solid #353634;padding-top:23px;color:#858983;font-size:11px;}
 .ct-footer-bottom a {color:#c9c2ae;}
 @keyframes ct-rotate {to{transform:rotate(360deg);}}
-@media(max-width:1050px) {.ct-nav {grid-template-columns:170px 1fr auto;gap:12px}.ct-nav-links {gap:15px}.ct-hero-inner {gap:33px}.ct-content-grid {grid-template-columns:1.02fr .98fr;gap:18px}.ct-channels {grid-template-columns:1fr}.ct-footer-grid {gap:22px}}
-@media(max-width:900px) {.ct-nav {display:flex;justify-content:space-between}.ct-nav-links {display:none}.ct-menu {display:flex}.ct-hero-inner {grid-template-columns:1fr}.ct-hero {padding:143px 0 76px;min-height:0}.ct-console {max-width:570px;width:100%;margin:0 auto}.ct-content-grid {grid-template-columns:1fr}.ct-channels {grid-template-columns:1fr 1fr}.ct-next-row {align-items:start}.ct-footer-grid {grid-template-columns:repeat(2,1fr)} }
-@media(max-width:650px) {.ct-shell {width:calc(100% - 36px)}.ct-nav {top:10px;width:calc(100% - 24px);min-height:67px;padding:6px 11px}.ct-nav-cta {display:none}.ct-brand {width:139px;height:55px}.ct-brand img {width:136px;height:54px;max-width:136px;max-height:54px}.ct-nav-right {gap:9px}.ct-lang {font-size:11px}.ct-menu {height:39px;width:39px}.ct-mobile {top:80px}.ct-hero {padding:130px 0 67px}.ct-hero h1 {font-size:clamp(34px,9vw,48px)}.ct-hero-copy {font-size:14px}.ct-hero-bottom {margin-top:34px}.ct-console {min-height:305px;padding:18px}.ct-console-orbits {height:205px}.ct-orbit {width:197px;height:197px}.ct-orbit:nth-child(2){width:154px;height:154px}.ct-orbit:nth-child(3){width:110px;height:110px}.ct-core {width:77px;height:77px}.ct-console-micro {left:18px;right:18px;bottom:19px;font-size:8px}.ct-main {padding:66px 0 80px}.ct-section-heading {display:block}.ct-section-heading p {margin-top:15px}.ct-map-viewport {height:350px}.ct-channels {grid-template-columns:1fr}.ct-form-card {padding:26px 19px}.ct-form-grid {grid-template-columns:1fr;gap:0}.ct-next {padding:66px 0}.ct-next-row {display:block}.ct-next-email {margin-top:25px}.ct-footer-grid {grid-template-columns:1fr 1fr;gap:30px}.ct-footer-brand {grid-column:1/-1}.ct-footer-bottom {flex-direction:column}}
+@media(max-width:1180px) {.ct-nav-links {gap:16px}.ct-nav-links a {font-size:11px}}
+@media(max-width:1050px) {.ct-nav-links {display:none}.ct-menu {display:flex}.ct-hero-inner {gap:33px}.ct-content-grid {grid-template-columns:1.02fr .98fr;gap:18px}.ct-channels {grid-template-columns:1fr}.ct-footer-grid {gap:22px}}
+@media(max-width:900px) {.ct-hero-inner {grid-template-columns:1fr}.ct-hero {padding:143px 0 76px;min-height:0}.ct-console {max-width:570px;width:100%;margin:0 auto}.ct-content-grid {grid-template-columns:1fr}.ct-channels {grid-template-columns:1fr 1fr}.ct-next-row {align-items:start}.ct-footer-grid {grid-template-columns:repeat(2,1fr)} }
+@media(max-width:650px) {.ct-shell {width:calc(100% - 36px)}.ct-nav {top:10px;width:calc(100% - 24px);min-height:59px;padding:8px 11px}.ct-nav-cta {display:none}.ct-brand {width:139px;height:55px}.ct-brand img {width:136px;height:54px;max-width:136px;max-height:54px}.ct-nav-right {gap:9px}.ct-lang {font-size:11px}.ct-menu {height:39px;width:39px}.ct-mobile {top:76px}.ct-hero {padding:130px 0 67px}.ct-hero h1 {font-size:clamp(34px,9vw,48px)}.ct-hero-copy {font-size:14px}.ct-hero-bottom {margin-top:34px}.ct-console {min-height:305px;padding:18px}.ct-console-orbits {height:205px}.ct-orbit {width:197px;height:197px}.ct-orbit:nth-child(2){width:154px;height:154px}.ct-orbit:nth-child(3){width:110px;height:110px}.ct-core {width:77px;height:77px}.ct-console-micro {left:18px;right:18px;bottom:19px;font-size:8px}.ct-main {padding:66px 0 80px}.ct-section-heading {display:block}.ct-section-heading p {margin-top:15px}.ct-map-viewport {height:350px}.ct-channels {grid-template-columns:1fr}.ct-form-card {padding:26px 19px}.ct-form-grid {grid-template-columns:1fr;gap:0}.ct-next {padding:66px 0}.ct-next-row {display:block}.ct-next-email {margin-top:25px}.ct-footer-grid {grid-template-columns:1fr 1fr;gap:30px}.ct-footer-brand {grid-column:1/-1}.ct-footer-bottom {flex-direction:column}}
 @media(prefers-reduced-motion:reduce){.ct-orbit:nth-child(2){animation:none}.ct-nav,.ct-channel,.ct-primary,.ct-nav-cta{transition:none}}
 `;
 
@@ -181,10 +179,12 @@ function Navigation({ t, i18n, spanish }) {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
   const links = [
-    { url: '/', name: t('nav_home') },
-    { url: '/nosotros', name: t('nav_about') },
-    { url: '/servicios', name: t('nav_services') },
+    { url: '/#soluciones', name: spanish ? 'Soluciones' : 'Solutions' },
+    { url: '/#modelo', name: spanish ? 'El modelo' : 'The model' },
+    { url: '/nosotros', name: spanish ? 'Nosotros' : 'About' },
+    { url: '/servicios', name: spanish ? 'Servicios' : 'Services' },
     { url: '/blog', name: 'Blog' },
+    { url: '/calculadora', name: spanish ? 'Calculadora de personal' : 'Staff calculator' },
   ];
   const language = () => i18n.changeLanguage(spanish ? 'en' : 'es');
   return <>
@@ -195,13 +195,13 @@ function Navigation({ t, i18n, spanish }) {
       </nav>
       <div className="ct-nav-right">
         <button className="ct-lang" type="button" onClick={language} aria-label={spanish ? 'Switch to English' : 'Cambiar a español'}><Globe2 size={15} /> {spanish ? 'EN' : 'ES'}</button>
-        <a href="#formulario" className="ct-nav-cta">{t('nav_contact')}<ArrowUpRight size={16} /></a>
+        <Link href="/contacto" className="ct-nav-cta">{spanish ? 'Hablemos' : 'Let’s talk'}<ArrowUpRight size={16} /></Link>
         <button className="ct-menu" type="button" aria-expanded={menu} aria-label={menu ? (spanish ? 'Cerrar menú' : 'Close menu') : (spanish ? 'Abrir menú' : 'Open menu')} onClick={() => setMenu(v => !v)}>{menu ? <X size={20} /> : <Menu size={20} />}</button>
       </div>
     </header>
     {menu && <nav className="ct-mobile" aria-label={spanish ? 'Menú móvil' : 'Mobile menu'}>
       {links.map(({ url, name }) => <Link key={url} href={url} onClick={() => setMenu(false)}>{name}<ArrowUpRight size={15} /></Link>)}
-      <a href="#formulario" onClick={() => setMenu(false)}>{t('nav_contact')}<ArrowUpRight size={15} /></a>
+      <Link href="/contacto" onClick={() => setMenu(false)}>{spanish ? 'Hablemos' : 'Let’s talk'}<ArrowUpRight size={15} /></Link>
     </nav>}
   </>;
 }
@@ -298,7 +298,7 @@ export default function Contact() {
       <section className="ct-next"><div className="ct-shell ct-next-row"><div><Label>{w.next}</Label><h2>{w.nextTitle}</h2><p>{w.nextDesc}</p></div><a href="mailto:moreinfo@beenear.mx" className="ct-next-email">moreinfo@beenear.mx<ArrowUpRight size={18}/></a></div></section>
       <footer className="ct-footer"><div className="ct-shell"><div className="ct-footer-grid">
         <div className="ct-footer-brand"><Link href="/"><OfficialLogo/></Link><p>{t('footer_desc')}</p></div>
-        <div className="ct-footer-column"><h4>{w.links}</h4><Link href="/">{t('nav_home')}</Link><Link href="/nosotros">{t('nav_about')}</Link><Link href="/servicios">{t('nav_services')}</Link></div>
+        <div className="ct-footer-column"><h4>{w.links}</h4><Link href="/">{spanish ? 'Soluciones' : 'Solutions'}</Link><Link href="/nosotros">{spanish ? 'Nosotros' : 'About'}</Link><Link href="/servicios">{spanish ? 'Servicios' : 'Services'}</Link></div>
         <div className="ct-footer-column"><h4>{w.solutions}</h4><Link href="/servicios/contact-center">Contact Center</Link><Link href="/servicios/intake-sales">Intake Sales</Link><Link href="/blog">Blog</Link></div>
         <div className="ct-footer-column"><h4>{w.contact}</h4><a href="mailto:moreinfo@beenear.mx">moreinfo@beenear.mx</a><a href="tel:+12153180179">+1 (215) 318-0179</a><span>Ejército Nacional 373, CDMX</span></div>
       </div><div className="ct-footer-bottom"><span>© {new Date().getFullYear()} Bee Near. {w.rights}</span><a href="/docs/privacy_policy_for_website.pdf" target="_blank" rel="noopener noreferrer">{t('footer_privacy')}</a></div></div></footer>

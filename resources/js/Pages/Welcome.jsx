@@ -20,7 +20,7 @@ import {
 
 const CONTENT = {
   en: {
-    nav: ['Solutions', 'The model', 'About us', 'Insights'],
+    nav: ['Solutions', 'The model', 'About us', 'Services', 'Insights'],
     calculatorLink: 'Staffing Calculator',
     contact: 'Let’s talk', language: 'Language',
     eyebrow: 'THE NEW STANDARD IN CUSTOMER OPERATIONS',
@@ -114,7 +114,7 @@ const CONTENT = {
     preview: 'PREVIEW MODE', noLive: 'Live voice connection pending',
   },
   es: {
-    nav: ['Soluciones', 'El modelo', 'Nosotros', 'Blog'],
+    nav: ['Soluciones', 'El modelo', 'Nosotros', 'Servicios', 'Blog'],
     calculatorLink: 'Calculadora de personal',
     contact: 'Hablemos', language: 'Idioma',
     eyebrow: 'EL NUEVO ESTÁNDAR EN OPERACIONES CON CLIENTES',
@@ -792,7 +792,7 @@ const STYLES = `
 .bn-footer-col { display:flex; flex-direction:column; gap:15px; }
 .bn-footer-col a,.bn-footer-col span { color:#a4a4a5; font-size:12px; line-height:1.6; transition:color .2s; }
 .bn-footer-col a:hover { color:#f5be1e; }
-.bn-footer-contact a { overflow-wrap:anywhere; }
+.bn-footer-contact async { overflow-wrap:anywhere; }
 .bn-footer-bottom { border-top:1px solid rgba(255,255,255,.13); padding-top:25px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px; color:#6d6f71; font-size:11px; }
 .bn-footer-bottom a { color:#909293; } .bn-footer-bottom a:hover { color:#f5be1e; }
 .bn-reveal { opacity:0; transform:translateY(34px); transition:opacity .9s cubic-bezier(.2,.7,.2,1),transform .9s cubic-bezier(.2,.7,.2,1); }
@@ -914,61 +914,6 @@ const STYLES = `
   .bn-footer-grid { grid-template-columns:1fr 1fr; gap:35px 20px; padding-bottom:55px; }
   .bn-footer-brand { grid-column:1/3; }
   .bn-footer-contact { grid-column:1/3; }
-}
-@media (max-width:370px) {
-  .bn-shell { width:calc(100% - 28px); }
-  .bn-hero h1 { font-size:40px; }
-  .bn-metric-number { font-size:22px; }
-  .bn-metric-label { font-size:8px; }
-  .bn-modal { padding:22px; }
-}
-/* BEENE NEAR / CONVERSATION ORCHESTRATION — INTERACTIVE VISUAL MODEL */
-.bn-orch { margin-top:17px; }
-.bn-orch-heading { display:flex; align-items:flex-end; justify-content:space-between; gap:13px; margin:0 0 12px; }
-.bn-orch-heading>div { display:flex; flex-direction:column; gap:5px; min-width:0; }
-.bn-orch-kicker { font-size:7px; letter-spacing:1.45px; font-weight:700; color:#a68d4e; }
-.bn-orch-heading strong { font-size:10px; letter-spacing:.8px; color:#e5e4df; font-weight:700; }
-.bn-orch-interactive { color:#7d817e; font-size:7px; letter-spacing:.55px; white-space:nowrap; display:flex; align-items:center; gap:7px; }
-.bn-orch-live-dot { width:5px; height:5px; background:#f5be1e; border-radius:50%; box-shadow:0 0 10px #f5be1e70; animation:bn-blink 2.8s infinite; }
-.bn-orch-rail { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; }
-.bn-orch-tab { position:relative; border:1px solid #35383a; background:#191b1c; min-height:67px; min-width:0; padding:11px 8px 12px; text-align:left; border-radius:5px; display:flex; flex-direction:column; justify-content:space-between; gap:5px; color:#9c9f9f; transition:border-color .24s,background .24s,color .24s,transform .24s; }
-.bn-orch-tab:hover { background:#232426; border-color:#777264; transform:translateY(-2px); }
-.bn-orch-tab:focus-visible { outline:2px solid #f5be1e; outline-offset:2px; }
-.bn-orch-tab--active { border-color:rgba(245,190,30,.57); background:linear-gradient(125deg,#28271f 0%,#201f1b 100%); color:#f3f0e7; }
-.bn-orch-tab-number { display:block; font-size:8px; font-weight:800; letter-spacing:1px; color:#a59a81; }
-.bn-orch-tab--active .bn-orch-tab-number { color:#f5be1e; }
-.bn-orch-tab-name { font-size:9px; font-weight:650; line-height:1.25; }
-.bn-orch-tab-track { position:absolute; bottom:0; height:2px; left:0; right:0; overflow:hidden; background:transparent; }
-.bn-orch-tab-track span { display:block; height:100%; background:#f5be1e; width:0; }
-.bn-orch-tab--active .bn-orch-tab-track span { width:100%; animation:bn-orch-scan 2.9s ease-in-out infinite alternate; }
-.bn-orch-detail { min-height:173px; margin-top:8px; display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,.75fr); background:linear-gradient(112deg,#17191b,#121416); border:1px solid rgba(255,255,255,.085); border-radius:7px; overflow:hidden; animation:bn-orch-enter .4s ease both; }
-.bn-orch-detail-copy { min-width:0; padding:17px 16px 15px; }
-.bn-orch-detail-top { display:flex; align-items:center; justify-content:space-between; gap:9px; color:#d4b55f; font-size:7px; font-weight:750; letter-spacing:1.1px; }
-.bn-orch-detail-top span:last-child { color:#8b8c8a; }
-.bn-orch-detail h4 { margin:11px 0 7px; font-family:Manrope,Arial,sans-serif; font-size:14px; line-height:1.32; letter-spacing:-.026em; font-weight:700; color:#f1f0eb; }
-.bn-orch-detail p { font-size:10px; line-height:1.55; color:#a2a5a3; margin:0; }
-.bn-orch-tags { margin-top:12px; display:flex; gap:6px; flex-wrap:wrap; }
-.bn-orch-tags span { display:inline-flex; align-items:center; min-height:20px; padding:4px 7px; font-size:7px; font-weight:600; border-radius:3px; color:#afafa9; border:1px solid rgba(255,255,255,.10); }
-.bn-orch-trace { min-width:0; border-left:1px solid rgba(255,255,255,.085); padding:14px 11px 12px; display:flex; flex-direction:column; align-items:stretch; justify-content:center; background:radial-gradient(ellipse at 50% 45%,rgba(245,190,30,.05),transparent 78%); }
-.bn-orch-trace-top { display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:7px; font-weight:700; letter-spacing:1px; color:#949693; }
-.bn-orch-trace-nodes { display:flex; justify-content:center; align-items:center; padding:17px 2px 13px; }
-.bn-orch-trace-end { flex:none; width:13px; height:13px; transform:rotate(45deg); border:1px solid rgba(245,190,30,.72); box-shadow:0 0 0 4px rgba(245,190,30,.04); }
-.bn-orch-trace-end--last { background:#f5be1e; box-shadow:0 0 13px rgba(245,190,30,.16); }
-.bn-orch-trace-line { position:relative; height:1px; flex:1; max-width:90px; background:rgba(245,190,30,.36); overflow:hidden; }
-.bn-orch-trace-line span { position:absolute; inset:-1px auto -1px 0; width:38%; background:#ffe2a0; box-shadow:0 0 8px #ffe2a0; animation:bn-orch-beam 2s linear infinite; }
-.bn-orch-trace-route { font-size:7px; color:#999c98; letter-spacing:.5px; text-align:center; }
-.bn-orch-trace strong { font-size:8px; margin-top:8px; color:#e8c56f; font-weight:750; text-align:center; line-height:1.4; letter-spacing:.2px; }
-@keyframes bn-orch-scan { 0% { transform:translateX(-65%); } 100% { transform:translateX(0); } }
-@keyframes bn-orch-beam { from { transform:translateX(-120%); } to { transform:translateX(370%); } }
-@keyframes bn-orch-enter { from { opacity:.5; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
-@media (max-width:700px) {
-  .bn-orch-detail { grid-template-columns:1fr; }
-  .bn-orch-trace { border-left:0; border-top:1px solid rgba(255,255,255,.075); padding:12px 14px; }
-  .bn-orch-trace-nodes { padding:10px 2px; }
-  .bn-orch-tab { padding:10px 6px; min-height:65px; }
-  .bn-orch-tab-name { font-size:8px; }
-  .bn-orch-detail-copy { padding:14px; }
-  .bn-orch-detail h4 { font-size:13px; }
 }
 @media (max-width:380px) {
   .bn-orch-heading { align-items:flex-start; flex-direction:column; gap:5px; }
@@ -1511,7 +1456,8 @@ export default function Welcome() {
             <a href="#solutions">{c.nav[0]}</a>
             <a href="#how-it-works">{c.nav[1]}</a>
             <Link href="/nosotros">{c.nav[2]}</Link>
-            <Link href="/blog">{c.nav[3]}</Link>
+            <Link href="/servicios">{c.nav[3]}</Link>
+            <Link href="/blog">{c.nav[4]}</Link>
             <Link href="/calculadora">{c.calculatorLink}</Link>
           </nav>
           <div className="bn-nav-actions">
@@ -1527,7 +1473,8 @@ export default function Welcome() {
             <a href="#solutions" onClick={() => setMenuOpen(false)}>{c.nav[0]}<ArrowUpRight size={15} /></a>
             <a href="#how-it-works" onClick={() => setMenuOpen(false)}>{c.nav[1]}<ArrowUpRight size={15} /></a>
             <Link href="/nosotros" onClick={() => setMenuOpen(false)}>{c.nav[2]}<ArrowUpRight size={15} /></Link>
-            <Link href="/blog" onClick={() => setMenuOpen(false)}>{c.nav[3]}<ArrowUpRight size={15} /></Link>
+            <Link href="/servicios" onClick={() => setMenuOpen(false)}>{c.nav[3]}<ArrowUpRight size={15} /></Link>
+            <Link href="/blog" onClick={() => setMenuOpen(false)}>{c.nav[4]}<ArrowUpRight size={15} /></Link>
             <Link href="/calculadora" onClick={() => setMenuOpen(false)}>{c.calculatorLink}<ArrowUpRight size={15} /></Link>
             <Link href="/contacto" onClick={() => setMenuOpen(false)}>{c.contact}<ArrowUpRight size={15} /></Link>
             <button type="button" onClick={flipLang}>{spanish ? 'English' : 'Español'}<Globe2 size={15} /></button>
@@ -1560,7 +1507,7 @@ export default function Welcome() {
           <section className="bn-bridge"><div className="bn-shell"><SectionReveal className="bn-bridge-grid"><div className="bn-bridge-signature"><BeeSymbol /><div className="bn-bridge-kicker">{c.bridgeOverline}</div></div><div><h2>{c.bridgeTitle}</h2><p className="bn-bridge-copy">{c.bridgeDesc}</p></div></SectionReveal></div></section>
           <section className="bn-cta"><div className="bn-shell"><SectionReveal className="bn-cta-grid"><div><div className="bn-cta-eyebrow">{c.closingEyebrow}</div><h2><span>{c.closingTitle}</span><em>{c.closingTitle2}</em></h2><p className="bn-cta-copy">{c.closingDesc}</p></div><div className="bn-cta-action"><Link href="/contacto"><span>{c.closingCta}</span><ArrowUpRight size={28} /></Link></div></SectionReveal></div></section>
         </main>
-        <footer className="bn-footer"><div className="bn-shell"><div className="bn-footer-grid"><div className="bn-footer-brand"><Link className="bn-brand" href="/"><img className="bn-brand-img bn-brand-img--footer" src="/images/beenear-imagotipo-dark.png" alt="Bee Near" /></Link><p>{c.footerLine}</p></div><div className="bn-footer-col"><h4 className="bn-footer-heading">{c.footerSolutions}</h4><Link href="/servicios/contact-center">Contact Center</Link><Link href="/servicios/intake-sales">Intake Sales</Link><Link href="/calculadora">{c.calculatorLink}</Link><a href="#how-it-works">{c.nav[1]}</a></div><div className="bn-footer-col"><h4 className="bn-footer-heading">{c.footerCompany}</h4><Link href="/nosotros">{c.nav[2]}</Link><Link href="/blog">{c.nav[3]}</Link><Link href="/contacto">{c.contact}</Link></div><div className="bn-footer-col bn-footer-contact"><h4 className="bn-footer-heading">{c.footerReach}</h4><a href="mailto:moreinfo@beenear.mx">moreinfo@beenear.mx</a><a href="tel:+12153180179">+1 (215) 318-0179</a><span>Ejército Nacional 373, CDMX</span></div></div><div className="bn-footer-bottom"><span>© {new Date().getFullYear()} Bee Near. {c.rights}</span><a href="/docs/privacy_policy_for_website.pdf" target="_blank" rel="noreferrer">{c.privacy}</a><span>DESIGNED FOR CONNECTION.</span></div></div></footer>
+        <footer className="bn-footer"><div className="bn-shell"><div className="bn-footer-grid"><div className="bn-footer-brand"><Link className="bn-brand" href="/"><img className="bn-brand-img bn-brand-img--footer" src="/images/beenear-imagotipo-dark.png" alt="Bee Near" /></Link><p>{c.footerLine}</p></div><div className="bn-footer-col"><h4 className="bn-footer-heading">{c.footerSolutions}</h4><Link href="/servicios/contact-center">Contact Center</Link><Link href="/servicios/intake-sales">Intake Sales</Link><Link href="/calculadora">{c.calculatorLink}</Link><a href="#how-it-works">{c.nav[1]}</a></div><div className="bn-footer-col"><h4 className="bn-footer-heading">{c.footerCompany}</h4><Link href="/nosotros">{c.nav[2]}</Link><Link href="/blog">{c.nav[4]}</Link><Link href="/contacto">{c.contact}</Link></div><div className="bn-footer-col bn-footer-contact"><h4 className="bn-footer-heading">{c.footerReach}</h4><a href="mailto:moreinfo@beenear.mx">moreinfo@beenear.mx</a><a href="tel:+12153180179">+1 (215) 318-0179</a><span>Ejército Nacional 373, CDMX</span></div></div><div className="bn-footer-bottom"><span>© {new Date().getFullYear()} Bee Near. {c.rights}</span><a href="/docs/privacy_policy_for_website.pdf" target="_blank" rel="noreferrer">{c.privacy}</a><span>DESIGNED FOR CONNECTION.</span></div></div></footer>
         {demoOpen && <VoicePreviewModal c={c} onClose={closeDemo} />}
       </div>
     </>

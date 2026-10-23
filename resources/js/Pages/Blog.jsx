@@ -24,13 +24,13 @@ const BLOG_CSS = `
 .bk-logo-sub { display:block;margin-top:4px;font-size:7px;letter-spacing:1.55px;color:#888c87;font-weight:700; }
 .bk-nav { position:fixed;z-index:100;top:18px;left:50%;transform:translateX(-50%);width:min(1252px,calc(100% - 64px));min-height:63px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:9px 14px 9px 21px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(16,17,18,.9);box-shadow:0 12px 40px rgba(0,0,0,.25);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);transition:top .25s,background .25s; }
 .bk-nav.scrolled { top:9px;background:rgba(14,15,16,.97); }
-.bk-nav-links { display:flex;align-items:center;gap:29px; }
+.bk-nav-links { display:flex;align-items:center;gap:24px; }
 .bk-nav-links a { color:#aeb0aa;font-size:12px;font-weight:500;position:relative;transition:color .2s; }
 .bk-nav-links a:hover,.bk-nav-links a[aria-current='page'] { color:#f1eee8; }
 .bk-nav-links a[aria-current='page']::after { content:'';position:absolute;height:2px;width:100%;left:0;bottom:-11px;background:var(--bk-yellow); }
 .bk-nav-right { display:flex;align-items:center;gap:16px; }
 .bk-lang { display:flex;align-items:center;gap:6px;border:0;background:none;color:#dddcd7;font-weight:700;font-size:11px;padding:9px 1px; }
-.bk-contact { display:flex;gap:15px;align-items:center;justify-content:center;border-radius:6px;background:var(--bk-yellow);padding:12px 15px;color:#171717!important;font-size:11px;font-weight:800;transition:background .2s,transform .2s; }
+.bk-contact { display:flex;gap:12px;align-items:center;justify-content:center;border-radius:6px;background:var(--bk-yellow);padding:11px 20px;color:#171717!important;font-size:12px;font-weight:800;transition:background .2s,transform .2s; }
 .bk-contact:hover { transform:translateY(-2px);background:#ffcd42; }
 .bk-menu-btn { display:none;align-items:center;justify-content:center;width:40px;height:40px;background:#242627;color:#f8f8f8;border:1px solid #424242;border-radius:8px; }
 .bk-mobile { position:fixed;z-index:99;top:83px;left:12px;right:12px;padding:10px;border:1px solid #383a3a;border-radius:10px;background:#1a1c1e;box-shadow:0 22px 60px #000b; }
@@ -151,8 +151,9 @@ const BLOG_CSS = `
 @keyframes bk-float { from {transform:translateY(-5px)} to {transform:translateY(7px)} }
 @keyframes bk-pulse { 50% { opacity:.45; } }
 @keyframes bk-spin { to { transform:rotate(360deg); } }
-@media(max-width:1050px) { .bk-nav-links {gap:16px} .bk-reader-hero-layout {grid-template-columns:minmax(0,1fr) 230px} .bk-reader-layout {grid-template-columns:1fr 230px;gap:30px} .bk-footer-cols {gap:22px} }
-@media(max-width:920px) { .bk-nav-links {display:none} .bk-menu-btn {display:flex} .bk-hero-inner {grid-template-columns:1fr} .bk-hero {padding:132px 0 70px} .bk-graphic {max-width:600px;width:100%;min-height:330px;margin-inline:auto} .bk-featured {grid-template-columns:1fr 1fr} .bk-reader-hero-layout {grid-template-columns:1fr 190px;gap:26px} .bk-reader-layout {grid-template-columns:1fr} .bk-side {display:none} .bk-footer-cols {grid-template-columns:repeat(2,1fr)} }
+@media(max-width:1180px) { .bk-nav-links {gap:16px} .bk-nav-links a {font-size:11px} }
+@media(max-width:1050px) { .bk-nav-links {display:none} .bk-menu-btn {display:flex} .bk-reader-hero-layout {grid-template-columns:minmax(0,1fr) 230px} .bk-reader-layout {grid-template-columns:1fr 230px;gap:30px} .bk-footer-cols {gap:22px} }
+@media(max-width:920px) { .bk-hero-inner {grid-template-columns:1fr} .bk-hero {padding:132px 0 70px} .bk-graphic {max-width:600px;width:100%;min-height:330px;margin-inline:auto} .bk-featured {grid-template-columns:1fr 1fr} .bk-reader-hero-layout {grid-template-columns:1fr 190px;gap:26px} .bk-reader-layout {grid-template-columns:1fr} .bk-side {display:none} .bk-footer-cols {grid-template-columns:repeat(2,1fr)} }
 @media(max-width:700px) { .bk-wrap {width:calc(100% - 36px)} .bk-nav {top:10px;width:calc(100% - 24px);min-height:59px;padding:8px 11px} .bk-contact {display:none} .bk-logo-name {font-size:17px} .bk-hero {padding:120px 0 60px} .bk-hero h1 {font-size:clamp(34px,9.5vw,47px)} .bk-hero-desc {font-size:14px} .bk-hero-bottom {margin-top:30px} .bk-graphic {min-height:280px} .bk-index-section {padding:64px 0 75px} .bk-section-top {align-items:start} .bk-cards {grid-template-columns:1fr} .bk-featured {display:flex;flex-direction:column} .bk-featured .bk-cover {min-height:240px} .bk-featured .bk-cover-mid {flex-direction:row} .bk-featured .bk-cover-icon {width:76px;height:76px} .bk-featured .bk-cover-mid b {font-size:45px} .bk-featured-body {padding:26px} .bk-close {padding:66px 0} .bk-close-row {align-items:start} .bk-close-link {width:67px;height:67px} .bk-footer-cols {grid-template-columns:1fr 1fr;gap:33px} .bk-footer-brand {grid-column:1/-1} .bk-footer-bottom {flex-direction:column} .bk-reader-hero {padding:127px 0 58px} .bk-reader-hero-layout {grid-template-columns:1fr} .bk-reader-graphic {display:none} .bk-reader-hero h1 {font-size:clamp(32px,8.3vw,49px)} .bk-reader {padding:57px 0 72px} .bk-prose-section p {font-size:15px} }
 @media(max-width:390px) { .bk-nav-right {gap:7px} .bk-filters {gap:6px} .bk-filter {padding:9px;font-size:11px} .bk-hero h1 {font-size:33px} }
 @media(prefers-reduced-motion:reduce) { .bk-reveal {opacity:1;transform:none} .bk-reader-graphic::after,.bk-graphic svg.bk-orbit-art,.bk-live {animation:none} }
@@ -171,6 +172,7 @@ function BeeLogo() {
     </span>
   );
 }
+
 function BlogNav({ t, i18n, spanish }) {
   const [menu, setMenu] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -179,24 +181,63 @@ function BlogNav({ t, i18n, spanish }) {
     onScroll(); window.addEventListener('scroll',onScroll,{passive:true});
     return () => window.removeEventListener('scroll',onScroll);
   },[]);
-  const links = [{href:'/',name:t('nav_home')},{href:'/nosotros',name:t('nav_about')},{href:'/servicios',name:t('nav_services')},{href:'/blog',name:'Blog'}];
+  const links = [
+    { href: '/#soluciones', name: spanish ? 'Soluciones' : 'Solutions' },
+    { href: '/#modelo', name: spanish ? 'El modelo' : 'The model' },
+    { href: '/nosotros', name: spanish ? 'Nosotros' : 'About' },
+    { href: '/servicios', name: spanish ? 'Servicios' : 'Services' },
+    { href: '/blog', name: 'Blog' },
+    { href: '/calculadora', name: spanish ? 'Calculadora de personal' : 'Staff calculator' }
+  ];
   return <>
     <header className={`bk-nav${scrolled?' scrolled':''}`}>
       <Link href="/" aria-label="Bee Near — Inicio"><BeeLogo/></Link>
-      <nav className="bk-nav-links" aria-label={spanish?'Menú principal':'Main navigation'}>{links.map(x=><Link key={x.href} href={x.href} aria-current={x.href==='/blog'?'page':undefined}>{x.name}</Link>)}</nav>
-      <div className="bk-nav-right"><button className="bk-lang" type="button" onClick={()=>i18n.changeLanguage(spanish?'en':'es')} aria-label={spanish?'Switch to English':'Cambiar a español'}><Globe2 size={14}/>{spanish?'EN':'ES'}</button><Link className="bk-contact" href="/contacto">{t('nav_contact')}<ArrowUpRight size={15}/></Link><button type="button" className="bk-menu-btn" onClick={()=>setMenu(!menu)} aria-label={menu?(spanish?'Cerrar menú':'Close menu'):(spanish?'Abrir menú':'Open menu')} aria-expanded={menu}>{menu?<X size={20}/>:<Menu size={20}/>}</button></div>
+      <nav className="bk-nav-links" aria-label={spanish?'Menú principal':'Main navigation'}>
+        {links.map(x=><Link key={x.href} href={x.href} aria-current={x.href==='/blog'?'page':undefined}>{x.name}</Link>)}
+      </nav>
+      <div className="bk-nav-right">
+        <button className="bk-lang" type="button" onClick={()=>i18n.changeLanguage(spanish?'en':'es')} aria-label={spanish?'Switch to English':'Cambiar a español'}>
+          <Globe2 size={14}/>{spanish?'EN':'ES'}
+        </button>
+        <Link className="bk-contact" href="/contacto">
+          {spanish ? 'Hablemos' : 'Let’s talk'}<ArrowUpRight size={15}/>
+        </Link>
+        <button type="button" className="bk-menu-btn" onClick={()=>setMenu(!menu)} aria-label={menu?(spanish?'Cerrar menú':'Close menu'):(spanish?'Abrir menú':'Open menu')} aria-expanded={menu}>
+          {menu?<X size={20}/>:<Menu size={20}/>}
+        </button>
+      </div>
     </header>
-    {menu&&<nav className="bk-mobile" aria-label={spanish?'Navegación móvil':'Mobile navigation'}>{links.map(x=><Link key={x.href} href={x.href} onClick={()=>setMenu(false)}>{x.name}<ArrowUpRight size={15}/></Link>)}<Link href="/contacto" onClick={()=>setMenu(false)}>{t('nav_contact')}<ArrowUpRight size={15}/></Link></nav>}
+    {menu&&<nav className="bk-mobile" aria-label={spanish?'Navegación móvil':'Mobile navigation'}>
+      {links.map(x=><Link key={x.href} href={x.href} onClick={()=>setMenu(false)}>{x.name}<ArrowUpRight size={15}/></Link>)}
+      <Link href="/contacto" onClick={()=>setMenu(false)}>{spanish ? 'Hablemos' : 'Let’s talk'}<ArrowUpRight size={15}/></Link>
+    </nav>}
   </>;
 }
+
 function BlogFooter({t,spanish}) {
   return <footer className="bk-footer"><div className="bk-wrap"><div className="bk-footer-cols">
       <div className="bk-footer-brand"><Link href="/"><BeeLogo/></Link><p>{t('footer_desc')}</p></div>
-      <div><h4>{t('footer_links')}</h4><Link href="/">{t('nav_home')}</Link><Link href="/nosotros">{t('nav_about')}</Link><Link href="/servicios">{t('nav_services')}</Link></div>
-      <div><h4>{spanish?'EXPLORAR':'EXPLORE'}</h4><Link href="/blog">Blog</Link><Link href="/contacto">{t('nav_contact')}</Link><a href="/docs/privacy_policy_for_website.pdf" target="_blank" rel="noopener noreferrer">{t('footer_privacy')}</a></div>
-      <div><h4>{t('footer_contact')}</h4><a href="mailto:moreinfo@beenear.mx">moreinfo@beenear.mx</a><a href="tel:+12153180179">+1 (215) 318-0179</a><span>Ejército Nacional 373, CDMX</span></div>
+      <div>
+        <h4>{t('footer_links')}</h4>
+        <Link href="/">{spanish ? 'Soluciones' : 'Solutions'}</Link>
+        <Link href="/nosotros">{spanish ? 'Nosotros' : 'About'}</Link>
+        <Link href="/servicios">{spanish ? 'Servicios' : 'Services'}</Link>
+      </div>
+      <div>
+        <h4>{spanish?'EXPLORAR':'EXPLORE'}</h4>
+        <Link href="/blog">Blog</Link>
+        <Link href="/contacto">{spanish ? 'Hablemos' : 'Let’s talk'}</Link>
+        <a href="/docs/privacy_policy_for_website.pdf" target="_blank" rel="noopener noreferrer">{t('footer_privacy')}</a>
+      </div>
+      <div>
+        <h4>{t('footer_contact')}</h4>
+        <a href="mailto:moreinfo@beenear.mx">moreinfo@beenear.mx</a>
+        <a href="tel:+12153180179">+1 (215) 318-0179</a>
+        <span>Ejército Nacional 373, CDMX</span>
+      </div>
     </div><div className="bk-footer-bottom"><span>© {new Date().getFullYear()} Bee Near. {t('footer_rights')}</span><span>HUMAN × INTELLIGENCE</span></div></div></footer>;
 }
+
 function Eyebrow({children,dark=false}) { return <div className={`bk-eyebrow${dark?' dark':''}`}>{children}</div>; }
 function BlogCover({article,featured=false}) {
   const Icon=article.icon;
