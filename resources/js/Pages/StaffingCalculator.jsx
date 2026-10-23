@@ -1,10 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Head, Link } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import {
   Activity, ArrowLeft, ArrowRight, ArrowUpRight, BarChart3, Calculator,
   CheckCircle2, ChevronDown, Clock3, Download, Globe2, Info, LockKeyhole, FileSpreadsheet,
-  Minus, Plus, RefreshCcw, Settings2, ShieldCheck, UsersRound,
+  Minus, Plus, RefreshCcw, Settings2, ShieldCheck, UsersRound, PencilLine,
   UserRoundCheck, UserRoundCog, AlertTriangle, Zap,
 } from 'lucide-react';
 
@@ -468,6 +468,8 @@ const CSS = `
 .bc-header { height:88px; display:flex; align-items:center; justify-content:space-between; gap:20px; border-bottom:1px solid rgba(255,255,255,.09); }
 .bc-logo { display:flex; align-items:center; gap:10px; flex-shrink:0; }
 .bc-logo-official { display:block; height:63px; width:auto; max-width:165px; object-fit:contain; }
+/* Alternar imagen institucional segun pantalla o impresion. */
+.bc-logo-print { display:none; }
 .bc-mark { width:34px; height:35px; display:inline-flex; color:var(--gold); }
 .bc-mark svg { width:100%; height:100%; }
 .bc-logo strong { font-size:19px; letter-spacing:-.8px; font-family:Manrope,sans-serif; }
@@ -537,6 +539,40 @@ const CSS = `
 .bc-big { display:flex; align-items:baseline; gap:11px; padding:12px 0 23px; border-bottom:1px solid rgba(255,255,255,.13); }
 .bc-big strong { font:750 clamp(51px,6vw,81px)/1 Manrope,sans-serif; letter-spacing:-.08em; color:#f1c94f; }
 .bc-big span { font-size:14px; color:#e1e1dc; }
+/* El dato editable y el total resultante comparten tipografia y escala visual. */
+.bc-headcount-block { margin:3px 0 24px; padding:22px 24px 18px; border:1px solid rgba(245,190,30,.28); border-radius:10px; background:linear-gradient(120deg,rgba(245,190,30,.075),rgba(245,190,30,.018)); }
+.bc-headcount-kicker { font-size:10px; font-weight:800; letter-spacing:1.3px; color:#d7b355; }
+.bc-headcount-title { display:block; margin:12px 0 9px; font:700 18px Manrope,sans-serif; color:#f1eee7; }
+/* Captura visible: el valor grande ES un campo editable, con ayuda contextual. */
+.bc-headcount-row { display:flex; align-items:center; justify-content:space-between; gap:18px; min-height:110px; padding:10px 0 19px; border-bottom:1px solid rgba(255,255,255,.13); }
+.bc-headcount-number-wrap { display:flex; align-items:baseline; gap:12px; min-width:0; flex:1; }
+.bc-headcount-input { display:block; width:5ch; max-width:100%; min-width:2ch; border:0; border-radius:0; border-bottom:2px dashed rgba(245,190,30,.65); padding:0 0 2px; background:transparent; outline:none; color:#f1c94f; font:750 clamp(51px,6vw,81px)/1 Manrope,sans-serif; letter-spacing:-.08em; font-variant-numeric:tabular-nums; appearance:textfield; transition:border-color .2s,box-shadow .2s; }
+.bc-headcount-input::-webkit-inner-spin-button,.bc-headcount-input::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
+.bc-headcount-input:hover { border-bottom-style:solid; border-bottom-color:#f5be1e; }
+.bc-headcount-input:focus-visible { border-bottom-style:solid; border-bottom-color:#fff1a8; outline:none; box-shadow:0 5px 0 -3px rgba(245,190,30,.28); }
+.bc-headcount-unit { font-size:14px; color:#e1e1dc; white-space:nowrap; }
+.bc-entry-prompt { position:relative; display:flex; align-items:center; gap:11px; width:min(224px,45%); padding:12px 13px; border:1px solid rgba(245,190,30,.48); border-radius:9px; background:linear-gradient(120deg,rgba(245,190,30,.18),rgba(245,190,30,.065)); color:#ebd694; box-shadow:0 5px 23px rgba(0,0,0,.15); flex-shrink:0; }
+.bc-entry-prompt::before { content:''; position:absolute; top:calc(50% - 7px); left:-8px; width:13px; height:13px; transform:rotate(45deg); border-left:1px solid rgba(245,190,30,.48); border-bottom:1px solid rgba(245,190,30,.48); background:#342f20; }
+.bc-entry-prompt-icon { position:relative; z-index:1; display:grid; place-items:center; flex:none; width:28px; height:28px; border:1px solid rgba(245,190,30,.36); border-radius:8px; background:rgba(245,190,30,.12); color:#f4cd65; }
+.bc-entry-prompt-text { position:relative; z-index:1; min-width:0; display:flex; flex-direction:column; gap:3px; }
+.bc-entry-prompt-text strong { font-size:10px; line-height:1.35; letter-spacing:.65px; color:#ffe097; }
+.bc-entry-prompt-text small { font-size:10px; line-height:1.5; color:#c9c4ad; }
+.bc-result-guide { display:flex; flex-direction:column; justify-content:flex-end; gap:8px; height:150px; padding-bottom:15px; border-bottom:1px solid rgba(245,190,30,.12); }
+.bc-result-guide-label { display:flex; align-items:center; gap:8px; font-size:10px; font-weight:800; letter-spacing:1.15px; color:#ddbf70; }
+.bc-result-guide-label svg { color:#e1be55; }
+.bc-result-guide p { margin:0; max-width:360px; font-size:11px; line-height:1.65; color:#adafa8; }
+@media(max-width:1050px) { .bc-result-guide { height:auto; min-height:65px; padding:10px 0 14px; } }
+@media(max-width:630px) { .bc-headcount-row { align-items:flex-start; flex-direction:column; gap:17px; } .bc-entry-prompt { width:100%; max-width:310px; margin:0 0 0 7px; } .bc-entry-prompt::before { left:19px; top:-8px; border-left:1px solid rgba(245,190,30,.48); border-top:1px solid rgba(245,190,30,.48); border-bottom:0; } .bc-headcount-unit { font-size:12px; } }
+.bc-headcount-explain { margin-top:13px!important; color:#b9b8aa; font-size:11px; line-height:1.75; }
+.bc-breakdown { margin:17px 0 4px; padding:15px; border:1px solid rgba(245,190,30,.24); border-radius:8px; background:rgba(245,190,30,.055); }
+.bc-breakdown-kicker { font-size:10px; letter-spacing:1.1px; font-weight:800; color:#dbc170; }
+.bc-breakdown-equation { margin-top:9px; display:flex; gap:10px; align-items:baseline; flex-wrap:wrap; color:#d7d8d0; font-size:12px; line-height:1.7; }
+.bc-breakdown-equation strong { font:750 20px Manrope,sans-serif; color:#f1c94f; }
+.bc-breakdown-operator { color:#b9a25f; font-weight:800; }
+.bc-breakdown-note { margin-top:9px!important; color:#a8aa9f; font-size:10px; line-height:1.7; }
+@media(max-width:630px){.bc-headcount-block{padding:17px 15px}.bc-headcount-title{font-size:16px}.bc-headcount-unit{font-size:12px}.bc-breakdown-equation{gap:7px}}
+@media print{.bc-result-guide{display:none!important}.bc-breakdown{background:#fff!important;border-color:#ccc!important;break-inside:avoid}.bc-breakdown-kicker,.bc-breakdown-equation,.bc-breakdown-note{color:#333!important}.bc-breakdown-equation strong{color:#8c6600!important}}
+
 .bc-roles { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; padding:21px 0; }
 .bc-role { background:#222425; border:1px solid rgba(255,255,255,.07); border-radius:8px; padding:13px 10px; min-width:0; }
 .bc-role strong { font:700 clamp(21px,2.5vw,33px) Manrope,sans-serif; letter-spacing:-.04em; display:block; }
@@ -634,7 +670,14 @@ const CSS = `
 .bc-policy-strip--editable { color:#e6d09a; border-color:rgba(245,190,30,.45); background:rgba(245,190,30,.08); }
 .bc-admin--unlocked { border-color:rgba(245,190,30,.63); }
 @media(max-width:630px){.bc-admin{padding:20px 16px}.bc-admin-form{flex-direction:column;align-items:stretch}.bc-admin-btn{width:100%}}
-@media print{.bc-admin {display:none!important}}
+@media print{
+  /* En PDF, sustituir el imagotipo claro por el oficial de letras oscuras. */
+  .bc-logo-screen { display:none!important; }
+  .bc-logo-print { display:block!important; height:63px; width:auto; max-width:165px; object-fit:contain; }
+  .bc-logo { display:inline-flex!important; align-items:center; }
+  .bc-header { height:88px; }
+  .bc-admin {display:none!important}
+}
 @media print{ .bc{background:#fff;color:#191919} .bc-header-actions,.bc-tabs,.bc-stack,.bc-actions,.bc-mini-button,.bc-faq,.bc-table input{display:none!important} .bc-print-val{display:inline!important} .bc-columns{display:block} .bc-report,.bc-chart,.bc-table-wrap{position:static;background:#fff;color:#111;box-shadow:none;border:1px solid #ddd} .bc-report h2,.bc-big span,.bc-metric>span,.bc-total span,.bc-metric strong,.bc-role strong{color:#111!important} .bc-big strong{color:#8c6600!important} .bc-table{min-width:0} .bc-table td,.bc-table th{color:#111!important;padding:5px} .bc-chart-bar{print-color-adjust:exact} .bc-table-section{break-before:page} }
 @media(prefers-reduced-motion:reduce){.bc *, .bc *::before,.bc *::after {transition:none!important;animation:none!important}}
 `;
@@ -667,7 +710,7 @@ export default function StaffingCalculator() {
   const spanish = (i18n.resolvedLanguage || i18n.language || 'es').toLowerCase().startsWith('es');
   const t = spanish ? WORDS.es : WORDS.en;
   const locale = spanish ? 'es-MX' : 'en-US';
-  const [basis, setBasis] = useState('demand'); // demand | fixed
+  const [basis, setBasis] = useState('fixed'); // fixed (default) | demand
   const [headcount, setHeadcount] = useState('100');
   const [inclusion, setInclusion] = useState('additional');
   const [rows, setRows] = useState(DEFAULT_ROWS);
@@ -678,6 +721,44 @@ export default function StaffingCalculator() {
   const [adminPassword, setAdminPassword] = useState('');
   const [adminMessage, setAdminMessage] = useState('');
   const [policyDraft, setPolicyDraft] = useState({ ...POLICY });
+  // Alinea el número editable y el resultado respecto a sus tarjetas,
+  // sin depender del zoom, los textos traducidos o el ancho de pantalla.
+  const startingNumberRef = useRef(null);
+  const finalNumberRef = useRef(null);
+  const resultGuideRef = useRef(null);
+  useEffect(() => {
+    if (basis !== 'fixed') return;
+    const alignNumbers = () => {
+      const initial = startingNumberRef.current;
+      const final = finalNumberRef.current;
+      const guide = resultGuideRef.current;
+      if (!initial || !final || !guide) return;
+      if (window.innerWidth <= 1050) {
+        guide.style.removeProperty('height');
+        return;
+      }
+      const initialCard = initial.closest('.bc-panel');
+      const finalCard = final.closest('.bc-panel');
+      if (!initialCard || !finalCard) return;
+      const fromTop = initial.getBoundingClientRect().top - initialCard.getBoundingClientRect().top;
+      const toTop = final.getBoundingClientRect().top - finalCard.getBoundingClientRect().top;
+      const current = guide.getBoundingClientRect().height;
+      const next = Math.max(65, Math.min(350, current + fromTop - toTop));
+      if (Math.abs(current - next) > 1) guide.style.height = `${Math.round(next)}px`;
+    };
+    alignNumbers();
+    const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(alignNumbers) : null;
+    if (observer) {
+      observer.observe(startingNumberRef.current.closest('.bc-panel'));
+      observer.observe(finalNumberRef.current.closest('.bc-panel'));
+    }
+    window.addEventListener('resize', alignNumbers);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener('resize', alignNumbers);
+    };
+  }, [basis, inclusion, spanish]);
+
 
   const restoreOfficialPolicy = () => setPolicyDraft({ ...POLICY });
   const activePolicy = useMemo(() => {
@@ -813,7 +894,7 @@ export default function StaffingCalculator() {
     const calls = raw === '' ? '' : String(Math.min(3000, parseInt(raw, 10)));
     setRows((previous) => previous.map((row) => row.hour === hour ? { ...row, calls } : row));
   };
-  const reset = () => { setRows(DEFAULT_ROWS()); setBasis('demand'); setHeadcount('100'); setInclusion('additional'); setExpandedHourly(false); if (adminUnlocked) restoreOfficialPolicy(); }; 
+  const reset = () => { setRows(DEFAULT_ROWS()); setBasis('fixed'); setHeadcount('100'); setInclusion('additional'); setExpandedHourly(false); if (adminUnlocked) restoreOfficialPolicy(); }; 
   const clearCalls = () => setRows(DEFAULT_ROWS().map((r) => ({...r, calls: 0})));
   const printReport = () => { setExpandedHourly(true); window.setTimeout(() => window.print(), 150); };
   const flipLang = () => i18n.changeLanguage(spanish ? 'en' : 'es');
@@ -873,20 +954,56 @@ export default function StaffingCalculator() {
     <div className="bc">
       <div className="bc-layout">
         <header className="bc-header">
-          <Link href="/" className="bc-logo" aria-label="Bee Near"><img className="bc-logo-official" src="/images/beenear-imagotipo-dark.png" alt="Bee Near" /></Link>
+          <Link href="/" className="bc-logo" aria-label="Bee Near">
+            {/* Logo de letras claras para el sitio web oscuro. */}
+            <img className="bc-logo-official bc-logo-screen" src="/images/beenear-imagotipo-dark.png" alt="Bee Near" />
+            {/* Logo de letras negras, exclusivo para imprimir o guardar como PDF. */}
+            <img className="bc-logo-official bc-logo-print" src="/images/imagotipo.jpeg" alt="" aria-hidden="true" />
+          </Link>
           <div className="bc-header-actions"><Link href="/" className="bc-back"><ArrowLeft size={16}/>{t.back}</Link><button type="button" className="bc-lang" onClick={flipLang}><Globe2 size={15}/>{spanish?'EN':'ES'}</button></div>
         </header>
         <div className="bc-intro"><div className="bc-eyebrow">{t.eyebrow}</div><h1>{t.title1}<br/><span>{t.title2}</span></h1><p>{t.lead}</p></div>
         <div role="tablist" aria-label={t.staffing} className="bc-tabs">
-          <button role="tab" aria-selected={basis==='demand'} className="bc-tab" onClick={()=>setBasis('demand')}><Activity size={17}/>{t.b1}</button>
           <button role="tab" aria-selected={basis==='fixed'} className="bc-tab" onClick={()=>setBasis('fixed')}><UsersRound size={17}/>{t.b2}</button>
+          <button role="tab" aria-selected={basis==='demand'} className="bc-tab" onClick={()=>setBasis('demand')}><Activity size={17}/>{t.b1}</button>
         </div>
         <div className="bc-columns">
           <div className="bc-stack">
             <section className="bc-panel" aria-label={t.needs}>
               <div className="bc-panel-head"><h2><Calculator size={19}/>{basis==='fixed' ? t.b2 : t.needs}</h2><small>01 / 03</small></div>
               <p className="bc-helper">{basis==='demand'?t.b1Help:t.b2Help}</p>
-              {basis==='fixed' && <div style={{maxWidth:260,marginBottom:22}}><NumberField label={t.demanded} value={headcount} onChange={setHeadcount} min={0} max={5000} suffix={t.staff}/></div>}
+              {basis==='fixed' && <div className="bc-headcount-block">
+                <div className="bc-headcount-kicker">{spanish ? '01 / PLANTILLA DE PARTIDA' : '01 / STARTING WORKFORCE'}</div>
+                <label htmlFor="bc-headcount" className="bc-headcount-title">
+                  {inclusion === 'additional'
+                    ? (spanish ? 'Operadores solicitados' : 'Requested agents')
+                    : (spanish ? 'Personas disponibles, incluido el apoyo' : 'Available people, including support')}
+                </label>
+                <div className="bc-headcount-row">
+                  <div className="bc-headcount-number-wrap">
+                    <input ref={startingNumberRef} id="bc-headcount" className="bc-headcount-input" type="number" inputMode="numeric"
+                      min="0" max="5000" step="1" value={headcount}
+                      onChange={event => setHeadcount(event.target.value)}
+                      onFocus={event => event.target.select()}
+                      aria-describedby="bc-headcount-help"
+                      aria-label={inclusion === 'additional' ? (spanish ? 'Número de operadores iniciales, editable' : 'Starting agent count, editable') : (spanish ? 'Plantilla total disponible, editable' : 'Total available staff, editable')}
+                      style={{width: `${Math.max(3, String(headcount).length) + 1}ch`}} />
+                    <span className="bc-headcount-unit">{inclusion === 'additional' ? t.operators : t.staff}</span>
+                  </div>
+                  <div className="bc-entry-prompt" id="bc-headcount-help" role="note">
+                    <span className="bc-entry-prompt-icon"><PencilLine size={16} aria-hidden="true" /></span>
+                    <span className="bc-entry-prompt-text">
+                      <strong>{spanish ? 'INGRESA TU CANTIDAD AQUÍ' : 'ENTER YOUR NUMBER HERE'}</strong>
+                      <small>{spanish ? 'Haz clic en el número para editarlo.' : 'Click the number to edit it.'}</small>
+                    </span>
+                  </div>
+                </div>
+                <p className="bc-headcount-explain">
+                  {inclusion === 'additional'
+                    ? (spanish ? 'Estos son los operadores de partida. El gerente y el equipo de apoyo se suman en el resultado de la derecha.' : 'These are your starting agents. The manager and support team are added to the total on the right.')
+                    : (spanish ? 'Esta cantidad ya incluye a todos los puestos. El resultado de la derecha conservará el mismo total y mostrará su distribución.' : 'This number already includes every role. The total on the right remains the same and shows its distribution.')}
+                </p>
+              </div>}
               <div className={`bc-policy-strip ${adminUnlocked ? 'bc-policy-strip--editable' : ''}`}>{adminUnlocked ? <Settings2 size={15}/> : <LockKeyhole size={15}/>} {adminUnlocked ? t.adminSimulation : t.locked}</div>
               <div className="bc-form-grid bc-form-grid--three">
                 {adminUnlocked ? <NumberField label={t.aht} value={policyDraft.aht} onChange={v=>changePolicy('aht',v)} min={30} max={3600} suffix={t.seconds}/> : <LockedField label={t.aht} value={POLICY.aht} suffix={t.seconds}/>}
@@ -936,8 +1053,27 @@ export default function StaffingCalculator() {
           </div>
           <aside className="bc-panel bc-report" aria-live="polite">
             <div className="bc-panel-head" style={{marginBottom:5}}><div className="bc-report-overline">{t.report}</div><BarChart3 size={20} color="#deb855"/></div>
-            <h2>{t.summary}</h2>
-            <div className="bc-big"><strong>{roles.valid ? format(roles.total,0,locale) : '—'}</strong><span>{t.staff}</span></div>
+            <h2>{basis === 'fixed' ? (spanish ? 'Plantilla total resultante' : 'Resulting total workforce') : t.summary}</h2>
+            {basis === 'fixed' && <div ref={resultGuideRef} className="bc-result-guide">
+              <div className="bc-result-guide-label"><CheckCircle2 size={15} aria-hidden="true" />{spanish ? '02 / RESULTADO AUTOMÁTICO' : '02 / AUTOMATIC RESULT'}</div>
+              <p>{spanish ? 'Se actualiza en tiempo real cuando cambias el número de la izquierda.' : 'Updates instantly when you change the number on the left.'}</p>
+            </div>}
+            <div className="bc-big"><strong ref={finalNumberRef}>{roles.valid ? format(roles.total,0,locale) : '—'}</strong><span>{t.staff}</span></div>
+            {basis === 'fixed' && roles.valid && <div className="bc-breakdown" role="status" aria-live="polite">
+              <div className="bc-breakdown-kicker">{spanish ? 'ASÍ SE RELACIONAN LOS DOS VALORES' : 'HOW THE TWO VALUES RELATE'}</div>
+              <div className="bc-breakdown-equation">
+                <span><strong>{format(roles.agents,0,locale)}</strong> {t.operators}</span>
+                <span className="bc-breakdown-operator">+</span>
+                <span><strong>{format(roles.supportTotal,0,locale)}</strong> {spanish ? 'de apoyo' : 'support staff'}</span>
+                {roles.reserve > 0 && <><span className="bc-breakdown-operator">+</span><span><strong>{format(roles.reserve,0,locale)}</strong> {spanish ? 'sin asignar' : 'unassigned'}</span></>}
+                <span className="bc-breakdown-operator">=</span>
+                <span><strong>{format(roles.total,0,locale)}</strong> {t.staff}</span>
+              </div>
+              <p className="bc-breakdown-note">{inclusion === 'additional'
+                ? (spanish ? 'La cantidad que capturaste corresponde a operadores; el resultado añade los puestos de coordinación.' : 'Your input counts agents; the result adds management and support positions.')
+                : (spanish ? 'Ambos totales son iguales porque elegiste incluir al personal de apoyo dentro de la plantilla.' : 'Both totals match because you chose to include support staff within the workforce.')}
+              </p>
+            </div>}
             <div className="bc-roles">
               {[
                 [t.agents, roles.agents], [t.manager, roles.manager],
