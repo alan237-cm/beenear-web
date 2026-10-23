@@ -683,7 +683,30 @@ const CSS = `
 `;
 
 // Solo el backend valida contraseñas. El frontend nunca almacena la clave.
-const ADMIN_ENDPOINT = '/calculadora/admin';
+// Compatibilidad con rutas publicadas distintas en local y produccion.
+// Detectamos el prefijo solo mediante GET /status, sin transmitir contrasenas al probar rutas.
+const ADMIN_ENDPOINTS = ['/calculadora', '/calculadora/admin'];
+async function detectAdminEndpoint(preferred = null) {
+  const candidates = preferred
+    ? [preferred, ...ADMIN_ENDPOINTS.filter((endpoint) => endpoint !== preferred)]
+    : ADMIN_ENDPOINTS;
+  for (const endpoint of candidates) {
+    const response = await fetch(`${endpoint}/status`, {
+      credentials: 'same-origin',
+      headers: { Accept: 'application/json' },
+      cache: 'no-store',
+    });
+    // Solo un 404 permite ensayar el siguiente prefijo.
+    // Un 401, 419, 500 o 503 es un problema real que no debemos ocultar.
+    if (response.status === 404) continue;
+    if (!response.ok) throw new Error(`http-${response.status}`);
+    const data = await response.json();
+    if (typeof data?.unlocked !== 'boolean') throw new Error('invalid-status-response');
+    return { endpoint, data };
+  }
+  throw new Error('route-not-found');
+}
+
 function csrfHeaders() {
   const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
   const xsrf = document.cookie.split('; ').find((cookie) => cookie.startsWith('XSRF-TOKEN='));
@@ -720,6 +743,7 @@ export default function StaffingCalculator() {
   const [adminBusy, setAdminBusy] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
   const [adminMessage, setAdminMessage] = useState('');
+  const adminEndpointRef = useRef(null);
   const [policyDraft, setPolicyDraft] = useState({ ...POLICY });
   // Alinea el número editable y el resultado respecto a sus tarjetas,
   // sin depender del zoom, los textos traducidos o el ancho de pantalla.
@@ -776,22 +800,20 @@ export default function StaffingCalculator() {
     let live = true;
     async function checkSession() {
       try {
-        const response = await fetch(`${ADMIN_ENDPOINT}/status`, {
-          credentials: 'same-origin', headers: { Accept: 'application/json' }, cache: 'no-store',
-        });
-        if (!response.ok) throw new Error('unavailable');
-        const data = await response.json();
+        const { endpoint, data } = await detectAdminEndpoint(adminEndpointRef.current);
         if (!live) return;
+        adminEndpointRef.current = endpoint;
         if (!data.unlocked) {
           setAdminUnlocked(false);
           setPolicyDraft({ ...POLICY });
         } else setAdminUnlocked(true);
         setAdminMessage('');
-      } catch (_) {
+      } catch (error) {
         if (!live) return;
+        adminEndpointRef.current = null;
         setAdminUnlocked(false);
         setPolicyDraft({ ...POLICY });
-        setAdminMessage('backend');
+        setAdminMessage(error.message === 'route-not-found' ? 'route' : 'backend');
       } finally {
         if (live) setAdminReady(true);
       }
@@ -815,11 +837,21 @@ export default function StaffingCalculator() {
     setAdminBusy(true);
     setAdminMessage('');
     try {
-      const response = await fetch(`${ADMIN_ENDPOINT}/unlock`, {
+      // El prefijo fue confirmado antes mediante GET /status.
+      // Nunca enviamos la contrasena a un endpoint alternativo a ciegas.
+      const endpoint = adminEndpointRef.current;
+      if (!endpoint) throw new Error('route');
+      const response = await fetch(`${endpoint}/unlock`, {
         method: 'POST', credentials: 'same-origin', headers: csrfHeaders(),
         body: JSON.stringify({ password: adminPassword }),
       });
-      if (!response.ok) throw new Error(response.status === 401 || response.status === 429 ? 'denied' : 'backend');
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 429) throw new Error('denied');
+        if (response.status === 419) throw new Error('csrf');
+        if (response.status === 503) throw new Error('config');
+        if (response.status === 404) throw new Error('route');
+        throw new Error('backend');
+      }
       const data = await response.json();
       if (!data.unlocked) throw new Error('denied');
       setAdminUnlocked(true);
@@ -827,7 +859,7 @@ export default function StaffingCalculator() {
       setAdminMessage('success');
     } catch (error) {
       setAdminUnlocked(false);
-      setAdminMessage(error.message === 'denied' ? 'denied' : 'backend');
+      setAdminMessage(['denied', 'csrf', 'config', 'route'].includes(error.message) ? error.message : 'backend');
     } finally {
       setAdminPassword('');
       setAdminBusy(false);
@@ -838,7 +870,9 @@ export default function StaffingCalculator() {
     if (adminBusy) return;
     setAdminBusy(true);
     try {
-      const response = await fetch(`${ADMIN_ENDPOINT}/lock`, {
+      const endpoint = adminEndpointRef.current;
+      if (!endpoint) throw new Error('route');
+      const response = await fetch(`${endpoint}/lock`, {
         method: 'POST', credentials: 'same-origin', headers: csrfHeaders(), body: '{}',
       });
       if (!response.ok) throw new Error('backend');
@@ -1147,6 +1181,9 @@ export default function StaffingCalculator() {
           </form>}
           {adminMessage==='denied' && <div className="bc-alert" role="alert"><AlertTriangle size={16}/>{t.adminError}</div>}
           {adminMessage==='backend' && <div className="bc-alert" role="alert"><AlertTriangle size={16}/>{t.adminMissing}</div>}
+          {adminMessage==='route' && <div className="bc-alert" role="alert"><AlertTriangle size={16}/>{spanish ? 'No se encontraron las rutas administrativas en Laravel (404). Revisa php artisan route:list --path=calculadora.' : 'Admin routes were not found in Laravel (404). Check php artisan route:list --path=calculadora.'}</div>}
+          {adminMessage==='csrf' && <div className="bc-alert" role="alert"><AlertTriangle size={16}/>{spanish ? 'La sesión o el token CSRF no es válido (419). Actualiza la página y usa el mismo dominio local (localhost o 127.0.0.1).' : 'Session or CSRF token invalid (419). Refresh and use the same local hostname consistently.'}</div>}
+          {adminMessage==='config' && <div className="bc-alert" role="alert"><AlertTriangle size={16}/>{spanish ? 'Laravel respondió 503. Revisa la configuración del acceso administrativo en el entorno donde estás probando.' : 'Laravel returned 503. Check the administrator access configuration in this environment.'}</div>}
           {adminMessage==='success' && adminUnlocked && <p className="bc-admin-hint" role="status">{t.adminSaved}</p>}
         </section>
         <footer className="bc-footer"><span>© {new Date().getFullYear()} Bee Near · Workforce Intelligence</span><Link href="/contacto">{t.contact} <ArrowRight size={14} style={{verticalAlign:'middle'}}/></Link></footer>
