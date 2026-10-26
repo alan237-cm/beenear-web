@@ -84,6 +84,13 @@ function supportRoles(agents, operationExists = agents > 0) {
 }
 function allocateRoles(people, inclusion) {
   const input = Math.max(0, Math.trunc(people));
+  // Política para microequipos: de 1 a 4 personas, todas son operadores.
+  // No se asignan gerente, supervisores, calidad ni capacitadores.
+  // Es la misma regla en ambas modalidades y en los reportes exportados.
+  if (input <= 4) {
+    return { agents: input, manager: 0, supervisors: 0, quality: 0,
+      trainers: 0, supportTotal: 0, reserve: 0, total: input, valid: true };
+  }
   const withSupport = (agents, exists = agents > 0) => {
     const support = supportRoles(agents, exists);
     return { agents, ...support, supportTotal: support.manager + support.supervisors + support.quality + support.trainers };
@@ -118,7 +125,7 @@ const WORDS = {
     lead: 'Calcula la capacidad operativa con Erlang C y construye una plantilla con la estructura de coordinación definida por Bee Near.',
     b1: 'Dimensionamiento por demanda', b2: 'Plantilla de tamaño fijo',
     b1Help: 'Erlang C determina los operadores simultáneos; después se calcula cuántos deben programarse según la disponibilidad y se suma el personal de apoyo.',
-    b2Help: 'Indica cuántas personas necesitas; la estructura de gerente, supervisión, calidad y capacitación se calcula automáticamente.',
+    b2Help: 'Indica cuántas personas necesitas. Hasta 4, todas son operadores; para equipos mayores, la estructura de apoyo se calcula automáticamente.',
     demanded: 'Personas solicitadas', demandDetail: 'Agentes programados / plantilla total, según la opción elegida',
     needs: 'Proyección de llamadas', preset: 'Ejemplo del Excel', reset: 'Restablecer valores',
     calls: 'Llamadas', aht: 'TMO / AHT', seconds: 'segundos', hours: 'Hora',
@@ -133,6 +140,7 @@ const WORDS = {
     included: 'Incluirlo en el total', includedDesc: 'Plantilla total, contando también al personal de apoyo',
     report: 'RESUMEN DEL DIMENSIONAMIENTO', summary: 'Tu plantilla recomendada',
     estimated: 'Estimación basada en el modelo', requested: 'Plantilla configurada',
+    smallTeam: 'Equipo reducido: entre 1 y 4 personas se contabilizan como operadores. No se agregan puestos administrativos.', smallTeamEmpty: 'No hay personal asignado.', printGraphQuestion: '¿Deseas incluir toda la sección de proyección horaria?', printGraphExplanation: 'Elige entre un resumen ejecutivo o el reporte completo con la gráfica, la tabla y el desglose por hora.', printGraphYes: 'Sí, incluir toda la proyección horaria', printGraphNo: 'No, imprimir solo el resumen', printCancel: 'Cancelar', printContinue: 'Continuar a imprimir / PDF', printDialogTitle: 'Preparar impresión', printGraphOption: 'Incluir sección de proyección horaria', exportDialogTitle: 'Preparar exportación', exportExcelIntro: '¿Deseas incluir la proyección horaria como una segunda hoja del archivo Excel?', exportCSVIntro: '¿Deseas incluir las 24 filas de la proyección horaria al final del CSV?', exportExcelYes: 'Sí, incluir hoja de proyección horaria', exportExcelNo: 'No, descargar solo el resumen ejecutivo', exportCSVYes: 'Sí, incluir los datos de las 24 horas', exportCSVNo: 'No, descargar solo el resumen ejecutivo', exportExcelDescription: 'El resumen ejecutivo siempre se incluye. La proyección se entrega en una segunda pestaña.', exportCSVDescription: 'El CSV contiene datos, no gráficas ni formato visual. La proyección es un bloque adicional.', exportDownloadExcel: 'Descargar Excel (.xlsx)', exportDownloadCSV: 'Descargar CSV',
     staff: 'personas', agents: 'Operadores', supervisors: 'Supervisores', manager: 'Gerente', quality: 'Calidad', trainers: 'Capacitadores', reserve: 'Reserva sin asignar',
     total: 'Total de la plantilla', required: 'Operadores simultáneos en hora pico (Erlang C)', headcount: 'Operadores programados (con disponibilidad)',
     callsDay: 'Llamadas previstas / día', peak: 'Hora de máxima demanda', capacity: 'Cobertura de la demanda',
@@ -145,10 +153,10 @@ const WORDS = {
     chart: 'PERSONAL PROGRAMADO POR HORA', table: 'DETALLE HORARIO', Erlangs: 'Erlangs',
     active: 'Operadores en línea', scheduled: 'Operadores programados', achieved: 'Nivel servicio estimado',
     download: 'Descargar Excel', downloadCSV: 'CSV (datos)', print: 'Imprimir / PDF', transparent: 'Cómo se calcula',
-    formula: 'Tráfico = llamadas × TMO ÷ 3,600. Erlang C estima operadores en línea; luego se divide entre la disponibilidad calculada. Para cada grupo iniciado de 20 operadores se agrega 1 supervisor, 1 integrante de calidad y 1 capacitador, además de 1 gerente por operación.',
+    formula: 'Tráfico = llamadas × TMO ÷ 3,600. Erlang C estima operadores en línea; luego se divide entre la disponibilidad calculada. Para equipos de 1 a 4 personas no se agrega apoyo. A partir de 5 se agrega 1 gerente y, por cada grupo de hasta 20 operadores, 1 supervisor, 1 integrante de calidad y 1 capacitador.',
     disclaimer: 'Herramienta orientativa. La plantilla pico no equivale a la nómina necesaria para cubrir todos los turnos del día. No contempla turnos, legislación laboral, mezcla de canales ni abandono. Los valores predeterminados provienen del ejemplo de Excel y no garantizan el resultado operativo.',
     noteWorkbook: 'En el Excel original el tráfico utiliza ÷1,800 y la macro Agerlang es personalizada; aquí utilizamos Erlang C estándar (÷3,600) para intervalos de una hora. Las cifras pueden diferir.',
-    ratio: 'Regla fija: 1 gerente por operación y 1 supervisor, 1 calidad y 1 capacitador por cada 20 operadores o fracción.',
+    ratio: 'Equipos de 1 a 4: solo operadores. Desde 5: 1 gerente y 1 supervisor, 1 calidad y 1 capacitador por cada 20 operadores o fracción.',
     units: 'personas', back: 'Volver al inicio', preview: 'Estimación, no cotización',
     example: 'Ejemplo: 30 operadores + 1 gerente + 2 supervisores + 2 de calidad + 2 capacitadores = 37 personas. El personal de apoyo puede sumarse o incluirse dentro del total.',
     csvName: 'dimensionamiento-beenear', typeHour: 'Por hora', sl: 'NS',
@@ -161,7 +169,7 @@ const WORDS = {
     lead: 'Estimate operational capacity with Erlang C and organize the workforce using Bee Near’s predefined management structure.',
     b1: 'Demand-based staffing', b2: 'Fixed-size workforce',
     b1Help: 'Erlang C estimates simultaneous online agents. Scheduled headcount is adjusted for availability, then support staff is added to the total.',
-    b2Help: 'Set the requested workforce size. Management, supervision, quality and training roles are calculated automatically.',
+    b2Help: 'Enter your workforce size. Up to 4 people are all agents; larger teams receive calculated support roles automatically.',
     demanded: 'Requested workforce', demandDetail: 'Scheduled agents or total staff, according to allocation',
     needs: 'Call volume forecast', preset: 'Excel example', reset: 'Reset values',
     calls: 'Calls', aht: 'AHT', seconds: 'seconds', hours: 'Hour',
@@ -176,6 +184,7 @@ const WORDS = {
     included: 'Include within total', includedDesc: 'A fixed total including all support roles',
     report: 'STAFFING ANALYSIS', summary: 'Your staffing estimate',
     estimated: 'Model estimate', requested: 'Configured workforce',
+    smallTeam: 'Small team: with 1 to 4 people, everyone is assigned as an agent. No administrative positions are added.', smallTeamEmpty: 'No staff assigned.', printGraphQuestion: 'Include the entire hourly forecast section?', printGraphExplanation: 'Choose an executive summary or the full report, including the chart, hourly table and all forecast details.', printGraphYes: 'Yes, include the full hourly forecast', printGraphNo: 'No, print summary only', printCancel: 'Cancel', printContinue: 'Continue to print / PDF', printDialogTitle: 'Print settings', printGraphOption: 'Include hourly forecast section', exportDialogTitle: 'Export settings', exportExcelIntro: 'Include the hourly forecast as a second Excel worksheet?', exportCSVIntro: 'Include the 24 hourly forecast rows at the end of the CSV?', exportExcelYes: 'Yes, include hourly forecast worksheet', exportExcelNo: 'No, download executive summary only', exportCSVYes: 'Yes, include all 24 hourly data rows', exportCSVNo: 'No, download executive summary only', exportExcelDescription: 'The executive summary is always included. The hourly forecast is placed in a separate sheet.', exportCSVDescription: 'CSV stores data only, without charts or visual formatting. Hourly rows are an optional block.', exportDownloadExcel: 'Download Excel (.xlsx)', exportDownloadCSV: 'Download CSV',
     staff: 'people', agents: 'Agents', supervisors: 'Supervisors', manager: 'Manager', quality: 'Quality', trainers: 'Trainers', reserve: 'Unassigned reserve',
     total: 'Total workforce', required: 'Simultaneous peak agents (Erlang C)', headcount: 'Scheduled agents (availability adjusted)',
     callsDay: 'Forecast calls / day', peak: 'Peak hour', capacity: 'Demand coverage',
@@ -188,10 +197,10 @@ const WORDS = {
     chart: 'SCHEDULED AGENTS BY HOUR', table: 'HOURLY DETAIL', Erlangs: 'Erlangs',
     active: 'Online agents', scheduled: 'Scheduled agents', achieved: 'Estimated service level',
     download: 'Download Excel', downloadCSV: 'CSV (data)', print: 'Print / PDF', transparent: 'Calculation method',
-    formula: 'Traffic = calls × AHT ÷ 3,600. Standard Erlang C estimates online agents, then divides by the calculated availability. For each started group of 20 agents, add a supervisor, a quality analyst and a trainer, plus one manager per operation.',
+    formula: 'Traffic = calls × AHT ÷ 3,600. Standard Erlang C estimates online agents, then divides by availability. Teams of 1 to 4 people have no administrative staff. From 5 people onward, add a manager and one supervisor, quality analyst and trainer for each started group of up to 20 agents.',
     disclaimer: 'Planning estimate only. Peak staffing is not total payroll for all shifts. Does not account for shift rosters, employment law, blended channels or abandonment. Spreadsheet defaults do not guarantee operational outcomes.',
     noteWorkbook: 'The source workbook divides traffic by 1,800 and uses a custom Agerlang macro. This tool applies standard Erlang C using 3,600 seconds per hour. Results may differ.',
-    ratio: 'Fixed rule: 1 manager per operation plus 1 supervisor, 1 quality analyst and 1 trainer for each 20 agents or fraction.',
+    ratio: 'Teams of 1 to 4: agents only. From 5 onward: 1 manager plus a supervisor, quality analyst and trainer for each 20 agents or fraction.',
     units: 'people', back: 'Back to home', preview: 'Planning estimate, not a quote',
     example: 'Example: 30 agents + 1 manager + 2 supervisors + 2 quality analysts + 2 trainers = 37 people. Support staff may be added or included in the total.',
     csvName: 'beenear-staffing-estimate', typeHour: 'Per hour', sl: 'SL',
@@ -364,7 +373,7 @@ const EXCEL_STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
   </cellXfs>
   <cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
 </styleSheet>`;
-function exportStyledWorkbook(data, lang, filename) {
+function exportStyledWorkbook(data, lang, filename, includeHourly = true) {
   const es = lang === 'es';
   const currentPolicy = data.policy;
   const now = new Date().toLocaleString(es ? 'es-MX' : 'en-US');
@@ -435,16 +444,16 @@ function exportStyledWorkbook(data, lang, filename) {
   });
   merged(hourlySheet, 33, 1, 8, data.adminCustomized ? (es ? 'La fila dorada señala el pico · simulación administrativa · Erlang C estándar.' : 'Gold row marks peak · administrator simulation · standard Erlang C.') : (es ? 'La fila dorada señala el pico · parámetros oficiales · Erlang C estándar.' : 'Gold row marks peak · official assumptions · standard Erlang C.'), 9, 31);
 
-  const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>`;
+  const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>${includeHourly ? '<Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>' : ''}</Types>`;
   const rootRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`;
-  const workbook = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="${es ? 'Resumen ejecutivo' : 'Executive summary'}" sheetId="1" r:id="rId1"/><sheet name="${es ? 'Proyeccion horaria' : 'Hourly forecast'}" sheetId="2" r:id="rId2"/></sheets></workbook>`;
-  const bookRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`;
+  const workbook = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="${es ? 'Resumen ejecutivo' : 'Executive summary'}" sheetId="1" r:id="rId1"/>${includeHourly ? `<sheet name="${es ? 'Proyeccion horaria' : 'Hourly forecast'}" sheetId="2" r:id="rId2"/>` : ''}</sheets></workbook>`;
+  const bookRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>${includeHourly ? '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/>' : ''}<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`;
   const blob = zipStore([
     ['[Content_Types].xml', contentTypes], ['_rels/.rels', rootRels],
     ['xl/workbook.xml', workbook], ['xl/_rels/workbook.xml.rels', bookRels],
     ['xl/styles.xml', EXCEL_STYLES],
     ['xl/worksheets/sheet1.xml', excelSheet(book)],
-    ['xl/worksheets/sheet2.xml', excelSheet(hourlySheet)],
+    ...(includeHourly ? [['xl/worksheets/sheet2.xml', excelSheet(hourlySheet)]] : []),
   ]);
   const link = document.createElement('a');
   const objectUrl = URL.createObjectURL(blob);
@@ -693,7 +702,138 @@ const CSS = `
   .bc-header { height:88px; }
   .bc-admin {display:none!important}
 }
-@media print{ .bc{background:#fff;color:#191919} .bc-header-actions,.bc-tabs,.bc-stack,.bc-actions,.bc-mini-button,.bc-faq,.bc-table input{display:none!important} .bc-print-val{display:inline!important} .bc-columns{display:block} .bc-report,.bc-chart,.bc-table-wrap{position:static;background:#fff;color:#111;box-shadow:none;border:1px solid #ddd} .bc-report h2,.bc-big span,.bc-metric>span,.bc-total span,.bc-metric strong,.bc-role strong{color:#111!important} .bc-big strong{color:#8c6600!important} .bc-table{min-width:0} .bc-table td,.bc-table th{color:#111!important;padding:5px} .bc-chart-bar{print-color-adjust:exact} .bc-table-section{break-before:page} }
+@media print{ .bc--print-no-hourly .bc-table-section{display:none!important;break-before:auto!important} .bc-print-dialog-backdrop{display:none!important} .bc{background:#fff;color:#191919} .bc-header-actions,.bc-tabs,.bc-stack,.bc-actions,.bc-mini-button,.bc-faq,.bc-table input{display:none!important} .bc-print-val{display:inline!important} .bc-columns{display:block} .bc-report,.bc-chart,.bc-table-wrap{position:static;background:#fff;color:#111;box-shadow:none;border:1px solid #ddd} .bc-report h2,.bc-big span,.bc-metric>span,.bc-total span,.bc-metric strong,.bc-role strong{color:#111!important} .bc-big strong{color:#8c6600!important} .bc-table{min-width:0} .bc-table td,.bc-table th{color:#111!important;padding:5px} .bc-chart-bar{print-color-adjust:exact} .bc-table-section{break-before:page} }
+/* Microequipos: resultados condensados, sin tarjetas administrativas vacías. */
+.bc-roles--micro { grid-template-columns:minmax(160px,1fr); padding:16px 0; }
+.bc-roles--micro .bc-role { min-height:0; max-width:320px; }
+.bc-small-team-note { display:flex; align-items:flex-start; gap:9px; margin:12px 0 0; padding:12px 14px; border:1px solid rgba(245,190,30,.25); border-radius:8px; background:rgba(245,190,30,.055); color:#ddc98e; font-size:11px; line-height:1.6; }
+.bc-small-team-note svg { flex:none; margin-top:1px; }
+/* Diálogo propio para incluir u omitir toda la proyección horaria en el PDF. */
+.bc-print-dialog-backdrop { position:fixed; inset:0; z-index:2000; display:flex; align-items:center; justify-content:center; padding:18px; background:rgba(0,0,0,.76); backdrop-filter:blur(5px); }
+.bc-print-dialog { width:min(490px,100%); max-height:calc(100dvh - 36px); overflow:auto; padding:27px; background:#1d1f20; border:1px solid rgba(245,190,30,.35); border-radius:15px; box-shadow:0 24px 90px rgba(0,0,0,.55); color:#f1eee7; }
+.bc-print-dialog-eyebrow { font-size:10px; font-weight:800; letter-spacing:1.2px; color:#f5be1e; margin-bottom:12px; }
+.bc-print-dialog h2 { margin:0 0 11px; font:750 24px Manrope,sans-serif; }
+.bc-print-dialog p { margin:0 0 19px; color:#b9b9b1; font-size:12px; line-height:1.7; }
+.bc-print-options { display:grid; gap:10px; }
+.bc-print-option { display:flex; align-items:center; gap:12px; min-height:65px; padding:14px; background:#242627; border:1px solid #464744; border-radius:10px; cursor:pointer; transition:border-color .2s,background .2s; }
+.bc-print-option--active { border-color:#f5be1e; background:rgba(245,190,30,.08); }
+.bc-print-option input { accent-color:#f5be1e; width:17px; height:17px; flex:none; }
+.bc-print-option svg { color:#e9c76a; flex:none; }
+.bc-print-option span { font-size:13px; font-weight:750; }
+.bc-print-dialog-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:25px; flex-wrap:wrap; }
+.bc-print-dialog-actions button { min-height:44px; padding:0 16px; border-radius:8px; font-size:12px; font-weight:800; }
+.bc-print-cancel { border:1px solid #5a5c59; background:transparent; color:#e9e7df; }
+.bc-print-confirm { border:1px solid #f5be1e; background:#f5be1e; color:#161717; }
+.bc-print-cancel:hover { border-color:#f5be1e; }
+.bc-print-confirm:hover { background:#ffd35c; }
+@media(max-width:630px){.bc-print-dialog{padding:22px 17px}.bc-print-dialog-actions button{flex:1}}
+@media print { .bc-print-dialog-backdrop{display:none!important} }
+/* ===============================================================
+   BEE NEAR / PRINT EDITION — estilos exclusivos para PDF/A4
+   El sitio web, los cálculos y el XLSX/CSV no se ven afectados.
+   =============================================================== */
+.bc-print-summary-heading,
+.bc-print-hourly-heading,
+.bc-print-page-note { display:none; }
+@page { size:A4 portrait; margin:11mm 12mm 12mm; }
+@media print {
+  html, body, #app { margin:0!important; padding:0!important; width:100%!important; background:#fff!important; }
+  html { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .bc, .bc * { box-sizing:border-box!important; }
+  .bc { width:100%!important; min-height:0!important; background:#fff!important; color:#202224!important; font-family:'DM Sans',Arial,sans-serif!important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .bc-layout { width:100%!important; max-width:none!important; margin:0!important; padding:0!important; }
+  .bc-header {
+    position:relative!important; top:auto!important; left:auto!important;
+    transform:none!important; width:100%!important; max-width:none!important;
+    min-height:49px!important; height:49px!important;
+    margin:0 0 12px!important; padding:0 0 8px!important;
+    display:flex!important; z-index:auto!important;
+    border:0!important; border-bottom:2px solid #d1a539!important;
+    border-radius:0!important; background:transparent!important;
+    backdrop-filter:none!important; -webkit-backdrop-filter:none!important;
+    box-shadow:none!important;
+  }
+  .bc-menu-button, .bc-mobile-nav, .bc-nav-links, .bc-nav-cta { display:none!important; }
+  .bc-logo-print { display:block!important; height:42px!important; max-width:148px!important; object-fit:contain!important; }
+  .bc-logo-screen, .bc-header-actions, .bc-tabs, .bc-stack,
+  .bc-actions, .bc-mini-button, .bc-faq, .bc-admin,
+  .bc-print-dialog-backdrop, .bc-hourly-toggle, .bc-footer,
+  .bc-chart-bar::after, .bc-table input { display:none!important; }
+  .bc-print-val { display:inline!important; }
+  .bc-intro { margin:0 0 15px!important; max-width:none!important; }
+  .bc-intro .bc-eyebrow { display:none!important; }
+  .bc-intro h1 { margin:0 0 7px!important; font:800 24px/1.12 Manrope,Arial,sans-serif!important; letter-spacing:-.045em!important; color:#202224!important; }
+  .bc-intro h1 br { display:none!important; }
+  .bc-intro h1 span { color:#97751f!important; margin-left:7px; }
+  .bc-intro p { max-width:none!important; margin:0!important; color:#697070!important; font-size:10px!important; line-height:1.45!important; }
+  .bc-columns { display:block!important; padding:0!important; margin:0!important; }
+  .bc-panel.bc-report { position:static!important; top:auto!important; margin:0!important; padding:16px 19px 14px!important; border:1px solid #dedbd2!important; border-top:4px solid #dbb04f!important; border-radius:9px!important; box-shadow:none!important; background:#fff!important; color:#1d2021!important; break-inside:avoid-page!important; page-break-inside:avoid!important; }
+  .bc-print-summary-heading { display:flex!important; align-items:center; justify-content:space-between; gap:10px; margin:0 0 10px!important; padding:0 0 9px!important; border-bottom:1px solid #e6e1d7; font-size:9px!important; color:#a07c2c!important; letter-spacing:1.15px; font-weight:800; }
+  .bc-print-summary-heading span:last-child { color:#88867e!important; font-size:8px!important; letter-spacing:.7px; }
+  .bc-report > .bc-panel-head { margin:0 0 2px!important; }
+  .bc-report .bc-report-overline { font-size:9px!important; color:#977420!important; letter-spacing:1.05px!important; }
+  .bc-report > .bc-panel-head svg { width:15px!important; height:15px!important; }
+  .bc-report h2 { margin:3px 0 7px!important; font:800 17px/1.25 Manrope,Arial,sans-serif!important; color:#202224!important; letter-spacing:-.03em!important; }
+  .bc-result-guide { display:none!important; }
+  .bc-big { display:flex!important; gap:9px!important; align-items:baseline!important; margin:0 0 12px!important; padding:0 0 12px!important; border-bottom:1px solid #e3dfd6!important; }
+  .bc-big strong { font:800 46px/1 Manrope,Arial,sans-serif!important; color:#a07a20!important; letter-spacing:-.06em!important; }
+  .bc-big span { font-size:12px!important; color:#555851!important; }
+  .bc-breakdown { margin:0 0 10px!important; padding:9px 12px!important; border:1px solid #e2d6b7!important; border-radius:7px!important; background:#fcf9f1!important; break-inside:avoid!important; }
+  .bc-breakdown-kicker { font-size:8px!important; font-weight:800!important; color:#9e7b23!important; letter-spacing:.6px!important; }
+  .bc-breakdown-equation { gap:7px!important; margin:4px 0 0!important; font-size:10px!important; color:#333631!important; line-height:1.35!important; }
+  .bc-breakdown-equation strong { font:800 16px Manrope,Arial,sans-serif!important; color:#98721b!important; }
+  .bc-breakdown-note { margin:4px 0 0!important; font-size:9px!important; line-height:1.35!important; color:#777771!important; }
+  .bc-roles, .bc-roles.bc-roles--micro { display:grid!important; grid-template-columns:repeat(5,minmax(0,1fr))!important; gap:6px!important; margin:0!important; padding:0 0 11px!important; }
+  .bc-roles.bc-roles--micro { grid-template-columns:minmax(0,1fr)!important; }
+  .bc-role { background:#f7f7f4!important; border:1px solid #e5e4df!important; border-radius:6px!important; padding:8px 7px!important; min-height:55px!important; max-width:none!important; }
+  .bc-role strong { font:800 21px/1.05 Manrope,Arial,sans-serif!important; color:#292a29!important; }
+  .bc-role span { margin:5px 0 0!important; font-size:8px!important; line-height:1.25!important; color:#666a66!important; }
+  .bc-small-team-note { padding:7px 9px!important; margin:0 0 7px!important; color:#6d5b31!important; background:#faf7ef!important; font-size:9px!important; }
+  .bc-total { padding:9px 0!important; border-top:1px solid #dcdad3!important; border-bottom:1px solid #dcdad3!important; }
+  .bc-total span { color:#393b37!important; font-size:10px!important; }
+  .bc-total strong { font:800 22px Manrope,Arial,sans-serif!important; color:#97721d!important; }
+  .bc-details { display:grid!important; grid-template-columns:1fr 1fr!important; gap:8px!important; margin:0!important; padding:12px 0!important; }
+  .bc-metric { min-height:54px!important; padding:9px 10px!important; border:1px solid #e7e6e0!important; background:#fafaf8!important; border-radius:5px!important; }
+  .bc-metric>span { color:#6e706d!important; font-size:9px!important; line-height:1.3!important; }
+  .bc-metric>div { margin-top:4px!important; }
+  .bc-metric strong { color:#232523!important; font:800 18px/1.05 Manrope,Arial,sans-serif!important; }
+  .bc-metric--highlight strong { color:#99751d!important; }
+  .bc-report .bc-note { margin:6px 0!important; padding:0!important; font-size:9px!important; color:#696c68!important; }
+  .bc-success,.bc-alert { margin:6px 0!important; padding:8px 10px!important; border-radius:5px!important; font-size:9px!important; line-height:1.4!important; background:#f5f9f6!important; color:#35644b!important; border:1px solid #cfdfd5!important; }
+  .bc-alert { background:#fff9ec!important; border-color:#e6d09e!important; color:#7a5a19!important; }
+  .bc-report > .bc-note:last-of-type { font-size:9px!important; padding-top:5px!important; color:#787870!important; }
+  .bc-print-page-note { display:flex!important; align-items:center; justify-content:space-between; border-top:1px solid #e4e1da; margin:12px 0 0!important; padding-top:8px!important; color:#797a72!important; font-size:8px!important; letter-spacing:.25px!important; }
+  /* Una página exclusiva para el anexo horario. La sección entera
+     (gráfica + 24 filas) se compone para una sola hoja A4. */
+  .bc-table-section { display:block; break-before:page!important; page-break-before:always!important; margin:0!important; padding:0!important; border:0!important; }
+  .bc--print-no-hourly .bc-table-section { display:none!important; break-before:auto!important; page-break-before:auto!important; }
+  .bc-print-hourly-heading { display:flex!important; align-items:center; justify-content:space-between; padding:0 0 9px!important; margin:0 0 10px!important; border-bottom:2px solid #dbb04f!important; font-size:9px!important; color:#a07c2c!important; letter-spacing:1.1px!important; font-weight:800!important; }
+  .bc-print-hourly-heading span:last-child { color:#777974!important; font-size:8px!important; }
+  .bc-table-header { display:block!important; margin:0 0 10px!important; }
+  .bc-table-header .bc-eyebrow { display:none!important; }
+  .bc-table-header h2 { margin:0 0 4px!important; font:800 19px/1.2 Manrope,Arial,sans-serif!important; color:#232525!important; }
+  .bc-table-header p { margin:0!important; font-size:9px!important; line-height:1.35!important; color:#767b75!important; }
+  .bc-hourly-content { display:block!important; padding:0!important; }
+  .bc-chart { display:block!important; padding:9px 11px 7px!important; margin:0 0 10px!important; border:1px solid #dddcd5!important; border-radius:7px!important; background:#fff!important; overflow:visible!important; }
+  .bc-chart-title { font-size:8px!important; margin:0 0 5px!important; color:#90701e!important; }
+  .bc-chart-bars { height:75px!important; gap:4px!important; border-bottom:1px solid #dbd5c4!important; }
+  .bc-chart-bar,.bc-chart-bar--peak { background:linear-gradient(180deg,#d8b453,#a17a25)!important; border-radius:2px 2px 0 0!important; }
+  .bc-chart-axis { margin:4px 0 0!important; font-size:8px!important; color:#797a77!important; }
+  .bc-table-wrap { margin:0!important; width:100%!important; overflow:visible!important; border:1px solid #ddddd7!important; border-radius:5px!important; background:#fff!important; break-inside:avoid-page!important; page-break-inside:avoid!important; }
+  .bc-table { width:100%!important; min-width:0!important; table-layout:fixed!important; border-collapse:collapse!important; }
+  .bc-table thead { display:table-header-group!important; }
+  .bc-table tr { break-inside:avoid!important; page-break-inside:avoid!important; }
+  .bc-table th { background:#282a29!important; color:#fff!important; text-align:left!important; padding:8px 5px!important; font-size:9px!important; line-height:1.2!important; letter-spacing:0!important; white-space:normal!important; overflow-wrap:break-word!important; border:0!important; }
+  .bc-table td { padding:5.3px 5px!important; height:24px!important; font-size:10px!important; line-height:1.13!important; color:#292b29!important; white-space:nowrap!important; border-bottom:1px solid #ebeae5!important; background:#fff!important; }
+  .bc-table tr:nth-child(even) td { background:#f8f8f6!important; }
+  .bc-table tr.bc-row--peak td { background:#fff3ce!important; font-weight:800!important; }
+  .bc-table td strong { color:#95731e!important; font-weight:800!important; }
+  .bc-table-static { padding:0!important; color:#292b29!important; font-weight:600!important; }
+  .bc-table-static svg { display:none!important; }
+  .bc-table .bc-peak-tag { font-size:7px!important; letter-spacing:0!important; margin-left:3px!important; color:#976d12!important; }
+  .bc-table-section .bc-print-page-note { margin-top:9px!important; }
+}
+
 @media(prefers-reduced-motion:reduce){.bc *, .bc *::before,.bc *::after {transition:none!important;animation:none!important}}
 `;
 
@@ -753,6 +893,11 @@ export default function StaffingCalculator() {
   const [inclusion, setInclusion] = useState('additional');
   const [rows, setRows] = useState(DEFAULT_ROWS);
   const [expandedHourly, setExpandedHourly] = useState(false);
+  // Un único diálogo para PDF, Excel y CSV; no afecta al reporte mostrado en pantalla.
+  const [exportFormat, setExportFormat] = useState(null); // 'pdf' | 'xlsx' | 'csv'
+  const printDialogOpen = exportFormat !== null;
+  const [includeHourlySection, setIncludeHourlySection] = useState(true);
+  const printYesRef = useRef(null);
   const [adminUnlocked, setAdminUnlocked] = useState(false);
   const [adminReady, setAdminReady] = useState(false);
   const [adminBusy, setAdminBusy] = useState(false);
@@ -957,14 +1102,30 @@ export default function StaffingCalculator() {
   };
   const reset = () => { setRows(DEFAULT_ROWS()); setBasis('fixed'); setHeadcount('100'); setInclusion('additional'); setExpandedHourly(false); if (adminUnlocked) restoreOfficialPolicy(); }; 
   const clearCalls = () => setRows(DEFAULT_ROWS().map((r) => ({...r, calls: 0})));
-  const printReport = () => { setExpandedHourly(true); window.setTimeout(() => window.print(), 150); };
+  // Abrir el mismo diálogo, con descripción y acción adaptadas al formato.
+  const printReport = () => setExportFormat('pdf');
+  const confirmPrint = () => {
+    setExportFormat(null);
+    // En la impresión la opción elegida oculta o presenta TODA la proyección.
+    if (includeHourlySection) setExpandedHourly(true);
+    window.setTimeout(() => window.print(), 180);
+  };
+  useEffect(() => {
+    if (!printDialogOpen) return;
+    printYesRef.current?.focus();
+    const onEscape = (event) => {
+      if (event.key === 'Escape') setExportFormat(null);
+    };
+    document.addEventListener('keydown', onEscape);
+    return () => document.removeEventListener('keydown', onEscape);
+  }, [printDialogOpen]);
   const flipLang = () => i18n.changeLanguage(spanish ? 'en' : 'es');
-  const saveExcel = () => exportStyledWorkbook({
+  const saveExcel = (withHourly = true) => exportStyledWorkbook({
     basis, inclusion: effectiveInclusion, roles, hourly, dailyCalls, peak, peakOnline, peakScheduled,
     shrinkage, shortage, invalidCalc, policy: activePolicy, adminCustomized,
-  }, spanish ? 'es' : 'en', t.csvName);
+  }, spanish ? 'es' : 'en', t.csvName, withHourly);
 
-  const saveCSV = () => {
+  const saveCSV = (withHourly = true) => {
     // CSV exports data only; formatting is available in the XLSX export.
     const lines = [
       ['Bee Near', spanish ? 'Dimensionamiento de personal' : 'Staffing Report'],
@@ -977,6 +1138,13 @@ export default function StaffingCalculator() {
       [spanish ? 'Capacitadores' : 'Trainers', roles.trainers],
       [spanish ? 'Reserva' : 'Reserve', roles.reserve],
       [spanish ? 'Total personal' : 'Total staff', roles.total],
+      [], [spanish ? 'RESUMEN OPERATIVO' : 'OPERATIONS SUMMARY'],
+      [spanish ? 'Llamadas previstas / día' : 'Forecast calls / day', dailyCalls],
+      [spanish ? 'Hora de máxima demanda' : 'Peak hour', formatHour(peak?.hour ?? 0)],
+      [spanish ? 'Operadores simultáneos en pico' : 'Peak simultaneous agents', peakOnline],
+      [spanish ? 'Operadores programados en pico' : 'Peak scheduled agents', peakScheduled],
+      [spanish ? 'Déficit operativo' : 'Operational shortfall', shortage],
+      [], [spanish ? 'PARÁMETROS DE CÁLCULO' : 'CALCULATION SETTINGS'],
       [spanish ? 'AHT (seg)' : 'AHT (seconds)', activePolicy.aht],
       [spanish ? 'Nivel de servicio (%)' : 'Service level (%)', activePolicy.serviceLevel],
       [spanish ? 'Responder antes de (seg)' : 'Answer within (seconds)', activePolicy.answerSeconds],
@@ -986,13 +1154,17 @@ export default function StaffingCalculator() {
       [spanish ? 'Absentismo (%)' : 'Absenteeism (%)', activePolicy.absence],
       [spanish ? 'Incidencias técnicas (%)' : 'Technical incidents (%)', activePolicy.incidents],
       [spanish ? 'Disponibilidad (%)' : 'Availability (%)', Number((availability * 100).toFixed(2))],
-      [spanish ? 'Tipo de valores' : 'Settings type', adminCustomized ? (spanish ? 'Simulación administrativa' : 'Administrator simulation') : (spanish ? 'Oficiales' : 'Official')], [],
-      [spanish ? 'Hora' : 'Hour', spanish ? 'Llamadas' : 'Calls', 'AHT (s)', 'Erlangs',
-        spanish ? 'Operadores en línea' : 'Online agents', spanish ? 'Programados' : 'Scheduled',
-        spanish ? 'Nivel servicio (%)' : 'Service level (%)', spanish ? 'Ocupación (%)' : 'Occupancy (%)'],
-      ...hourly.map(h => [formatHour(h.hour), h.calls, h.aht,
-        h.traffic.toFixed(3), h.agents ?? '', h.scheduled ?? '',
-        (h.serviceLevel * 100).toFixed(2), (h.occupancy * 100).toFixed(2)]),
+      [spanish ? 'Tipo de valores' : 'Settings type', adminCustomized ? (spanish ? 'Simulación administrativa' : 'Administrator simulation') : (spanish ? 'Oficiales' : 'Official')],
+      ...(withHourly ? [
+        [],
+        [spanish ? 'PROYECCIÓN HORARIA' : 'HOURLY FORECAST'],
+        [spanish ? 'Hora' : 'Hour', spanish ? 'Llamadas' : 'Calls', 'AHT (s)', 'Erlangs',
+          spanish ? 'Operadores en línea' : 'Online agents', spanish ? 'Programados' : 'Scheduled',
+          spanish ? 'Nivel servicio (%)' : 'Service level (%)', spanish ? 'Ocupación (%)' : 'Occupancy (%)'],
+        ...hourly.map(h => [formatHour(h.hour), h.calls, h.aht,
+          h.traffic.toFixed(3), h.agents ?? '', h.scheduled ?? '',
+          (h.serviceLevel * 100).toFixed(2), (h.occupancy * 100).toFixed(2)]),
+      ] : []),
     ];
     const quote = (cell) => `"${String(cell ?? '').replace(/"/g, '""')}"`;
     const csv = '\uFEFF' + lines.map((line) => line.map(quote).join(';')).join('\r\n');
@@ -1006,13 +1178,25 @@ export default function StaffingCalculator() {
     window.setTimeout(() => URL.revokeObjectURL(url), 1500);
   };
 
+  const confirmExport = () => {
+    if (exportFormat === 'pdf') {
+      confirmPrint();
+    } else if (exportFormat === 'xlsx') {
+      setExportFormat(null);
+      saveExcel(includeHourlySection);
+    } else if (exportFormat === 'csv') {
+      setExportFormat(null);
+      saveCSV(includeHourlySection);
+    }
+  };
+
   return <>
     <Head title={`${spanish ? 'Calculadora de personal' : 'Staffing Calculator'} | Bee Near`}>
       <meta name="description" content={spanish ? 'Calcula operadores, supervisores y administradores con Erlang C para tu contact center. Incluye administración dentro o fuera de tu plantilla.' : 'Estimate contact center agents, supervisors and administrators using Erlang C. Include overhead staff within or on top of the requested headcount.'}/>
       <meta name="robots" content="index,follow"/>
     </Head>
     <style>{CSS}</style>
-    <div className="bc">
+    <div className={`bc ${includeHourlySection ? '' : 'bc--print-no-hourly'}`}>
       <header className={`bc-header${scrolled ? ' bc-header--scroll' : ''}`}>
         <Link href="/" className="bc-logo" aria-label="Bee Near">
           {/* Logo de letras claras para el sitio web oscuro. */}
@@ -1091,7 +1275,9 @@ export default function StaffingCalculator() {
                   </div>
                 </div>
                 <p className="bc-headcount-explain">
-                  {inclusion === 'additional'
+                  {referenceCount <= 4
+                    ? (spanish ? 'Equipo reducido: todas las personas se asignan a la operación, sin sumar administración.' : 'Small team: everyone is assigned as an agent, without extra administration.')
+                    : inclusion === 'additional'
                     ? (spanish ? 'Estos son los operadores de partida. El gerente y el equipo de apoyo se suman en el resultado de la derecha.' : 'These are your starting agents. The manager and support team are added to the total on the right.')
                     : (spanish ? 'Esta cantidad ya incluye a todos los puestos. El resultado de la derecha conservará el mismo total y mostrará su distribución.' : 'This number already includes every role. The total on the right remains the same and shows its distribution.')}
                 </p>
@@ -1127,23 +1313,25 @@ export default function StaffingCalculator() {
               </> : <div className="bc-policy-strip" role="note" style={{marginBottom:18}}><Info size={17} style={{flexShrink:0}}/>{t.demandRule}</div>}
               <h3 className="bc-subhead">{t.structure}</h3>
               {/* Política institucional: el cálculo automático es la única modalidad disponible. */}
-              <div className="bc-auto-fixed" role="note" aria-label={t.auto}>
+              {referenceCount > 4 && <div className="bc-auto-fixed" role="note" aria-label={t.auto}>
                 <span className="bc-auto-fixed-check"><CheckCircle2 size={18} aria-hidden="true"/></span>
                 <span className="bc-auto-fixed-copy"><strong>{t.auto}</strong><small>{t.automaticDetail}</small></span>
                 <LockKeyhole size={16} className="bc-auto-fixed-lock" aria-hidden="true"/>
-              </div>
-              <div className="bc-policy-list">
+              </div>}
+              {referenceCount <= 4 && <div className="bc-small-team-note" role="note"><Info size={15}/>{referenceCount === 0 ? t.smallTeamEmpty : t.smallTeam}</div>}
+              {referenceCount > 4 && <div className="bc-policy-list">
                 {[
                   [t.manager, spanish ? '1 por operación' : '1 per operation'],
                   [t.supervisors, `1 / ${POLICY.operatorsPerSupport} ${t.operators}`],
                   [t.quality, `1 / ${POLICY.operatorsPerSupport} ${t.operators}`],
                   [t.trainers, `1 / ${POLICY.operatorsPerSupport} ${t.operators}`],
                 ].map(([label,value])=><div className="bc-policy-item" key={label}><span>{label}</span><strong>{value}</strong></div>)}
-              </div>
-              <p className="bc-note"><Info size={14}/>{t.example}</p>
+              </div>}
+              {referenceCount > 4 && <p className="bc-note"><Info size={14}/>{t.example}</p>}
             </section>
           </div>
           <aside className="bc-panel bc-report" aria-live="polite">
+            <div className="bc-print-summary-heading" aria-hidden="true"><span>BEE NEAR / REPORTE EJECUTIVO</span><span>01 / DIMENSIONAMIENTO</span></div>
             <div className="bc-panel-head" style={{marginBottom:5}}><div className="bc-report-overline">{t.report}</div><BarChart3 size={20} color="#deb855"/></div>
             <h2>{basis === 'fixed' ? (spanish ? 'Plantilla total resultante' : 'Resulting total workforce') : t.summary}</h2>
             {basis === 'fixed' && <div ref={resultGuideRef} className="bc-result-guide">
@@ -1155,24 +1343,28 @@ export default function StaffingCalculator() {
               <div className="bc-breakdown-kicker">{spanish ? 'ASÍ SE RELACIONAN LOS DOS VALORES' : 'HOW THE TWO VALUES RELATE'}</div>
               <div className="bc-breakdown-equation">
                 <span><strong>{format(roles.agents,0,locale)}</strong> {t.operators}</span>
-                <span className="bc-breakdown-operator">+</span>
-                <span><strong>{format(roles.supportTotal,0,locale)}</strong> {spanish ? 'de apoyo' : 'support staff'}</span>
+                {referenceCount > 4 && <><span className="bc-breakdown-operator">+</span>
+                <span><strong>{format(roles.supportTotal,0,locale)}</strong> {spanish ? 'de apoyo' : 'support staff'}</span></>}
                 {roles.reserve > 0 && <><span className="bc-breakdown-operator">+</span><span><strong>{format(roles.reserve,0,locale)}</strong> {spanish ? 'sin asignar' : 'unassigned'}</span></>}
                 <span className="bc-breakdown-operator">=</span>
                 <span><strong>{format(roles.total,0,locale)}</strong> {t.staff}</span>
               </div>
-              <p className="bc-breakdown-note">{inclusion === 'additional'
+              <p className="bc-breakdown-note">{referenceCount <= 4
+                ? (spanish ? 'Equipo reducido: todas las personas se asignan como operadores, sin administración adicional.' : 'Small team: everyone is an agent; no extra administration is assigned.')
+                : inclusion === 'additional'
                 ? (spanish ? 'La cantidad que capturaste corresponde a operadores; el resultado añade los puestos de coordinación.' : 'Your input counts agents; the result adds management and support positions.')
                 : (spanish ? 'Ambos totales son iguales porque elegiste incluir al personal de apoyo dentro de la plantilla.' : 'Both totals match because you chose to include support staff within the workforce.')}
               </p>
             </div>}
-            <div className="bc-roles">
-              {[
-                [t.agents, roles.agents], [t.manager, roles.manager],
-                [t.supervisors, roles.supervisors], [t.quality, roles.quality],
-                [t.trainers, roles.trainers],
-              ].map(([label,value])=><div className="bc-role" key={label}><strong>{roles.valid?format(value,0,locale):'—'}</strong><span>{label}</span></div>)}
+            <div className={`bc-roles ${referenceCount <= 4 ? 'bc-roles--micro' : ''}`}>
+              {(referenceCount <= 4
+                ? [[t.agents, roles.agents]]
+                : [[t.agents, roles.agents], [t.manager, roles.manager],
+                   [t.supervisors, roles.supervisors], [t.quality, roles.quality],
+                   [t.trainers, roles.trainers]]
+              ).map(([label,value])=><div className="bc-role" key={label}><strong>{roles.valid?format(value,0,locale):'—'}</strong><span>{label}</span></div>)}
             </div>
+            {referenceCount <= 4 && <div className="bc-small-team-note" role="note"><Info size={15}/>{referenceCount === 0 ? t.smallTeamEmpty : t.smallTeam}</div>}
             {roles.reserve>0 && <p className="bc-note">{t.reserve}: {roles.reserve}</p>}
             <div className="bc-total"><span>{t.total}</span><strong>{roles.valid?format(roles.total,0,locale):'—'}</strong></div>
             <div className="bc-details">
@@ -1184,14 +1376,16 @@ export default function StaffingCalculator() {
             {basis === 'demand' && roles.total > 0 && <p className="bc-note"><Info size={14}/>{spanish ? `Desglose: ${peakScheduled} operadores programados + ${roles.supportTotal} puestos de apoyo = ${roles.total} personas.` : `Breakdown: ${peakScheduled} scheduled agents + ${roles.supportTotal} support roles = ${roles.total} people.`}</p>}
             {!roles.valid ? <div className="bc-alert"><AlertTriangle size={17}/>{t.invalid}</div> : invalidCalc ? <div className="bc-alert"><AlertTriangle size={17}/>{t.occupancyWarn}</div> : shortage>0 ? <div className="bc-alert"><AlertTriangle size={17}/>{t.shortage} <strong>{spanish?'Déficit:':'Shortfall:'} {shortage}.</strong></div> : <div className="bc-success"><CheckCircle2 size={18}/>{t.enough}</div>}
             <div className="bc-actions">
-              <button type="button" className="bc-action bc-action--primary" onClick={saveExcel}><FileSpreadsheet size={18}/>{t.download} (.xlsx)</button>
-              <button type="button" className="bc-action" onClick={saveCSV}><Download size={17}/>{t.downloadCSV}</button>
+              <button type="button" className="bc-action bc-action--primary" onClick={() => setExportFormat('xlsx')}><FileSpreadsheet size={18}/>{t.download} (.xlsx)</button>
+              <button type="button" className="bc-action" onClick={() => setExportFormat('csv')}><Download size={17}/>{t.downloadCSV}</button>
               <button type="button" className="bc-action" onClick={printReport}><ArrowUpRight size={17}/>{t.print}</button>
             </div>
             <p className="bc-note"><ShieldCheck size={15}/>{t.preview}</p>
+            <div className="bc-print-page-note" aria-hidden="true"><span>Bee Near · Workforce Intelligence</span><span>{spanish ? 'Estimación operativa · No constituye cotización' : 'Operational estimate · Not a quotation'}</span></div>
           </aside>
         </div>
         <section id="bc-hourly" className="bc-table-section" aria-label={t.results}>
+          <div className="bc-print-hourly-heading" aria-hidden="true"><span>BEE NEAR / WORKFORCE INTELLIGENCE</span><span>{spanish ? '02 / ANEXO HORARIO' : '02 / HOURLY APPENDIX'}</span></div>
           <div className="bc-table-header">
             <div><div className="bc-eyebrow" style={{marginBottom:12}}>03 / 03</div><h2>{t.results}</h2><p>{t.instructions}</p></div>
             <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
@@ -1216,6 +1410,7 @@ export default function StaffingCalculator() {
               </tr>)}
             </tbody></table></div>
           </div>}
+          <div className="bc-print-page-note" aria-hidden="true"><span>Bee Near · Workforce Intelligence</span><span>{spanish ? 'Proyección de 24 intervalos de una hora · Erlang C' : '24 one-hour intervals · Erlang C'}</span></div>
         </section>
         <div className="bc-faq">
           <details><summary>{t.transparent}<ChevronDown size={17}/></summary><p>{t.formula}</p><p>{t.noteWorkbook}</p></details>
@@ -1244,6 +1439,33 @@ export default function StaffingCalculator() {
           {adminMessage==='config' && <div className="bc-alert" role="alert"><AlertTriangle size={16}/>{spanish ? 'Laravel respondió 503. Revisa la configuración del acceso administrativo en el entorno donde estás probando.' : 'Laravel returned 503. Check the administrator access configuration in this environment.'}</div>}
           {adminMessage==='success' && adminUnlocked && <p className="bc-admin-hint" role="status">{t.adminSaved}</p>}
         </section>
+        {printDialogOpen && <div className="bc-print-dialog-backdrop" onMouseDown={event => { if (event.target === event.currentTarget) setExportFormat(null); }}>
+          <section className="bc-print-dialog" role="dialog" aria-modal="true" aria-labelledby="bc-print-dialog-title" aria-describedby="bc-print-dialog-desc">
+            <div className="bc-print-dialog-eyebrow">BEE NEAR / {exportFormat === 'pdf' ? 'PDF' : exportFormat === 'xlsx' ? 'EXCEL' : 'CSV'}</div>
+            <h2 id="bc-print-dialog-title">{exportFormat === 'pdf' ? t.printDialogTitle : t.exportDialogTitle}</h2>
+            <p id="bc-print-dialog-desc">
+              <strong>{exportFormat === 'pdf' ? t.printGraphQuestion : exportFormat === 'xlsx' ? t.exportExcelIntro : t.exportCSVIntro}</strong>{' '}
+              {exportFormat === 'pdf' ? t.printGraphExplanation : exportFormat === 'xlsx' ? t.exportExcelDescription : t.exportCSVDescription}
+            </p>
+            <div className="bc-print-options" role="radiogroup" aria-label={t.printGraphOption}>
+              <label className={`bc-print-option ${includeHourlySection ? 'bc-print-option--active' : ''}`}>
+                <input ref={printYesRef} type="radio" name="bc-print-chart-choice" checked={includeHourlySection} onChange={() => setIncludeHourlySection(true)} />
+                <BarChart3 size={22}/><span>{exportFormat === 'pdf' ? t.printGraphYes : exportFormat === 'xlsx' ? t.exportExcelYes : t.exportCSVYes}</span>
+              </label>
+              <label className={`bc-print-option ${!includeHourlySection ? 'bc-print-option--active' : ''}`}>
+                <input type="radio" name="bc-print-chart-choice" checked={!includeHourlySection} onChange={() => setIncludeHourlySection(false)} />
+                <FileSpreadsheet size={22}/><span>{exportFormat === 'pdf' ? t.printGraphNo : exportFormat === 'xlsx' ? t.exportExcelNo : t.exportCSVNo}</span>
+              </label>
+            </div>
+            <div className="bc-print-dialog-actions">
+              <button type="button" className="bc-print-cancel" onClick={() => setExportFormat(null)}>{t.printCancel}</button>
+              <button type="button" className="bc-print-confirm" onClick={confirmExport}>
+                {exportFormat === 'pdf' ? <ArrowUpRight size={15} style={{verticalAlign:'middle',marginRight:7}} /> : <Download size={15} style={{verticalAlign:'middle',marginRight:7}} />}
+                {exportFormat === 'pdf' ? t.printContinue : exportFormat === 'xlsx' ? t.exportDownloadExcel : t.exportDownloadCSV}
+              </button>
+            </div>
+          </section>
+        </div>}
         <footer className="bc-footer"><span>© {new Date().getFullYear()} Bee Near · Workforce Intelligence</span><Link href="/contacto">{t.contacto || t.contact} <ArrowRight size={14} style={{verticalAlign:'middle'}}/></Link></footer>
       </div>
     </div>
