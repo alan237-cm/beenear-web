@@ -5,7 +5,7 @@ import {
   Activity, ArrowLeft, ArrowRight, ArrowUpRight, BarChart3, Calculator,
   CheckCircle2, ChevronDown, Clock3, Download, Globe2, Info, LockKeyhole, FileSpreadsheet,
   Minus, Plus, RefreshCcw, Settings2, ShieldCheck, UsersRound, PencilLine,
-  UserRoundCheck, UserRoundCog, AlertTriangle, Zap,
+  UserRoundCheck, UserRoundCog, AlertTriangle, Zap, Menu, X,
 } from 'lucide-react';
 
 /**
@@ -137,7 +137,7 @@ const WORDS = {
     total: 'Total de la plantilla', required: 'Operadores simultáneos en hora pico (Erlang C)', headcount: 'Operadores programados (con disponibilidad)',
     callsDay: 'Llamadas previstas / día', peak: 'Hora de máxima demanda', capacity: 'Cobertura de la demanda',
     shortage: 'Faltan operadores para cubrir el pico calculado con Erlang C. Ajusta tu plantilla o suma al personal administrativo por separado.',
-    enough: 'La plantilla operativa configurada cubre la necesidad estimada en la hora de mayor demanda.',
+    enough: 'La plantilla operativa cubre la necesidad estimada en la hora de mayor demanda.',
     invalid: 'La plantilla solicitada no permite cubrir el gerente obligatorio.',
     occupancyWarn: 'No se encontró una dotación factible bajo los parámetros fijos de Bee Near. Revisa el volumen de llamadas.',
     results: 'Proyección horaria', instructions: 'Despliega el detalle para capturar llamadas enteras por hora. El TMO solo puede cambiarse mediante acceso administrativo.',
@@ -345,7 +345,7 @@ const EXCEL_STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
   <borders count="3">
     <border><left/><right/><top/><bottom/><diagonal/></border>
     <border><left/><right/><top/><bottom style="hair"><color rgb="FFDDDBD2"/></bottom><diagonal/></border>
-    <border><left style="thin"><color rgb="FFD0B65A"/></left><right style="thin"><color rgb="FFD0B65A"/></right><top style="thin"><color rgb="FFD0B65A"/></top><bottom style="thin"><color rgb="FFD0B65A"/></bottom><diagonal/></border>
+    <border><left style="thin"><color rgb="FFD0B65A"/></left><right style="thin"><color rgb="FFD0B65A"/></right><top style="thin"><color rgb="FFD0B65A"/></left><bottom style="thin"><color rgb="FFD0B65A"/></bottom><diagonal/></border>
   </borders>
   <cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
   <cellXfs count="12">
@@ -458,28 +458,43 @@ function exportStyledWorkbook(data, lang, filename) {
 
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
-.bc { --bg:#101112; --panel:#1b1d1e; --panel2:#202223; --border:#363839; --gold:#f5be1e; --goldSoft:#e1bc5b; --cream:#f1eee7; --muted:#9da09d; min-height:100vh; font-family:'DM Sans',sans-serif; color:var(--cream); background:radial-gradient(ellipse 48% 35% at 92% 3%,rgba(245,190,30,.08),transparent 80%),#101112; -webkit-font-smoothing:antialiased; }
+.bc { --bg:#101112; --panel:#1b1d1e; --panel2:#202223; --border:#363839; --gold:#f5be1e; --goldSoft:#e1bc5b; --cream:#f1eee7; --muted:#9da09d; min-height:100vh; font-family:'DM Sans',sans-serif; color:var(--cream); background:radial-gradient(ellipse 48% 35% at 92% 3%,rgba(245,190,30,.08),transparent 80%),#101112; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
 .bc * { box-sizing:border-box; }
 .bc a { text-decoration:none; color:inherit; }
 .bc button { cursor:pointer; font:inherit; }
 .bc h1,.bc h2,.bc h3,.bc h4,.bc p { margin:0; }
 .bc button:focus-visible,.bc input:focus-visible,.bc a:focus-visible,.bc summary:focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
-.bc-layout { width:min(1370px,calc(100% - 80px)); margin:auto; }
-.bc-header { height:88px; display:flex; align-items:center; justify-content:space-between; gap:20px; border-bottom:1px solid rgba(255,255,255,.09); }
+.bc-layout { width:min(1370px,calc(100% - 80px)); margin:auto; padding-top:108px; }
+
+/* Navbar fija flotante con efecto blur y transición suave idéntica a Services */
+.bc-header { position:fixed; z-index:100; left:50%; transform:translateX(-50%); top:18px; width:min(1252px,calc(100% - 64px)); min-height:63px; padding:9px 14px 9px 21px; display:flex; align-items:center; justify-content:space-between; gap:20px; border:1px solid rgba(255,255,255,.12); border-radius:12px; background:rgba(16,17,18,.85); box-shadow:0 12px 40px rgba(0,0,0,.2); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); transition:top .25s,background .25s; }
+.bc-header--scroll { top:9px; background:rgba(14,15,16,.97); }
+
 .bc-logo { display:flex; align-items:center; gap:10px; flex-shrink:0; }
-.bc-logo-official { display:block; height:63px; width:auto; max-width:165px; object-fit:contain; }
-/* Alternar imagen institucional segun pantalla o impresion. */
+.bc-logo-official { display:block; height:64px; width:auto; max-width:166px; object-fit:contain; object-position:left center; }
 .bc-logo-print { display:none; }
 .bc-mark { width:34px; height:35px; display:inline-flex; color:var(--gold); }
 .bc-mark svg { width:100%; height:100%; }
 .bc-logo strong { font-size:19px; letter-spacing:-.8px; font-family:Manrope,sans-serif; }
 .bc-logo strong em { color:var(--gold); font-style:normal; }
 .bc-logo small { display:block; font-size:8px; letter-spacing:1.6px; color:#979995; }
-.bc-header-actions { display:flex; align-items:center; gap:22px; }
-.bc-back { display:flex; align-items:center; gap:9px; color:#c5c7c4!important; font-size:12px; font-weight:700; transition:color .2s; }
-.bc-back:hover { color:var(--gold)!important; }
-.bc-lang { display:flex; align-items:center; gap:8px; border:1px solid var(--border); background:transparent; border-radius:7px; padding:9px 12px; color:#dedfdc; font-size:11px; font-weight:700; }
-.bc-intro { max-width:970px; margin:68px 0 40px; }
+.bc-header-actions { display:flex; align-items:center; gap:17px; }
+
+/* Enlaces de la barra de navegación */
+.bc-nav-links { display:flex; align-items:center; gap:24px; }
+.bc-nav-links a { position:relative; color:#aaaead; font-size:12px; font-weight:500; transition:color .2s; text-decoration:none; }
+.bc-nav-links a:hover, .bc-nav-links a[aria-current=page] { color:#f0ede5; }
+.bc-nav-links a[aria-current=page]:after { content:''; position:absolute; bottom:-10px; left:0; width:100%; height:2px; background:var(--gold); }
+
+.bc-nav-cta { display:inline-flex; align-items:center; gap:12px; padding:11px 20px; background:var(--gold); border-radius:6px; color:#121212; font-size:12px; font-weight:700; white-space:nowrap; transition:transform .2s,background .2s; }
+.bc-nav-cta:hover { background:#ffd66a; transform:translateY(-2px); }
+
+.bc-menu-button { display:none; align-items:center; justify-content:center; width:40px; height:40px; background:#252729; border:1px solid #3a3b3b; border-radius:7px; color:#fff; }
+.bc-mobile-nav { position:fixed; z-index:99; top:84px; left:12px; right:12px; padding:10px; border:1px solid #383a3a; border-radius:11px; background:#1b1d1e; box-shadow:0 28px 65px #000a; }
+.bc-mobile-nav a { width:100%; display:flex; justify-content:space-between; align-items:center; background:transparent; border:0; border-bottom:1px solid #353636; color:#eee; padding:15px 12px; font:600 13px 'DM Sans',sans-serif; text-decoration:none; }
+
+.bc-lang { display:flex; align-items:center; gap:7px; border:0; background:transparent; padding:10px 2px; font-size:11px; letter-spacing:.6px; font-weight:700; color:#d7d6d0; }
+.bc-intro { max-width:970px; margin:28px 0 40px; }
 .bc-eyebrow { display:flex; align-items:center; gap:10px; font-size:10px; letter-spacing:1.65px; font-weight:800; color:var(--goldSoft); }
 .bc-eyebrow:before { content:''; display:block; width:25px; height:1px; background:var(--gold); }
 .bc-intro h1 { font-family:Manrope,sans-serif; font-size:clamp(34px,4.2vw,57px); line-height:1.16; font-weight:700; letter-spacing:-.06em; margin:19px 0 18px; }
@@ -533,7 +548,7 @@ const CSS = `
 .bc-alert svg { flex:none; }
 .bc-success { display:flex; align-items:flex-start; gap:10px; background:rgba(98,169,127,.075); border:1px solid rgba(116,180,136,.22); padding:14px; font-size:11px; color:#b3d2bc; line-height:1.7; border-radius:8px; }
 .bc-success svg { flex:none; }
-.bc-report { position:sticky; top:18px; background:linear-gradient(155deg,#292723,#1b1c1d 44%,#161819); border-color:rgba(245,190,30,.22); }
+.bc-report { position:sticky; top:104px; background:linear-gradient(155deg,#292723,#1b1c1d 44%,#161819); border-color:rgba(245,190,30,.22); }
 .bc-report-overline { font-size:10px; font-weight:800; letter-spacing:1.3px; color:#d7b355; }
 .bc-report h2 { font:700 20px Manrope,sans-serif; letter-spacing:-.04em; margin:10px 0 20px; }
 .bc-big { display:flex; align-items:baseline; gap:11px; padding:12px 0 23px; border-bottom:1px solid rgba(255,255,255,.13); }
@@ -624,8 +639,8 @@ const CSS = `
 .bc-faq details[open] summary svg { transform:rotate(180deg); }
 .bc-faq p { padding:12px 0 0; color:#a3a7a3; font-size:12px; line-height:1.9; }
 .bc-footer { border-top:1px solid rgba(255,255,255,.1); padding:28px 0 45px; display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap; color:#868a86; font-size:11px; }
-@media(max-width:1050px){ .bc-layout{width:calc(100% - 48px)} .bc-columns{grid-template-columns:1fr} .bc-report{position:static} .bc-intro{margin-top:45px} }
-@media(max-width:630px){ .bc-layout{width:calc(100% - 28px)} .bc-header{height:76px} .bc-back{font-size:0!important;gap:0} .bc-back svg{width:20px;height:20px} .bc-logo-official{height:50px;max-width:133px}.bc-logo strong{font-size:17px} .bc-intro{margin:40px 0 25px} .bc-intro h1{font-size:35px} .bc-intro p{font-size:13px} .bc-tab{flex:1;justify-content:center;padding:12px 9px;font-size:10px} .bc-panel{padding:19px 15px} .bc-form-grid--three,.bc-factor-grid{grid-template-columns:1fr 1fr} .bc-choice-grid{grid-template-columns:1fr} .bc-roles{gap:6px} .bc-role{padding:11px 7px} .bc-role strong{font-size:24px} .bc-role span{font-size:9px} .bc-details{gap:7px} .bc-metric{padding:10px} .bc-metric strong{font-size:21px} .bc-table-header{align-items:start;flex-direction:column} .bc-chart{padding:20px 12px} .bc-chart-bars{gap:3px;height:112px} .bc-chart-bar::after{display:none} }
+@media(max-width:1050px){ .bc-layout{width:calc(100% - 48px)} .bc-columns{grid-template-columns:1fr} .bc-report{position:static} .bc-intro{margin-top:25px} .bc-nav-links { display:none; } .bc-menu-button { display:flex; } }
+@media(max-width:630px){ .bc-layout{width:calc(100% - 28px)} .bc-logo-official{height:42px;max-width:120px}.bc-logo strong{font-size:17px} .bc-intro{margin:20px 0 25px} .bc-intro h1{font-size:35px} .bc-intro p{font-size:13px} .bc-tab{flex:1;justify-content:center;padding:12px 9px;font-size:10px} .bc-panel{padding:19px 15px} .bc-form-grid--three,.bc-factor-grid{grid-template-columns:1fr 1fr} .bc-choice-grid{grid-template-columns:1fr} .bc-roles{gap:6px} .bc-role{padding:11px 7px} .bc-role strong{font-size:24px} .bc-role span{font-size:9px} .bc-details{gap:7px} .bc-metric{padding:10px} .bc-metric strong{font-size:21px} .bc-table-header{align-items:start;flex-direction:column} .bc-chart{padding:20px 12px} .bc-chart-bars{gap:3px;height:112px} .bc-chart-bar::after{display:none} .bc-nav-cta { display:none; } .bc-header { width:calc(100% - 24px); padding:0 12px; } }
 /* Campos corporativos de solo lectura */
 .bc-input-shell--locked { background:#242526; border-color:#343636; padding:0 11px 0 13px; gap:8px; }
 .bc-locked-number { font:750 15px Manrope,sans-serif; color:#e8dcc0; flex:1; }
@@ -743,6 +758,8 @@ export default function StaffingCalculator() {
   const [adminBusy, setAdminBusy] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
   const [adminMessage, setAdminMessage] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const adminEndpointRef = useRef(null);
   const [policyDraft, setPolicyDraft] = useState({ ...POLICY });
   // Alinea el número editable y el resultado respecto a sus tarjetas,
@@ -750,6 +767,16 @@ export default function StaffingCalculator() {
   const startingNumberRef = useRef(null);
   const finalNumberRef = useRef(null);
   const resultGuideRef = useRef(null);
+
+  useEffect(() => {
+    const updateScroll = () => {
+      setScrolled(window.scrollY > 35);
+    };
+    updateScroll();
+    window.addEventListener('scroll', updateScroll, { passive: true });
+    return () => window.removeEventListener('scroll', updateScroll);
+  }, []);
+
   useEffect(() => {
     if (basis !== 'fixed') return;
     const alignNumbers = () => {
@@ -986,16 +1013,47 @@ export default function StaffingCalculator() {
     </Head>
     <style>{CSS}</style>
     <div className="bc">
-      <div className="bc-layout">
-        <header className="bc-header">
-          <Link href="/" className="bc-logo" aria-label="Bee Near">
-            {/* Logo de letras claras para el sitio web oscuro. */}
-            <img className="bc-logo-official bc-logo-screen" src="/images/beenear-imagotipo-dark.png" alt="Bee Near" />
-            {/* Logo de letras negras, exclusivo para imprimir o guardar como PDF. */}
-            <img className="bc-logo-official bc-logo-print" src="/images/imagotipo.jpeg" alt="" aria-hidden="true" />
+      <header className={`bc-header${scrolled ? ' bc-header--scroll' : ''}`}>
+        <Link href="/" className="bc-logo" aria-label="Bee Near">
+          {/* Logo de letras claras para el sitio web oscuro. */}
+          <img className="bc-logo-official bc-logo-screen" src="/images/beenear-imagotipo-dark.png" alt="Bee Near" />
+          {/* Logo de letras negras, exclusivo para imprimir o guardar como PDF. */}
+          <img className="bc-logo-official bc-logo-print" src="/images/imagotipo.jpeg" alt="" aria-hidden="true" />
+        </Link>
+        
+        <nav className="bc-nav-links" aria-label="Main navigation">
+          <Link href="/#soluciones">{spanish ? 'Soluciones' : 'Solutions'}</Link>
+          <Link href="/#modelo">{spanish ? 'El modelo' : 'The model'}</Link>
+          <Link href="/nosotros">{spanish ? 'Nosotros' : 'About'}</Link>
+          <Link href="/servicios">{spanish ? 'Servicios' : 'Services'}</Link>
+          <Link href="/blog">Blog</Link>
+          <Link href="/calculadora" aria-current="page">{spanish ? 'Calculadora de personal' : 'Staff calculator'}</Link>
+        </nav>
+
+        <div className="bc-header-actions">
+          <button type="button" className="bc-lang" onClick={flipLang}><Globe2 size={15}/>{spanish ? 'EN' : 'ES'}</button>
+          <Link href="/contacto" className="bc-nav-cta">
+            {spanish ? 'Hablemos' : 'Let’s talk'} <ArrowUpRight size={16}/>
           </Link>
-          <div className="bc-header-actions"><Link href="/" className="bc-back"><ArrowLeft size={16}/>{t.back}</Link><button type="button" className="bc-lang" onClick={flipLang}><Globe2 size={15}/>{spanish?'EN':'ES'}</button></div>
-        </header>
+          <button className="bc-menu-button" type="button" aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'} aria-expanded={menuOpen} onClick={() => setMenuOpen(v => !v)}>
+            {menuOpen ? <X size={20}/> : <Menu size={20}/>}
+          </button>
+        </div>
+      </header>
+
+      {menuOpen && (
+        <nav className="bc-mobile-nav" aria-label="Mobile navigation">
+          <Link onClick={() => setMenuOpen(false)} href="/#soluciones">{spanish ? 'Soluciones' : 'Solutions'}<ArrowUpRight size={15}/></Link>
+          <Link onClick={() => setMenuOpen(false)} href="/#modelo">{spanish ? 'El modelo' : 'The model'}<ArrowUpRight size={15}/></Link>
+          <Link onClick={() => setMenuOpen(false)} href="/nosotros">{spanish ? 'Nosotros' : 'About'}<ArrowUpRight size={15}/></Link>
+          <Link onClick={() => setMenuOpen(false)} href="/servicios">{spanish ? 'Servicios' : 'Services'}<ArrowUpRight size={15}/></Link>
+          <Link onClick={() => setMenuOpen(false)} href="/blog">Blog<ArrowUpRight size={15}/></Link>
+          <Link onClick={() => setMenuOpen(false)} href="/calculadora" aria-current="page">{spanish ? 'Calculadora de personal' : 'Staff calculator'}<ArrowUpRight size={15}/></Link>
+          <Link onClick={() => setMenuOpen(false)} href="/contacto">{spanish ? 'Hablemos' : 'Let’s talk'}<ArrowUpRight size={15}/></Link>
+        </nav>
+      )}
+
+      <div className="bc-layout">
         <div className="bc-intro"><div className="bc-eyebrow">{t.eyebrow}</div><h1>{t.title1}<br/><span>{t.title2}</span></h1><p>{t.lead}</p></div>
         <div role="tablist" aria-label={t.staffing} className="bc-tabs">
           <button role="tab" aria-selected={basis==='fixed'} className="bc-tab" onClick={()=>setBasis('fixed')}><UsersRound size={17}/>{t.b2}</button>
@@ -1186,7 +1244,7 @@ export default function StaffingCalculator() {
           {adminMessage==='config' && <div className="bc-alert" role="alert"><AlertTriangle size={16}/>{spanish ? 'Laravel respondió 503. Revisa la configuración del acceso administrativo en el entorno donde estás probando.' : 'Laravel returned 503. Check the administrator access configuration in this environment.'}</div>}
           {adminMessage==='success' && adminUnlocked && <p className="bc-admin-hint" role="status">{t.adminSaved}</p>}
         </section>
-        <footer className="bc-footer"><span>© {new Date().getFullYear()} Bee Near · Workforce Intelligence</span><Link href="/contacto">{t.contact} <ArrowRight size={14} style={{verticalAlign:'middle'}}/></Link></footer>
+        <footer className="bc-footer"><span>© {new Date().getFullYear()} Bee Near · Workforce Intelligence</span><Link href="/contacto">{t.contacto || t.contact} <ArrowRight size={14} style={{verticalAlign:'middle'}}/></Link></footer>
       </div>
     </div>
   </>;
