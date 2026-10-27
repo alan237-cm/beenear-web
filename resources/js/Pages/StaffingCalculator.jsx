@@ -160,6 +160,8 @@ const WORDS = {
     units: 'personas', back: 'Volver al inicio', preview: 'Estimación, no cotización',
     example: 'Ejemplo: 30 operadores + 1 gerente + 2 supervisores + 2 de calidad + 2 capacitadores = 37 personas. El personal de apoyo puede sumarse o incluirse dentro del total.',
     csvName: 'dimensionamiento-beenear', typeHour: 'Por hora', sl: 'NS',
+    fixedModeNotice: 'Modo Plantilla Fija activo: La tabla horaria inferior es puramente informativa y de referencia; tu plantilla está dictada por el número manual de arriba.',
+    demandModeNotice: 'Modo Dimensionamiento por Demanda activo: El tráfico de esta tabla horaria gobierna el cálculo de operadores necesario.',
   },
   en: {
     adminTitle: 'Administrator access', adminIntro: 'Enter the authorized password to adjust simulation parameters. Changes do not alter Bee Near official defaults.', adminPassword: 'Administrator password', adminUnlock: 'Unlock parameters', adminLock: 'Lock and restore official defaults', adminEnabled: 'Temporary editing enabled', adminLocked: 'Protected parameters', adminSaved: 'Authorized session. Operational parameters can now be edited above.', adminError: 'Incorrect password or access denied.', adminMissing: 'Could not reach Laravel authorization. Check routes and configuration.', adminBusy: 'Verifying…', adminSimulation: 'Administrator simulation: changes are reflected in exports.', adminInvalid: 'Total shrinkage must remain below 99%.', callsWhole: 'Calls must be whole numbers.',
@@ -204,6 +206,8 @@ const WORDS = {
     units: 'people', back: 'Back to home', preview: 'Planning estimate, not a quote',
     example: 'Example: 30 agents + 1 manager + 2 supervisors + 2 quality analysts + 2 trainers = 37 people. Support staff may be added or included in the total.',
     csvName: 'beenear-staffing-estimate', typeHour: 'Per hour', sl: 'SL',
+    fixedModeNotice: 'Fixed workforce mode active: The hourly table below is for reference only; your headcount is determined by your manual input above.',
+    demandModeNotice: 'Demand-based mode active: The traffic in this hourly table drives the required agent calculation.',
   },
 };
 
@@ -354,7 +358,7 @@ const EXCEL_STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
   <borders count="3">
     <border><left/><right/><top/><bottom/><diagonal/></border>
     <border><left/><right/><top/><bottom style="hair"><color rgb="FFDDDBD2"/></bottom><diagonal/></border>
-    <border><left style="thin"><color rgb="FFD0B65A"/></left><right style="thin"><color rgb="FFD0B65A"/></right><top style="thin"><color rgb="FFD0B65A"/></left><bottom style="thin"><color rgb="FFD0B65A"/></bottom><diagonal/></border>
+    <border><left style="thin"><color rgb="FFD0B65A"/></left><right style="thin"><color rgb="FFD0B65A"/></left><top style="thin"><color rgb="FFD0B65A"/></left><bottom style="thin"><color rgb="FFD0B65A"/></bottom><diagonal/></border>
   </borders>
   <cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
   <cellXfs count="12">
@@ -411,8 +415,12 @@ function exportStyledWorkbook(data, lang, filename, includeHourly = true) {
   section(book, 18, es ? '02  /  RESUMEN OPERATIVO' : '02  /  OPERATIONS SUMMARY');
   pair(book, 19, es ? 'Llamadas del día' : 'Calls per day', data.dailyCalls, true);
   pair(book, 20, es ? 'Hora de mayor demanda' : 'Peak hour', formatHour(data.peak.hour));
-  pair(book, 21, es ? 'Agentes en línea, pico' : 'Peak online agents', data.peakOnline, true);
-  pair(book, 22, es ? 'Agentes programados, pico' : 'Peak scheduled agents', data.peakScheduled, true);
+  pair(book, 21,
+    data.basis === 'fixed' ? (es ? 'Cantidad indicada' : 'Entered workforce') : (es ? 'Operadores en línea, pico' : 'Peak online agents'),
+    data.basis === 'fixed' ? data.referenceCount : data.peakOnline, true);
+  pair(book, 22,
+    data.basis === 'fixed' ? (es ? 'Plantilla resultante' : 'Resulting workforce') : (es ? 'Operadores programados, pico' : 'Peak scheduled agents'),
+    data.basis === 'fixed' ? data.roles.total : data.peakScheduled, true);
   pair(book, 23, es ? 'Déficit operativo' : 'Agent shortfall', data.shortage, true);
   pair(book, 24, es ? 'Factibilidad de cálculo' : 'Calculation feasibility', data.invalidCalc ? (es ? 'Revisar demanda' : 'Review demand') : (es ? 'Calculado' : 'Calculated'));
   section(book, 25, data.adminCustomized ? (es ? '03  /  SIMULACIÓN ADMINISTRATIVA' : '03  /  ADMINISTRATOR SIMULATION') : (es ? '03  /  PARÁMETROS OFICIALES' : '03  /  OFFICIAL SETTINGS'));
@@ -1090,6 +1098,8 @@ export default function StaffingCalculator() {
   // tiene sentido descontar apoyo del cupo cuando el usuario elige 'included'.
   const effectiveInclusion = basis === 'demand' ? 'additional' : inclusion;
   const roles = allocateRoles(referenceCount, effectiveInclusion);
+  // En ambas modalidades comparamos los operadores disponibles con la demanda
+  // estimada: en modo fijo sirve para mostrar si la plantilla alcanza el pico.
   const shortage = Math.max(0, peakScheduled - roles.agents);
   const dailyCalls = hourly.reduce((sum, row) => sum + row.calls, 0);
   const maxScheduled = Math.max(1, ...hourly.map((row) => row.scheduled || 0));
@@ -1121,7 +1131,7 @@ export default function StaffingCalculator() {
   }, [printDialogOpen]);
   const flipLang = () => i18n.changeLanguage(spanish ? 'en' : 'es');
   const saveExcel = (withHourly = true) => exportStyledWorkbook({
-    basis, inclusion: effectiveInclusion, roles, hourly, dailyCalls, peak, peakOnline, peakScheduled,
+    basis, inclusion: effectiveInclusion, roles, hourly, dailyCalls, peak, peakOnline, peakScheduled, referenceCount,
     shrinkage, shortage, invalidCalc, policy: activePolicy, adminCustomized,
   }, spanish ? 'es' : 'en', t.csvName, withHourly);
 
@@ -1141,8 +1151,8 @@ export default function StaffingCalculator() {
       [], [spanish ? 'RESUMEN OPERATIVO' : 'OPERATIONS SUMMARY'],
       [spanish ? 'Llamadas previstas / día' : 'Forecast calls / day', dailyCalls],
       [spanish ? 'Hora de máxima demanda' : 'Peak hour', formatHour(peak?.hour ?? 0)],
-      [spanish ? 'Operadores simultáneos en pico' : 'Peak simultaneous agents', peakOnline],
-      [spanish ? 'Operadores programados en pico' : 'Peak scheduled agents', peakScheduled],
+      [basis === 'fixed' ? (spanish ? 'Cantidad indicada' : 'Entered workforce') : (spanish ? 'Operadores simultáneos en pico' : 'Peak simultaneous agents'), basis === 'fixed' ? referenceCount : peakOnline],
+      [basis === 'fixed' ? (spanish ? 'Plantilla resultante' : 'Resulting workforce') : (spanish ? 'Operadores programados en pico' : 'Peak scheduled agents'), basis === 'fixed' ? roles.total : peakScheduled],
       [spanish ? 'Déficit operativo' : 'Operational shortfall', shortage],
       [], [spanish ? 'PARÁMETROS DE CÁLCULO' : 'CALCULATION SETTINGS'],
       [spanish ? 'AHT (seg)' : 'AHT (seconds)', activePolicy.aht],
@@ -1370,8 +1380,20 @@ export default function StaffingCalculator() {
             <div className="bc-details">
               <Metric label={t.callsDay} value={format(dailyCalls,0,locale)}/>
               <Metric label={t.peak} value={formatHour(peak?.hour||0)}/>
-              <Metric label={t.required} value={format(peakOnline,0,locale)}/>
-              <Metric label={t.headcount} value={format(peakScheduled,0,locale)} highlight/>
+              {basis === 'demand' ? <>
+                <Metric label={t.required} value={format(peakOnline,0,locale)}/>
+                <Metric label={t.headcount} value={format(peakScheduled,0,locale)} highlight/>
+              </> : <>
+                <Metric
+                  label={spanish ? 'Cantidad indicada' : 'Entered workforce'}
+                  value={format(referenceCount,0,locale)}
+                />
+                <Metric
+                  label={spanish ? 'Plantilla resultante' : 'Resulting workforce'}
+                  value={roles.valid ? format(roles.total,0,locale) : '—'}
+                  highlight
+                />
+              </>}
             </div>
             {basis === 'demand' && roles.total > 0 && <p className="bc-note"><Info size={14}/>{spanish ? `Desglose: ${peakScheduled} operadores programados + ${roles.supportTotal} puestos de apoyo = ${roles.total} personas.` : `Breakdown: ${peakScheduled} scheduled agents + ${roles.supportTotal} support roles = ${roles.total} people.`}</p>}
             {!roles.valid ? <div className="bc-alert"><AlertTriangle size={17}/>{t.invalid}</div> : invalidCalc ? <div className="bc-alert"><AlertTriangle size={17}/>{t.occupancyWarn}</div> : shortage>0 ? <div className="bc-alert"><AlertTriangle size={17}/>{t.shortage} <strong>{spanish?'Déficit:':'Shortfall:'} {shortage}.</strong></div> : <div className="bc-success"><CheckCircle2 size={18}/>{t.enough}</div>}
@@ -1393,6 +1415,15 @@ export default function StaffingCalculator() {
               <button type="button" className="bc-mini-button" onClick={reset}><RefreshCcw size={15}/>{t.reset}</button>
             </div>
           </div>
+          
+          {/* Aviso dinámico según el Método A o B seleccionado */}
+          <div className="bc-policy-strip" style={{margin: '14px 0 16px'}}>
+            <Info size={16} style={{flexShrink:0, color: '#f5be1e'}} />
+            <span>
+              {basis === 'fixed' ? t.fixedModeNotice : t.demandModeNotice}
+            </span>
+          </div>
+
           <button type="button" className="bc-hourly-toggle" aria-expanded={expandedHourly} aria-controls="bc-hourly-content" onClick={()=>setExpandedHourly(open=>!open)}>
             <span style={{display:'inline-flex',alignItems:'center',gap:10}}><BarChart3 size={19}/>{expandedHourly ? t.hideHours : t.showHours}</span>
             <ChevronDown size={19} style={{transform:expandedHourly?'rotate(180deg)':'none',transition:'transform .2s'}}/>
