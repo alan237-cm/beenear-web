@@ -14,27 +14,17 @@ import {
  *
  * Source reference: "Modelo dimensionamiento.xlsm" (24 hourly demand rows,
  * initial 10-minute AHT, 99% SL in 10s, 15% shrinkage).
- *
- * This is NOT an exact reproduction of the workbook's custom Agerlang macro:
- * its traffic column uses /1800 instead of /3600, which is not the standard
- * Erlang definition for 60-minute buckets. This module uses standard Erlang C.
- *
- * Results are estimates, not guarantees or employee shift scheduling.
  */
 
-// Valores institucionales: definirlos aqui (no expuestos para edicion al cliente).
-// El nivel de servicio de 92 % toma como referencia la ultima captura del encargado.
 const POLICY = Object.freeze({ aht: 600, serviceLevel: 92, answerSeconds: 10, maxOccupancy: 85,
   rests: 6, training: 4, absence: 3, incidents: 2, operatorsPerSupport: 20 });
 
-// La proyeccion solo admite llamadas completas; los antiguos ejemplos fraccionarios se redondean.
 const DEFAULT_CALLS = [3, 4, 4, 5, 7, 10, 15, 32, 39, 45, 52, 60, 67, 61, 51, 47, 53, 42, 35, 14, 12, 9, 9, 10];
 const DEFAULT_ROWS = () => DEFAULT_CALLS.map((calls, hour) => ({ hour, calls }));
 const format = (value, digits = 0, locale = 'es-MX') => Number(value || 0).toLocaleString(locale, { maximumFractionDigits: digits });
 const safe = (value, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
 const bounded = (value, min, max, fallback = min) => Math.min(max, Math.max(min, safe(value, fallback)));
 
-// Erlang B via stable recursion, then transform to Erlang C (delay probability).
 function erlangC(traffic, n) {
   if (traffic <= 0) return 0;
   if (n <= traffic) return 1;
@@ -56,9 +46,8 @@ function serviceMetrics(traffic, n, aht, threshold) {
 }
 
 function requiredAgents(calls, aht, target, threshold, occupancyLimit) {
-  const traffic = (calls * aht) / 3600; // Correct traffic in Erlangs for one hour.
+  const traffic = (calls * aht) / 3600;
   if (traffic <= 0) return { traffic: 0, agents: 0, serviceLevel: 1, occupancy: 0, asa: 0 };
-  // Limit extreme input values to maintain UI responsiveness.
   const start = Math.max(1, Math.floor(traffic) + 1, Math.ceil(traffic / occupancyLimit));
   for (let n = start; n <= Math.min(5000, start + 1200); n += 1) {
     const metrics = serviceMetrics(traffic, n, aht, threshold);
@@ -69,10 +58,6 @@ function requiredAgents(calls, aht, target, threshold, occupancyLimit) {
   return { traffic, agents: null, serviceLevel: 0, occupancy: 0, asa: Infinity };
 }
 
-// Gerente: 1 por operacion. Cada bloque de hasta 20 operadores requiere
-// un supervisor, una persona de calidad y una de capacitacion.
-// Al incluir el apoyo en una plantilla cerrada, se busca la maxima capacidad
-// operativa que cabe en el total, sin rebajar la dotacion de soporte.
 function supportRoles(agents, operationExists = agents > 0) {
   const perRole = agents > 0 ? Math.ceil(agents / POLICY.operatorsPerSupport) : 0;
   return {
@@ -82,11 +67,9 @@ function supportRoles(agents, operationExists = agents > 0) {
     trainers: perRole,
   };
 }
+
 function allocateRoles(people, inclusion) {
   const input = Math.max(0, Math.trunc(people));
-  // Política para microequipos: de 1 a 4 personas, todas son operadores.
-  // No se asignan gerente, supervisores, calidad ni capacitadores.
-  // Es la misma regla en ambas modalidades y en los reportes exportados.
   if (input <= 4) {
     return { agents: input, manager: 0, supervisors: 0, quality: 0,
       trainers: 0, supportTotal: 0, reserve: 0, total: input, valid: true };
@@ -140,11 +123,12 @@ const WORDS = {
     included: 'Incluirlo en el total', includedDesc: 'Plantilla total, contando también al personal de apoyo',
     report: 'RESUMEN DEL DIMENSIONAMIENTO', summary: 'Tu plantilla recomendada',
     estimated: 'Estimación basada en el modelo', requested: 'Plantilla configurada',
-    smallTeam: 'Equipo reducido: entre 1 y 4 personas se contabilizan como operadores. No se agregan puestos administrativos.', smallTeamEmpty: 'No hay personal asignado.', printGraphQuestion: '¿Deseas incluir toda la sección de proyección horaria?', printGraphExplanation: 'Elige entre un resumen ejecutivo o el reporte completo con la gráfica, la tabla y el desglose por hora.', printGraphYes: 'Sí, incluir toda la proyección horaria', printGraphNo: 'No, imprimir solo el resumen', printCancel: 'Cancelar', printContinue: 'Continuar a imprimir / PDF', printDialogTitle: 'Preparar impresión', printGraphOption: 'Incluir sección de proyección horaria', exportDialogTitle: 'Preparar exportación', exportExcelIntro: '¿Deseas incluir la proyección horaria como una segunda hoja del archivo Excel?', exportCSVIntro: '¿Deseas incluir las 24 filas de la proyección horaria al final del CSV?', exportExcelYes: 'Sí, incluir hoja de proyección horaria', exportExcelNo: 'No, descargar solo el resumen ejecutivo', exportCSVYes: 'Sí, incluir los datos de las 24 horas', exportCSVNo: 'No, descargar solo el resumen ejecutivo', exportExcelDescription: 'El resumen ejecutivo siempre se incluye. La proyección se entrega en una segunda pestaña.', exportCSVDescription: 'El CSV contiene datos, no gráficas ni formato visual. La proyección es un bloque adicional.', exportDownloadExcel: 'Descargar Excel (.xlsx)', exportDownloadCSV: 'Descargar CSV',
+    smallTeam: 'Equipo reducido: entre 1 y 4 personas se contabilizan como operadores. No se agregan puestos administrativos.', smallTeamEmpty: 'No hay personal asignado.', printGraphQuestion: '¿Deseas incluir toda la proyección horaria?', printGraphExplanation: 'Elige entre un resumen ejecutivo o el reporte completo con la gráfica, la tabla y el desglose por hora.', printGraphYes: 'Sí, incluir toda la proyección horaria', printGraphNo: 'No, imprimir solo el resumen', printCancel: 'Cancelar', printContinue: 'Continuar a imprimir / PDF', printDialogTitle: 'Preparar impresión', printGraphOption: 'Incluir sección de proyección horaria', exportDialogTitle: 'Preparar exportación', exportExcelIntro: '¿Deseas incluir la proyección horaria como una segunda hoja del archivo Excel?', exportCSVIntro: '¿Deseas incluir las 24 filas de la proyección horaria al final del CSV?', exportExcelYes: 'Sí, incluir hoja de proyección horaria', exportExcelNo: 'No, descargar solo el resumen ejecutivo', exportCSVYes: 'Sí, incluir los datos de las 24 horas', exportCSVNo: 'No, descargar solo el resumen ejecutivo', exportExcelDescription: 'El resumen ejecutivo siempre se incluye. La proyección se entrega en una segunda pestaña.', exportCSVDescription: 'El CSV contiene datos, no gráficas ni formato visual. La proyección es un bloque adicional.', exportDownloadExcel: 'Descargar Excel (.xlsx)', exportDownloadCSV: 'Descargar CSV',
     staff: 'personas', agents: 'Operadores', supervisors: 'Supervisores', manager: 'Gerente', quality: 'Calidad', trainers: 'Capacitadores', reserve: 'Reserva sin asignar',
     total: 'Total de la plantilla', required: 'Operadores simultáneos en hora pico (Erlang C)', headcount: 'Operadores programados (con disponibilidad)',
     callsDay: 'Llamadas previstas / día', peak: 'Hora de máxima demanda', capacity: 'Cobertura de la demanda',
     shortage: 'Faltan operadores para cubrir el pico calculado con Erlang C. Ajusta tu plantilla o suma al personal administrativo por separado.',
+    matchPeak: 'Igualar plantilla al pico requerido',
     enough: 'La plantilla operativa cubre la necesidad estimada en la hora de mayor demanda.',
     invalid: 'La plantilla solicitada no permite cubrir el gerente obligatorio.',
     occupancyWarn: 'No se encontró una dotación factible bajo los parámetros fijos de Bee Near. Revisa el volumen de llamadas.',
@@ -160,8 +144,8 @@ const WORDS = {
     units: 'personas', back: 'Volver al inicio', preview: 'Estimación, no cotización',
     example: 'Ejemplo: 30 operadores + 1 gerente + 2 supervisores + 2 de calidad + 2 capacitadores = 37 personas. El personal de apoyo puede sumarse o incluirse dentro del total.',
     csvName: 'dimensionamiento-beenear', typeHour: 'Por hora', sl: 'NS',
-    fixedModeNotice: 'Modo Plantilla Fija activo: La tabla horaria inferior es puramente informativa y de referencia; tu plantilla está dictada por el número manual de arriba.',
-    demandModeNotice: 'Modo Dimensionamiento por Demanda activo: El tráfico de esta tabla horaria gobierna el cálculo de operadores necesario.',
+    fixedModeNotice: 'Bloque 1 activo (Plantilla Fija): La tabla horaria inferior es puramente informativa y de referencia; tu plantilla está dictada por el número manual superior.',
+    demandModeNotice: 'Bloque 2 activo (Dimensionamiento por Demanda): El tráfico y los picos de llamada de esta tabla horaria gobiernan el cálculo de operadores requerido.',
   },
   en: {
     adminTitle: 'Administrator access', adminIntro: 'Enter the authorized password to adjust simulation parameters. Changes do not alter Bee Near official defaults.', adminPassword: 'Administrator password', adminUnlock: 'Unlock parameters', adminLock: 'Lock and restore official defaults', adminEnabled: 'Temporary editing enabled', adminLocked: 'Protected parameters', adminSaved: 'Authorized session. Operational parameters can now be edited above.', adminError: 'Incorrect password or access denied.', adminMissing: 'Could not reach Laravel authorization. Check routes and configuration.', adminBusy: 'Verifying…', adminSimulation: 'Administrator simulation: changes are reflected in exports.', adminInvalid: 'Total shrinkage must remain below 99%.', callsWhole: 'Calls must be whole numbers.',
@@ -191,6 +175,7 @@ const WORDS = {
     total: 'Total workforce', required: 'Simultaneous peak agents (Erlang C)', headcount: 'Scheduled agents (availability adjusted)',
     callsDay: 'Forecast calls / day', peak: 'Peak hour', capacity: 'Demand coverage',
     shortage: 'Not enough agents to meet peak demand under Erlang C. Increase the workforce or add administration separately.',
+    matchPeak: 'Match peak required workforce',
     enough: 'The configured operator team covers the estimated peak-hour demand.',
     invalid: 'The requested workforce cannot accommodate the required manager.',
     occupancyWarn: 'No feasible headcount was found under Bee Near’s fixed parameters. Review call demand.',
@@ -206,8 +191,8 @@ const WORDS = {
     units: 'people', back: 'Back to home', preview: 'Planning estimate, not a quote',
     example: 'Example: 30 agents + 1 manager + 2 supervisors + 2 quality analysts + 2 trainers = 37 people. Support staff may be added or included in the total.',
     csvName: 'beenear-staffing-estimate', typeHour: 'Per hour', sl: 'SL',
-    fixedModeNotice: 'Fixed workforce mode active: The hourly table below is for reference only; your headcount is determined by your manual input above.',
-    demandModeNotice: 'Demand-based mode active: The traffic in this hourly table drives the required agent calculation.',
+    fixedModeNotice: 'Fixed workforce block active: The hourly table below is for reference only; your headcount is determined by your manual input above.',
+    demandModeNotice: 'Demand-based block active: The traffic and call peaks in this hourly table drive the required agent calculation.',
   },
 };
 
@@ -253,12 +238,11 @@ function Metric({ label, value, unit, highlight = false }) {
 
 function formatHour(hour) { return `${String(hour).padStart(2, '0')}:00`; }
 
-// Lightweight, dependency-free XLSX report writer (OOXML + ZIP/STORE).
-// CSV cannot store cell styles; this workbook provides actual Excel formatting.
 function xmlSafe(value) {
   return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&apos;');
 }
+
 function zipStore(files) {
   const enc = new TextEncoder();
   const pieces = [];
@@ -308,11 +292,13 @@ function zipStore(files) {
   pieces.push(footer);
   return new Blob(pieces, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 }
+
 function excelCol(index) {
   let result = '';
   for (let n = index; n > 0; n = Math.floor((n - 1) / 26)) result = String.fromCharCode(65 + (n - 1) % 26) + result;
   return result;
 }
+
 function excelSheet(spec) {
   const lines = spec.rows.slice().sort((a, b) => a.row - b.row).map(({ row, height, cells }) => {
     const inner = cells.map(({ col, value, style = 0, number = false }) => {
@@ -335,6 +321,7 @@ function excelSheet(spec) {
     `<pageSetup orientation="landscape" paperSize="9" fitToWidth="1"/>` +
     `</worksheet>`;
 }
+
 const EXCEL_STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
   <fonts count="7">
@@ -358,7 +345,7 @@ const EXCEL_STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
   <borders count="3">
     <border><left/><right/><top/><bottom/><diagonal/></border>
     <border><left/><right/><top/><bottom style="hair"><color rgb="FFDDDBD2"/></bottom><diagonal/></border>
-    <border><left style="thin"><color rgb="FFD0B65A"/></left><right style="thin"><color rgb="FFD0B65A"/></left><top style="thin"><color rgb="FFD0B65A"/></left><bottom style="thin"><color rgb="FFD0B65A"/></bottom><diagonal/></border>
+    <border><left style="thin"><color rgb="FFD0B65A"/></left><right style="thin"><color rgb="FFD0B65A"/></right><top style="thin"><color rgb="FFD0B65A"/></top><bottom style="thin"><color rgb="FFD0B65A"/></bottom><diagonal/></border>
   </borders>
   <cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>
   <cellXfs count="12">
@@ -377,6 +364,7 @@ const EXCEL_STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
   </cellXfs>
   <cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles>
 </styleSheet>`;
+
 function exportStyledWorkbook(data, lang, filename, includeHourly = true) {
   const es = lang === 'es';
   const currentPolicy = data.policy;
@@ -483,7 +471,6 @@ const CSS = `
 .bc button:focus-visible,.bc input:focus-visible,.bc a:focus-visible,.bc summary:focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
 .bc-layout { width:min(1370px,calc(100% - 80px)); margin:auto; padding-top:108px; }
 
-/* Navbar fija flotante con efecto blur y transición suave idéntica a Services */
 .bc-header { position:fixed; z-index:100; left:50%; transform:translateX(-50%); top:18px; width:min(1252px,calc(100% - 64px)); min-height:63px; padding:9px 14px 9px 21px; display:flex; align-items:center; justify-content:space-between; gap:20px; border:1px solid rgba(255,255,255,.12); border-radius:12px; background:rgba(16,17,18,.85); box-shadow:0 12px 40px rgba(0,0,0,.2); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); transition:top .25s,background .25s; }
 .bc-header--scroll { top:9px; background:rgba(14,15,16,.97); }
 
@@ -497,7 +484,6 @@ const CSS = `
 .bc-logo small { display:block; font-size:8px; letter-spacing:1.6px; color:#979995; }
 .bc-header-actions { display:flex; align-items:center; gap:17px; }
 
-/* Enlaces de la barra de navegación */
 .bc-nav-links { display:flex; align-items:center; gap:24px; }
 .bc-nav-links a { position:relative; color:#aaaead; font-size:12px; font-weight:500; transition:color .2s; text-decoration:none; }
 .bc-nav-links a:hover, .bc-nav-links a[aria-current=page] { color:#f0ede5; }
@@ -571,11 +557,9 @@ const CSS = `
 .bc-big { display:flex; align-items:baseline; gap:11px; padding:12px 0 23px; border-bottom:1px solid rgba(255,255,255,.13); }
 .bc-big strong { font:750 clamp(51px,6vw,81px)/1 Manrope,sans-serif; letter-spacing:-.08em; color:#f1c94f; }
 .bc-big span { font-size:14px; color:#e1e1dc; }
-/* El dato editable y el total resultante comparten tipografia y escala visual. */
 .bc-headcount-block { margin:3px 0 24px; padding:22px 24px 18px; border:1px solid rgba(245,190,30,.28); border-radius:10px; background:linear-gradient(120deg,rgba(245,190,30,.075),rgba(245,190,30,.018)); }
 .bc-headcount-kicker { font-size:10px; font-weight:800; letter-spacing:1.3px; color:#d7b355; }
 .bc-headcount-title { display:block; margin:12px 0 9px; font:700 18px Manrope,sans-serif; color:#f1eee7; }
-/* Captura visible: el valor grande ES un campo editable, con ayuda contextual. */
 .bc-headcount-row { display:flex; align-items:center; justify-content:space-between; gap:18px; min-height:110px; padding:10px 0 19px; border-bottom:1px solid rgba(255,255,255,.13); }
 .bc-headcount-number-wrap { display:flex; align-items:baseline; gap:12px; min-width:0; flex:1; }
 .bc-headcount-input { display:block; width:5ch; max-width:100%; min-width:2ch; border:0; border-radius:0; border-bottom:2px dashed rgba(245,190,30,.65); padding:0 0 2px; background:transparent; outline:none; color:#f1c94f; font:750 clamp(51px,6vw,81px)/1 Manrope,sans-serif; letter-spacing:-.08em; font-variant-numeric:tabular-nums; appearance:textfield; transition:border-color .2s,box-shadow .2s; }
@@ -603,7 +587,6 @@ const CSS = `
 .bc-breakdown-operator { color:#b9a25f; font-weight:800; }
 .bc-breakdown-note { margin-top:9px!important; color:#a8aa9f; font-size:10px; line-height:1.7; }
 @media(max-width:630px){.bc-headcount-block{padding:17px 15px}.bc-headcount-title{font-size:16px}.bc-headcount-unit{font-size:12px}.bc-breakdown-equation{gap:7px}}
-@media print{.bc-result-guide{display:none!important}.bc-breakdown{background:#fff!important;border-color:#ccc!important;break-inside:avoid}.bc-breakdown-kicker,.bc-breakdown-equation,.bc-breakdown-note{color:#333!important}.bc-breakdown-equation strong{color:#8c6600!important}}
 
 .bc-roles { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; padding:21px 0; }
 .bc-role { background:#222425; border:1px solid rgba(255,255,255,.07); border-radius:8px; padding:13px 10px; min-width:0; }
@@ -658,7 +641,6 @@ const CSS = `
 .bc-footer { border-top:1px solid rgba(255,255,255,.1); padding:28px 0 45px; display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap; color:#868a86; font-size:11px; }
 @media(max-width:1050px){ .bc-layout{width:calc(100% - 48px)} .bc-columns{grid-template-columns:1fr} .bc-report{position:static} .bc-intro{margin-top:25px} .bc-nav-links { display:none; } .bc-menu-button { display:flex; } }
 @media(max-width:630px){ .bc-layout{width:calc(100% - 28px)} .bc-logo-official{height:42px;max-width:120px}.bc-logo strong{font-size:17px} .bc-intro{margin:20px 0 25px} .bc-intro h1{font-size:35px} .bc-intro p{font-size:13px} .bc-tab{flex:1;justify-content:center;padding:12px 9px;font-size:10px} .bc-panel{padding:19px 15px} .bc-form-grid--three,.bc-factor-grid{grid-template-columns:1fr 1fr} .bc-choice-grid{grid-template-columns:1fr} .bc-roles{gap:6px} .bc-role{padding:11px 7px} .bc-role strong{font-size:24px} .bc-role span{font-size:9px} .bc-details{gap:7px} .bc-metric{padding:10px} .bc-metric strong{font-size:21px} .bc-table-header{align-items:start;flex-direction:column} .bc-chart{padding:20px 12px} .bc-chart-bars{gap:3px;height:112px} .bc-chart-bar::after{display:none} .bc-nav-cta { display:none; } .bc-header { width:calc(100% - 24px); padding:0 12px; } }
-/* Campos corporativos de solo lectura */
 .bc-input-shell--locked { background:#242526; border-color:#343636; padding:0 11px 0 13px; gap:8px; }
 .bc-locked-number { font:750 15px Manrope,sans-serif; color:#e8dcc0; flex:1; }
 .bc-locked-icon { color:#a98f4e; flex-shrink:0; }
@@ -681,7 +663,6 @@ const CSS = `
 .bc-table-section { margin-top:18px; }
 .bc-report .bc-note--csv { font-size:10px; }
 @media(max-width:630px){.bc-policy-item{align-items:start;flex-direction:column;gap:3px}.bc-roles{grid-template-columns:repeat(2,minmax(0,1fr))}.bc-hourly-toggle{padding:15px}.bc-action{font-size:10px}}
-/* Acceso administrativo al final de la calculadora */
 .bc-admin { margin:34px 0 54px; padding:24px 27px; background:linear-gradient(135deg,#202224,#17191b); border:1px solid rgba(230,194,94,.28); border-radius:12px; }
 .bc-admin-top { display:flex; gap:15px; align-items:start; }
 .bc-admin-icon { width:42px; height:42px; border:1px solid rgba(245,190,30,.35); background:rgba(245,190,30,.07); color:#e3bc56; border-radius:10px; display:grid; place-items:center; flex:none; }
@@ -703,7 +684,6 @@ const CSS = `
 .bc-admin--unlocked { border-color:rgba(245,190,30,.63); }
 @media(max-width:630px){.bc-admin{padding:20px 16px}.bc-admin-form{flex-direction:column;align-items:stretch}.bc-admin-btn{width:100%}}
 @media print{
-  /* En PDF, sustituir el imagotipo claro por el oficial de letras oscuras. */
   .bc-logo-screen { display:none!important; }
   .bc-logo-print { display:block!important; height:63px; width:auto; max-width:165px; object-fit:contain; }
   .bc-logo { display:inline-flex!important; align-items:center; }
@@ -711,12 +691,10 @@ const CSS = `
   .bc-admin {display:none!important}
 }
 @media print{ .bc--print-no-hourly .bc-table-section{display:none!important;break-before:auto!important} .bc-print-dialog-backdrop{display:none!important} .bc{background:#fff;color:#191919} .bc-header-actions,.bc-tabs,.bc-stack,.bc-actions,.bc-mini-button,.bc-faq,.bc-table input{display:none!important} .bc-print-val{display:inline!important} .bc-columns{display:block} .bc-report,.bc-chart,.bc-table-wrap{position:static;background:#fff;color:#111;box-shadow:none;border:1px solid #ddd} .bc-report h2,.bc-big span,.bc-metric>span,.bc-total span,.bc-metric strong,.bc-role strong{color:#111!important} .bc-big strong{color:#8c6600!important} .bc-table{min-width:0} .bc-table td,.bc-table th{color:#111!important;padding:5px} .bc-chart-bar{print-color-adjust:exact} .bc-table-section{break-before:page} }
-/* Microequipos: resultados condensados, sin tarjetas administrativas vacías. */
 .bc-roles--micro { grid-template-columns:minmax(160px,1fr); padding:16px 0; }
 .bc-roles--micro .bc-role { min-height:0; max-width:320px; }
 .bc-small-team-note { display:flex; align-items:flex-start; gap:9px; margin:12px 0 0; padding:12px 14px; border:1px solid rgba(245,190,30,.25); border-radius:8px; background:rgba(245,190,30,.055); color:#ddc98e; font-size:11px; line-height:1.6; }
 .bc-small-team-note svg { flex:none; margin-top:1px; }
-/* Diálogo propio para incluir u omitir toda la proyección horaria en el PDF. */
 .bc-print-dialog-backdrop { position:fixed; inset:0; z-index:2000; display:flex; align-items:center; justify-content:center; padding:18px; background:rgba(0,0,0,.76); backdrop-filter:blur(5px); }
 .bc-print-dialog { width:min(490px,100%); max-height:calc(100dvh - 36px); overflow:auto; padding:27px; background:#1d1f20; border:1px solid rgba(245,190,30,.35); border-radius:15px; box-shadow:0 24px 90px rgba(0,0,0,.55); color:#f1eee7; }
 .bc-print-dialog-eyebrow { font-size:10px; font-weight:800; letter-spacing:1.2px; color:#f5be1e; margin-bottom:12px; }
@@ -736,10 +714,6 @@ const CSS = `
 .bc-print-confirm:hover { background:#ffd35c; }
 @media(max-width:630px){.bc-print-dialog{padding:22px 17px}.bc-print-dialog-actions button{flex:1}}
 @media print { .bc-print-dialog-backdrop{display:none!important} }
-/* ===============================================================
-   BEE NEAR / PRINT EDITION — estilos exclusivos para PDF/A4
-   El sitio web, los cálculos y el XLSX/CSV no se ven afectados.
-   =============================================================== */
 .bc-print-summary-heading,
 .bc-print-hourly-heading,
 .bc-print-page-note { display:none; }
@@ -811,8 +785,6 @@ const CSS = `
   .bc-alert { background:#fff9ec!important; border-color:#e6d09e!important; color:#7a5a19!important; }
   .bc-report > .bc-note:last-of-type { font-size:9px!important; padding-top:5px!important; color:#787870!important; }
   .bc-print-page-note { display:flex!important; align-items:center; justify-content:space-between; border-top:1px solid #e4e1da; margin:12px 0 0!important; padding-top:8px!important; color:#797a72!important; font-size:8px!important; letter-spacing:.25px!important; }
-  /* Una página exclusiva para el anexo horario. La sección entera
-     (gráfica + 24 filas) se compone para una sola hoja A4. */
   .bc-table-section { display:block; break-before:page!important; page-break-before:always!important; margin:0!important; padding:0!important; border:0!important; }
   .bc--print-no-hourly .bc-table-section { display:none!important; break-before:auto!important; page-break-before:auto!important; }
   .bc-print-hourly-heading { display:flex!important; align-items:center; justify-content:space-between; padding:0 0 9px!important; margin:0 0 10px!important; border-bottom:2px solid #dbb04f!important; font-size:9px!important; color:#a07c2c!important; letter-spacing:1.1px!important; font-weight:800!important; }
@@ -845,9 +817,6 @@ const CSS = `
 @media(prefers-reduced-motion:reduce){.bc *, .bc *::before,.bc *::after {transition:none!important;animation:none!important}}
 `;
 
-// Solo el backend valida contraseñas. El frontend nunca almacena la clave.
-// Compatibilidad con rutas publicadas distintas en local y produccion.
-// Detectamos el prefijo solo mediante GET /status, sin transmitir contrasenas al probar rutas.
 const ADMIN_ENDPOINTS = ['/calculadora', '/calculadora/admin'];
 async function detectAdminEndpoint(preferred = null) {
   const candidates = preferred
@@ -859,8 +828,6 @@ async function detectAdminEndpoint(preferred = null) {
       headers: { Accept: 'application/json' },
       cache: 'no-store',
     });
-    // Solo un 404 permite ensayar el siguiente prefijo.
-    // Un 401, 419, 500 o 503 es un problema real que no debemos ocultar.
     if (response.status === 404) continue;
     if (!response.ok) throw new Error(`http-${response.status}`);
     const data = await response.json();
@@ -896,13 +863,12 @@ export default function StaffingCalculator() {
   const spanish = (i18n.resolvedLanguage || i18n.language || 'es').toLowerCase().startsWith('es');
   const t = spanish ? WORDS.es : WORDS.en;
   const locale = spanish ? 'es-MX' : 'en-US';
-  const [basis, setBasis] = useState('fixed'); // fixed (default) | demand
+  const [basis, setBasis] = useState('fixed');
   const [headcount, setHeadcount] = useState('100');
   const [inclusion, setInclusion] = useState('additional');
   const [rows, setRows] = useState(DEFAULT_ROWS);
   const [expandedHourly, setExpandedHourly] = useState(false);
-  // Un único diálogo para PDF, Excel y CSV; no afecta al reporte mostrado en pantalla.
-  const [exportFormat, setExportFormat] = useState(null); // 'pdf' | 'xlsx' | 'csv'
+  const [exportFormat, setExportFormat] = useState(null);
   const printDialogOpen = exportFormat !== null;
   const [includeHourlySection, setIncludeHourlySection] = useState(true);
   const printYesRef = useRef(null);
@@ -915,16 +881,12 @@ export default function StaffingCalculator() {
   const [scrolled, setScrolled] = useState(false);
   const adminEndpointRef = useRef(null);
   const [policyDraft, setPolicyDraft] = useState({ ...POLICY });
-  // Alinea el número editable y el resultado respecto a sus tarjetas,
-  // sin depender del zoom, los textos traducidos o el ancho de pantalla.
   const startingNumberRef = useRef(null);
   const finalNumberRef = useRef(null);
   const resultGuideRef = useRef(null);
 
   useEffect(() => {
-    const updateScroll = () => {
-      setScrolled(window.scrollY > 35);
-    };
+    const updateScroll = () => { setScrolled(window.scrollY > 35); };
     updateScroll();
     window.addEventListener('scroll', updateScroll, { passive: true });
     return () => window.removeEventListener('scroll', updateScroll);
@@ -963,7 +925,6 @@ export default function StaffingCalculator() {
     };
   }, [basis, inclusion, spanish]);
 
-
   const restoreOfficialPolicy = () => setPolicyDraft({ ...POLICY });
   const activePolicy = useMemo(() => {
     if (!adminUnlocked) return POLICY;
@@ -975,7 +936,6 @@ export default function StaffingCalculator() {
   }, [adminUnlocked, policyDraft]);
   const adminCustomized = adminUnlocked && ADMIN_FIELDS.some(([key]) => activePolicy[key] !== POLICY[key]);
 
-  // Validación siempre con la sesión Laravel, nunca contra una contraseña en React.
   useEffect(() => {
     let live = true;
     async function checkSession() {
@@ -1017,8 +977,6 @@ export default function StaffingCalculator() {
     setAdminBusy(true);
     setAdminMessage('');
     try {
-      // El prefijo fue confirmado antes mediante GET /status.
-      // Nunca enviamos la contrasena a un endpoint alternativo a ciegas.
       const endpoint = adminEndpointRef.current;
       if (!endpoint) throw new Error('route');
       const response = await fetch(`${endpoint}/unlock`, {
@@ -1070,6 +1028,7 @@ export default function StaffingCalculator() {
     if (!adminUnlocked) return;
     setPolicyDraft((prev) => ({ ...prev, [key]: rawValue }));
   };
+
   const shrinkage = (activePolicy.rests + activePolicy.training + activePolicy.absence + activePolicy.incidents) / 100;
   const invalidShrink = shrinkage >= .99;
   const availability = Math.max(.01, 1 - shrinkage);
@@ -1093,18 +1052,12 @@ export default function StaffingCalculator() {
   const peakScheduled = peak?.scheduled || 0;
   const peakOnline = peak?.agents || 0;
   const referenceCount = basis === 'demand' ? peakScheduled : Math.trunc(bounded(headcount, 0, 5000, 100));
-  // Por demanda, peakScheduled YA es el minimo de OPERADORES necesarios, no el total
-  // de la plantilla. El personal de apoyo se agrega despues. Solo en plantilla fija
-  // tiene sentido descontar apoyo del cupo cuando el usuario elige 'included'.
   const effectiveInclusion = basis === 'demand' ? 'additional' : inclusion;
   const roles = allocateRoles(referenceCount, effectiveInclusion);
-  // En ambas modalidades comparamos los operadores disponibles con la demanda
-  // estimada: en modo fijo sirve para mostrar si la plantilla alcanza el pico.
   const shortage = Math.max(0, peakScheduled - roles.agents);
   const dailyCalls = hourly.reduce((sum, row) => sum + row.calls, 0);
   const maxScheduled = Math.max(1, ...hourly.map((row) => row.scheduled || 0));
 
-  // La captura rechaza decimales, signos y exponentes. El modelo usa enteros.
   const updateHour = (hour, raw) => {
     if (!/^\d*$/.test(raw)) return;
     const calls = raw === '' ? '' : String(Math.min(3000, parseInt(raw, 10)));
@@ -1112,23 +1065,21 @@ export default function StaffingCalculator() {
   };
   const reset = () => { setRows(DEFAULT_ROWS()); setBasis('fixed'); setHeadcount('100'); setInclusion('additional'); setExpandedHourly(false); if (adminUnlocked) restoreOfficialPolicy(); }; 
   const clearCalls = () => setRows(DEFAULT_ROWS().map((r) => ({...r, calls: 0})));
-  // Abrir el mismo diálogo, con descripción y acción adaptadas al formato.
   const printReport = () => setExportFormat('pdf');
   const confirmPrint = () => {
     setExportFormat(null);
-    // En la impresión la opción elegida oculta o presenta TODA la proyección.
     if (includeHourlySection) setExpandedHourly(true);
     window.setTimeout(() => window.print(), 180);
   };
+
   useEffect(() => {
     if (!printDialogOpen) return;
     printYesRef.current?.focus();
-    const onEscape = (event) => {
-      if (event.key === 'Escape') setExportFormat(null);
-    };
+    const onEscape = (event) => { if (event.key === 'Escape') setExportFormat(null); };
     document.addEventListener('keydown', onEscape);
     return () => document.removeEventListener('keydown', onEscape);
   }, [printDialogOpen]);
+
   const flipLang = () => i18n.changeLanguage(spanish ? 'en' : 'es');
   const saveExcel = (withHourly = true) => exportStyledWorkbook({
     basis, inclusion: effectiveInclusion, roles, hourly, dailyCalls, peak, peakOnline, peakScheduled, referenceCount,
@@ -1136,7 +1087,6 @@ export default function StaffingCalculator() {
   }, spanish ? 'es' : 'en', t.csvName, withHourly);
 
   const saveCSV = (withHourly = true) => {
-    // CSV exports data only; formatting is available in the XLSX export.
     const lines = [
       ['Bee Near', spanish ? 'Dimensionamiento de personal' : 'Staffing Report'],
       [spanish ? 'Modalidad' : 'Mode', basis],
@@ -1150,7 +1100,7 @@ export default function StaffingCalculator() {
       [spanish ? 'Total personal' : 'Total staff', roles.total],
       [], [spanish ? 'RESUMEN OPERATIVO' : 'OPERATIONS SUMMARY'],
       [spanish ? 'Llamadas previstas / día' : 'Forecast calls / day', dailyCalls],
-      [spanish ? 'Hora de máxima demanda' : 'Peak hour', formatHour(peak?.hour ?? 0)],
+      [spanish ? 'Hora de mayor demanda' : 'Peak hour', formatHour(peak?.hour ?? 0)],
       [basis === 'fixed' ? (spanish ? 'Cantidad indicada' : 'Entered workforce') : (spanish ? 'Operadores simultáneos en pico' : 'Peak simultaneous agents'), basis === 'fixed' ? referenceCount : peakOnline],
       [basis === 'fixed' ? (spanish ? 'Plantilla resultante' : 'Resulting workforce') : (spanish ? 'Operadores programados en pico' : 'Peak scheduled agents'), basis === 'fixed' ? roles.total : peakScheduled],
       [spanish ? 'Déficit operativo' : 'Operational shortfall', shortage],
@@ -1209,9 +1159,7 @@ export default function StaffingCalculator() {
     <div className={`bc ${includeHourlySection ? '' : 'bc--print-no-hourly'}`}>
       <header className={`bc-header${scrolled ? ' bc-header--scroll' : ''}`}>
         <Link href="/" className="bc-logo" aria-label="Bee Near">
-          {/* Logo de letras claras para el sitio web oscuro. */}
           <img className="bc-logo-official bc-logo-screen" src="/images/beenear-imagotipo-dark.png" alt="Bee Near" />
-          {/* Logo de letras negras, exclusivo para imprimir o guardar como PDF. */}
           <img className="bc-logo-official bc-logo-print" src="/images/imagotipo.jpeg" alt="" aria-hidden="true" />
         </Link>
         
@@ -1259,7 +1207,7 @@ export default function StaffingCalculator() {
               <div className="bc-panel-head"><h2><Calculator size={19}/>{basis==='fixed' ? t.b2 : t.needs}</h2><small>01 / 03</small></div>
               <p className="bc-helper">{basis==='demand'?t.b1Help:t.b2Help}</p>
               {basis==='fixed' && <div className="bc-headcount-block">
-                <div className="bc-headcount-kicker">{spanish ? '01 / PLANTILLA DE PARTIDA' : '01 / STARTING WORKFORCE'}</div>
+                <div className="bc-headcount-kicker">{spanish ? '01 / BLOQUE 1: PLANTILLA FIJA DE PARTIDA' : '01 / BLOCK 1: FIXED STARTING WORKFORCE'}</div>
                 <label htmlFor="bc-headcount" className="bc-headcount-title">
                   {inclusion === 'additional'
                     ? (spanish ? 'Operadores solicitados' : 'Requested agents')
@@ -1322,7 +1270,6 @@ export default function StaffingCalculator() {
                 </div>
               </> : <div className="bc-policy-strip" role="note" style={{marginBottom:18}}><Info size={17} style={{flexShrink:0}}/>{t.demandRule}</div>}
               <h3 className="bc-subhead">{t.structure}</h3>
-              {/* Política institucional: el cálculo automático es la única modalidad disponible. */}
               {referenceCount > 4 && <div className="bc-auto-fixed" role="note" aria-label={t.auto}>
                 <span className="bc-auto-fixed-check"><CheckCircle2 size={18} aria-hidden="true"/></span>
                 <span className="bc-auto-fixed-copy"><strong>{t.auto}</strong><small>{t.automaticDetail}</small></span>
@@ -1396,7 +1343,7 @@ export default function StaffingCalculator() {
               </>}
             </div>
             {basis === 'demand' && roles.total > 0 && <p className="bc-note"><Info size={14}/>{spanish ? `Desglose: ${peakScheduled} operadores programados + ${roles.supportTotal} puestos de apoyo = ${roles.total} personas.` : `Breakdown: ${peakScheduled} scheduled agents + ${roles.supportTotal} support roles = ${roles.total} people.`}</p>}
-            {!roles.valid ? <div className="bc-alert"><AlertTriangle size={17}/>{t.invalid}</div> : invalidCalc ? <div className="bc-alert"><AlertTriangle size={17}/>{t.occupancyWarn}</div> : shortage>0 ? <div className="bc-alert"><AlertTriangle size={17}/>{t.shortage} <strong>{spanish?'Déficit:':'Shortfall:'} {shortage}.</strong></div> : <div className="bc-success"><CheckCircle2 size={18}/>{t.enough}</div>}
+            {!roles.valid ? <div className="bc-alert"><AlertTriangle size={17}/>{t.invalid}</div> : invalidCalc ? <div className="bc-alert"><AlertTriangle size={17}/>{t.occupancyWarn}</div> : shortage>0 ? <div className="bc-alert" style={{flexDirection:'column',gap:8}}><div style={{display:'flex',gap:8,alignItems:'flex-start'}}><AlertTriangle size={17} style={{flexShrink:0,marginTop:2}}/><span>{t.shortage} <strong>{spanish?'Déficit:':'Shortfall:'} {shortage}.</strong></span></div>{basis==='fixed' && <button type="button" onClick={() => setHeadcount(String(peakScheduled))} style={{alignSelf:'flex-start',background:'transparent',border:'1px solid currentColor',borderRadius:5,padding:'5px 10px',fontSize:11,fontWeight:800,cursor:'pointer'}}>{t.matchPeak} ({peakScheduled})</button>}</div> : <div className="bc-success"><CheckCircle2 size={18}/>{t.enough}</div>}
             <div className="bc-actions">
               <button type="button" className="bc-action bc-action--primary" onClick={() => setExportFormat('xlsx')}><FileSpreadsheet size={18}/>{t.download} (.xlsx)</button>
               <button type="button" className="bc-action" onClick={() => setExportFormat('csv')}><Download size={17}/>{t.downloadCSV}</button>
@@ -1409,14 +1356,13 @@ export default function StaffingCalculator() {
         <section id="bc-hourly" className="bc-table-section" aria-label={t.results}>
           <div className="bc-print-hourly-heading" aria-hidden="true"><span>BEE NEAR / WORKFORCE INTELLIGENCE</span><span>{spanish ? '02 / ANEXO HORARIO' : '02 / HOURLY APPENDIX'}</span></div>
           <div className="bc-table-header">
-            <div><div className="bc-eyebrow" style={{marginBottom:12}}>03 / 03</div><h2>{t.results}</h2><p>{t.instructions}</p></div>
+            <div><div className="bc-eyebrow" style={{marginBottom:12}}>02 / 03 · BLOQUE 2</div><h2>{t.results}</h2><p>{t.instructions}</p></div>
             <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
               <button type="button" className="bc-mini-button" onClick={clearCalls}><RefreshCcw size={15}/>{t.clearHours}</button>
               <button type="button" className="bc-mini-button" onClick={reset}><RefreshCcw size={15}/>{t.reset}</button>
             </div>
           </div>
           
-          {/* Aviso dinámico según el Método A o B seleccionado */}
           <div className="bc-policy-strip" style={{margin: '14px 0 16px'}}>
             <Info size={16} style={{flexShrink:0, color: '#f5be1e'}} />
             <span>
