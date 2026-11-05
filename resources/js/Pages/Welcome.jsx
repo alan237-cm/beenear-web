@@ -209,10 +209,6 @@ const CONTENT = {
   },
 };
 
-/*
- * Visual model of COMI routing, not a connection to a live backend.
- * Keep stage descriptions bilingual and modify them here if the product changes.
- */
 const ORCHESTRATION_STAGES = {
   en: [
     {
@@ -387,6 +383,32 @@ function ControlDeck({ c, spanish }) {
   const [activeStep, setActiveStep] = useState(0);
   const selected = stages[activeStep];
 
+  // Estado con variación más amplia (subidas y bajadas simuladas de tráfico)
+  const [metrics, setMetrics] = useState({
+    firstContact: 1420,
+    humanSales: 380,
+    queue: 0,
+  });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMetrics((prev) => {
+        // Variación aleatoria que permite tanto sumar como restar (ej. de 1420 a 1400 y viceversa)
+        const deltaFirst = Math.floor(Math.random() * 31) - 15; // Entre -15 y +15
+        const deltaSales = Math.floor(Math.random() * 11) - 5;   // Entre -5 y +5
+        const randomQueue = Math.max(0, prev.queue + (Math.floor(Math.random() * 5) - 2)); // Entre -2 y +2, mínimo 0
+
+        return {
+          firstContact: Math.max(1300, prev.firstContact + deltaFirst),
+          humanSales: Math.max(300, prev.humanSales + deltaSales),
+          queue: randomQueue > 5 ? 2 : randomQueue,
+        };
+      });
+    }, 3500);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="bn-deck" aria-label={c.control}>
       <div className="bn-deck-top">
@@ -399,16 +421,15 @@ function ControlDeck({ c, spanish }) {
         <div className="bn-visual-side"><span>01 / 03</span><span>VOICE ORCHESTRATION</span></div>
       </div>
       <div className="bn-deck-metrics">
-        <CountMetric value={1420} label={c.first} />
-        <CountMetric value={380} label={c.human} />
-        <CountMetric value={0} label={c.queue} numberStyle="bn-metric-number--zero" />
+        <CountMetric value={metrics.firstContact} label={c.first} />
+        <CountMetric value={metrics.humanSales} label={c.human} />
+        <CountMetric value={metrics.queue} label={c.queue} numberStyle="bn-metric-number--zero" />
       </div>
       <div className="bn-deck-wave">
         <div className="bn-wave-copy"><span>{c.signalLabel}</span><small>{c.signalState}</small></div>
         <Waveform compact />
       </div>
 
-      {/* A visual operating model, not a list of staff or live agent statuses. */}
       <div className="bn-orch">
         <div className="bn-orch-heading">
           <div><span className="bn-orch-kicker">BEE NEAR / INTELLIGENCE SYSTEM</span><strong>{c.operators}</strong></div>
@@ -455,12 +476,6 @@ function ControlDeck({ c, spanish }) {
   );
 }
 
-
-/**
- * BEE NEAR / INFRASTRUCTURE OBSERVATORY
- * Client-provided marketing metrics. Validate uptime and cost claims before publishing.
- * This section is an architectural illustration, not a real-time service status page.
- */
 function InfrastructureSection({ c }) {
   const PillarIcons = [Mic2, Server, Network, TrendingDown];
 
@@ -527,7 +542,6 @@ function SolutionCard({ variant, index, label, title, tag, copy, points, href, a
   return (
     <article className={`bn-solution bn-solution--${variant}`}>
       <div className="bn-solution-shine" aria-hidden="true" />
-      {/* One shared grid row for both service descriptions keeps both diagrams perfectly level. */}
       <div className="bn-solution-intro">
         <div className="bn-solution-upper">
           <div className="bn-solution-num">{index}<span> / 02</span></div>
@@ -928,11 +942,6 @@ const STYLES = `
   .bn-reveal { opacity:1; transform:none; }
 }
 
-/* =====================================================
-   BEE NEAR / ATELIER — refined executive art direction
-   Calm typography, restrained brand accents and precise
-   spacing. Animations remain from the original components.
-   ===================================================== */
 .bn { --ink:#101112; --ink-2:#151719; --cream:#f2f0eb; --yellow:#f5be1e; --mute:#939591; background:#101112; font-weight:400; }
 .bn-shell { width:min(1260px,calc(100% - 104px)); }
 .bn-nav { top:18px; width:min(1252px,calc(100% - 64px)); padding:9px 14px 9px 21px; border-radius:12px; border-color:rgba(255,255,255,.12); background:rgba(16,17,18,.82); box-shadow:0 12px 40px rgba(0,0,0,.2); }
@@ -984,13 +993,11 @@ const STYLES = `
 .bn-deck-disclaimer { color:#747a78; }
 .bn-hero-bottom { bottom:23px; }
 .bn-scroll-icon { width:29px; height:29px; border-color:#515554; }
-/* The capabilities marquee stays animated, but becomes an understated ribbon. */
 .bn-ticker { background:#1b1d1e; color:#c3c6c2; padding:14px 0; border-top:1px solid rgba(255,255,255,.085); border-bottom:1px solid rgba(255,255,255,.085); }
 .bn-ticker-unit { font-size:9px; letter-spacing:1.25px; font-weight:650; gap:26px; }
 .bn-ticker-unit svg { color:#d0a434; width:11px; height:11px; }
 .bn-ticker-group { gap:26px; padding-right:26px; }
 .bn-ticker-viewport { animation-duration:44s; }
-/* Calm, softly lit editorial section in place of oversized display typography. */
 .bn-intro { background:#f2f0eb; padding:100px 0 103px; }
 .bn-intro:before { font-size:clamp(130px,22vw,320px); color:rgba(25,26,25,.015); }
 .bn-intro-grid { grid-template-columns:minmax(0,1.05fr) minmax(0,.68fr); gap:78px; }
@@ -1039,7 +1046,6 @@ const STYLES = `
 .bn-bridge-signature .bn-symbol { height:53px; width:53px; }
 .bn-bridge h2 { font-size:clamp(30px,3vw,43px); font-weight:650; letter-spacing:-.047em; }
 .bn-bridge-copy { font-size:13px; line-height:1.8; }
-/* Replace the giant full-bleed yellow billboard with a premium ivory closing panel. */
 .bn-cta { background:#e8e5dc; color:#171819; padding:101px 0 104px; border-top:4px solid #e5b73d; }
 .bn-cta:before { width:520px; height:520px; top:-320px; right:-40px; border-color:rgba(24,24,20,.055); box-shadow:0 0 0 85px rgba(24,24,20,.01); }
 .bn-cta-grid { grid-template-columns:1fr auto; align-items:center; }
@@ -1131,11 +1137,6 @@ const STYLES = `
   .bn-metric-number { font-size:21px; }
 }
 
-
-/* ====================================================================
-   BEE NEAR / INFRASTRUCTURE OBSERVATORY — block 02
-   Four asymmetric architectural pillars, not commodity metric cards.
-   ==================================================================== */
 .bn-infra { position:relative; isolation:isolate; padding:108px 0 118px; background:#101213; color:#f4f1e9; overflow:hidden; border-top:1px solid rgba(255,255,255,.075); border-bottom:1px solid rgba(255,255,255,.09); }
 .bn-infra-ambient { position:absolute; z-index:-1; inset:0; pointer-events:none; background:radial-gradient(ellipse at 84% 10%,rgba(245,190,30,.065),transparent 40%),radial-gradient(ellipse at 0% 100%,rgba(245,190,30,.022),transparent 47%); }
 .bn-infra-heading { display:grid; grid-template-columns:minmax(0,1.5fr) 180px; gap:60px; align-items:center; padding-bottom:40px; }
@@ -1214,16 +1215,6 @@ const STYLES = `
 }
 @media (prefers-reduced-motion:reduce) { .bn-infra-pillar:hover { transform:none; } }
 
-
-/* ===============================================================
-   TYPOGRAPHY + GRID QUALITY PASS / REVIEW 2026-10-16
-   Preserve the brand system and motion; improve readability at
-   normal browser zoom and keep the service diagrams in alignment.
-   =============================================================== */
-
-/* The two service cards share the SAME four CSS subgrid rows.
-   This avoids fragile pixel heights that break with long translations,
-   larger browser fonts or a 110% browser zoom. */
 .bn-solutions-grid {
   grid-template-columns:repeat(2,minmax(0,1fr));
   grid-auto-rows:auto;
@@ -1242,8 +1233,6 @@ const STYLES = `
 .bn-solution-points { flex:none; margin-bottom:27px; padding-top:4px; }
 .bn-solution-action { margin-top:0; }
 
-/* Real content must be readable at 100% without relying on browser zoom.
-   Small technical overlines remain small by design; paragraph text does not. */
 .bn-nav-links a { font-size:13px; }
 .bn-intro-right p { font-size:16px; line-height:1.78; }
 .bn-section-head-right h3 { font-size:19px; line-height:1.4; }
@@ -1263,7 +1252,6 @@ const STYLES = `
 .bn-bridge-copy,.bn-cta-copy,.bn-footer-brand p { font-size:15px; }
 .bn-footer-col a,.bn-footer-col span { font-size:13px; }
 
-/* Infrastructure is explanatory content, not a tiny monitoring terminal. */
 .bn-infra-heading p { font-size:16px; line-height:1.75; }
 .bn-infra-pillar { min-height:315px; }
 .bn-infra-pillar-head { margin-bottom:22px; }
@@ -1276,7 +1264,6 @@ const STYLES = `
 .bn-infra-console-head>span:last-child { font-size:10px; }
 .bn-infra-console-foot { font-size:10px; }
 
-/* Graceful fallback for browsers without CSS subgrid. */
 @supports not (grid-template-rows: subgrid) {
   .bn-solution { display:flex; flex-direction:column; }
   .bn-solution-intro { min-height:455px; }
@@ -1310,12 +1297,6 @@ const STYLES = `
   }
 }
 
-/* ===============================================================
-   FIRST-VIEW HERO / EXECUTIVE FIT
-   Fit the complete introductory message and COMI operating panel
-   into common desktop browser viewports without hiding any module.
-   Tablets and phones retain their natural vertical layout.
-   =============================================================== */
 @media (min-width:961px) {
   .bn-hero {
     min-height:100vh;
@@ -1340,7 +1321,6 @@ const STYLES = `
   .bn-hero-micro { margin-top:20px; }
   .bn-hero-bottom { bottom:10px; }
 
-  /* The deck has a compact, readable operational density. */
   .bn-deck { padding:12px 14px; }
   .bn-deck-top { padding:0 0 9px; }
   .bn-deck-visual { height:clamp(115px,18vh,158px); display:flex; align-items:center; justify-content:center; }
@@ -1353,7 +1333,6 @@ const STYLES = `
   .bn-wave--compact>span { max-height:30px; }
   .bn-deck-wave .bn-wave { width:44%; }
 
-  /* Four interactive stages and their description remain visible. */
   .bn-orch { margin-top:10px; }
   .bn-orch-heading { margin-bottom:7px; }
   .bn-orch-tab { min-height:48px; padding:7px 8px 9px; }
@@ -1369,8 +1348,6 @@ const STYLES = `
   .bn-deck-disclaimer { padding-top:8px; font-size:8px; }
 }
 
-/* Screens with a shorter browser viewport, e.g. laptops with browser
-   toolbars visible: save vertical space before sacrificing readability. */
 @media (min-width:961px) and (max-height:760px) {
   .bn-hero { padding-top:105px; padding-bottom:29px; }
   .bn-hero h1 { font-size:clamp(38px,3.05vw,49px); margin:14px 0; }
@@ -1384,8 +1361,6 @@ const STYLES = `
   .bn-orch-tab { min-height:44px; }
 }
 
-/* If the available desktop height is exceptionally small, avoid cropping:
-   the hero grows naturally and remains scrollable. */
 @media (min-width:961px) and (max-height:590px) {
   .bn-hero { padding-top:105px; padding-bottom:45px; }
   .bn-hero-bottom { display:none; }
@@ -1421,7 +1396,7 @@ export default function Welcome() {
 
   const closeDemo = React.useCallback(() => setDemoOpen(false), []);
   const flipLang = () => { i18n.changeLanguage(spanish ? 'en' : 'es'); setMenuOpen(false); };
-  const siteUrl = 'https://beenear-web.onrender.com'; // Replace with your final canonical domain when available.
+  const siteUrl = 'https://beenear-web.onrender.com';
   const metaDescription = 'AI-Powered Contact Center, Virtual Contact Center, BPO Nearshoring Services and AI Sales Intake. Bee Near combines conversational voice AI and human expertise.';
   const schema = {
     '@context': 'https://schema.org', '@graph': [
