@@ -103,7 +103,7 @@ const BLOG_CSS = `
 .bk-close-row { display:flex;gap:32px;justify-content:space-between;align-items:center; }
 .bk-close h2 { font:700 clamp(29px,3.1vw,45px)/1.2 Manrope,Arial,sans-serif;letter-spacing:-.055em;margin:17px 0 15px;max-width:700px; }
 .bk-close p { color:#a6aaa3;font-size:14px;line-height:1.7;max-width:560px; }
-.bk-close-link { width:94px;height:94px;display:flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid #817046;color:var(--bk-yellow);flex:none;transition:transform .25s,background .25s; }
+.bk-close-link { width:94px;height:94px;display:flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid #817046;color:var(--bk-yellow);flex:none;transition:transform .25s,background .2s; }
 .bk-close-link:hover { transform:rotate(45deg);background:#29251a; }
 .bk-footer { background:#101112;border-top:1px solid #343534;padding:61px 0 28px; }
 .bk-footer-cols { display:grid;grid-template-columns:1.5fr repeat(3,1fr);gap:39px;padding-bottom:58px; }
@@ -187,6 +187,7 @@ function BlogNav({ t, i18n, spanish }) {
     { href: '/nosotros', name: spanish ? 'Nosotros' : 'About' },
     { href: '/servicios', name: spanish ? 'Servicios' : 'Services' },
     { href: '/blog', name: 'Blog' },
+    { href: '/modelo-comercial', name: spanish ? 'Modelo Comercial' : 'Commercial Model' },
     { href: '/calculadora', name: spanish ? 'Calculadora de personal' : 'Staff calculator' }
   ];
   return <>
@@ -222,6 +223,7 @@ function BlogFooter({t,spanish}) {
         <Link href="/">{spanish ? 'Soluciones' : 'Solutions'}</Link>
         <Link href="/nosotros">{spanish ? 'Nosotros' : 'About'}</Link>
         <Link href="/servicios">{spanish ? 'Servicios' : 'Services'}</Link>
+        <Link href="/modelo-comercial">{spanish ? 'Modelo Comercial' : 'Commercial Model'}</Link>
       </div>
       <div>
         <h4>{spanish?'EXPLORAR':'EXPLORE'}</h4>

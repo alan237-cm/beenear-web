@@ -13,14 +13,12 @@ import {
  * Refined executive landing page. No new npm packages.
  * Required: React, @inertiajs/react, react-i18next, lucide-react.
  * Replace: resources/js/Pages/Welcome.jsx
- *
- * COMI: This is a visual preview, not a WebRTC integration.
- * Wallboard: Illustrative data, explicitly marked as simulated.
  */
 
 const CONTENT = {
   en: {
     nav: ['Solutions', 'The model', 'About us', 'Services', 'Insights'],
+    hiringModelLink: 'Commercial Model',
     calculatorLink: 'Staffing Calculator',
     contact: 'Let’s talk', language: 'Language',
     eyebrow: 'THE NEW STANDARD IN CUSTOMER OPERATIONS',
@@ -115,6 +113,7 @@ const CONTENT = {
   },
   es: {
     nav: ['Soluciones', 'El modelo', 'Nosotros', 'Servicios', 'Blog'],
+    hiringModelLink: 'Modelo Comercial',
     calculatorLink: 'Calculadora de personal',
     contact: 'Hablemos', language: 'Idioma',
     eyebrow: 'EL NUEVO ESTÁNDAR EN OPERACIONES CON CLIENTES',
@@ -383,7 +382,6 @@ function ControlDeck({ c, spanish }) {
   const [activeStep, setActiveStep] = useState(0);
   const selected = stages[activeStep];
 
-  // Estado con variación más amplia (subidas y bajadas simuladas de tráfico)
   const [metrics, setMetrics] = useState({
     firstContact: 1420,
     humanSales: 380,
@@ -393,10 +391,9 @@ function ControlDeck({ c, spanish }) {
   useEffect(() => {
     const interval = setInterval(() => {
       setMetrics((prev) => {
-        // Variación aleatoria que permite tanto sumar como restar (ej. de 1420 a 1400 y viceversa)
-        const deltaFirst = Math.floor(Math.random() * 31) - 15; // Entre -15 y +15
-        const deltaSales = Math.floor(Math.random() * 11) - 5;   // Entre -5 y +5
-        const randomQueue = Math.max(0, prev.queue + (Math.floor(Math.random() * 5) - 2)); // Entre -2 y +2, mínimo 0
+        const deltaFirst = Math.floor(Math.random() * 31) - 15;
+        const deltaSales = Math.floor(Math.random() * 11) - 5;
+        const randomQueue = Math.max(0, prev.queue + (Math.floor(Math.random() * 5) - 2));
 
         return {
           firstContact: Math.max(1300, prev.firstContact + deltaFirst),
@@ -1005,7 +1002,7 @@ const STYLES = `
 .bn-intro h2 em { color:#a88222; }
 .bn-intro-right p { font-size:14px; line-height:1.85; color:#656763; }
 .bn-intro-tags { margin-top:22px; gap:7px; }
-.bn-intro-tags span { border-color:#dcd9d1; font-size:8px; font-weight:650; letter-spacing:.3px; padding:8px 11px; }
+.bn-intro-tags span { border-color:rgba(255,255,255,.1); font-size:8px; font-weight:650; letter-spacing:.3px; padding:8px 11px; }
 .bn-solutions { padding:106px 0 111px; background:#141617; }
 .bn-section-head { grid-template-columns:minmax(0,1fr) minmax(0,.84fr); gap:60px; padding-bottom:35px; }
 .bn-section-head h2 { font-size:clamp(38px,3.8vw,56px); font-weight:700; letter-spacing:-.055em; line-height:1.12; margin-top:20px; }
@@ -1366,7 +1363,6 @@ const STYLES = `
   .bn-hero-bottom { display:none; }
 }
 
-
 @media(max-width:700px){.bn-brand-img{height:48px;max-width:124px}}
 `;
 
@@ -1433,6 +1429,7 @@ export default function Welcome() {
             <Link href="/nosotros">{c.nav[2]}</Link>
             <Link href="/servicios">{c.nav[3]}</Link>
             <Link href="/blog">{c.nav[4]}</Link>
+            <Link href="/modelo-comercial">{c.hiringModelLink}</Link>
             <Link href="/calculadora">{c.calculatorLink}</Link>
           </nav>
           <div className="bn-nav-actions">
@@ -1450,6 +1447,7 @@ export default function Welcome() {
             <Link href="/nosotros" onClick={() => setMenuOpen(false)}>{c.nav[2]}<ArrowUpRight size={15} /></Link>
             <Link href="/servicios" onClick={() => setMenuOpen(false)}>{c.nav[3]}<ArrowUpRight size={15} /></Link>
             <Link href="/blog" onClick={() => setMenuOpen(false)}>{c.nav[4]}<ArrowUpRight size={15} /></Link>
+            <Link href="/modelo-comercial" onClick={() => setMenuOpen(false)}>{c.hiringModelLink}<ArrowUpRight size={15} /></Link>
             <Link href="/calculadora" onClick={() => setMenuOpen(false)}>{c.calculatorLink}<ArrowUpRight size={15} /></Link>
             <Link href="/contacto" onClick={() => setMenuOpen(false)}>{c.contact}<ArrowUpRight size={15} /></Link>
             <button type="button" onClick={flipLang}>{spanish ? 'English' : 'Español'}<Globe2 size={15} /></button>

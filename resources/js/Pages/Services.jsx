@@ -8,6 +8,80 @@ import {
   ChevronRight, ShieldCheck, MoveUpRight,
 } from 'lucide-react';
 
+/* Componente interno: Modelo Comercial (Hiring Model) con estilo visual unificado */
+function HiringModelSection({ spanish }) {
+  const steps = [
+    {
+      number: '01',
+      title: spanish ? '1. Integración & Acceso VPN' : '1. Integration & VPN Access',
+      description: spanish 
+        ? 'Configuramos COMI Center, establecemos la seguridad por VPN y enlazamos las herramientas a tu medida.'
+        : 'We set up COMI Center, establish VPN security, and integrate tools to your exact needs.',
+    },
+    {
+      number: '02',
+      title: spanish ? '2. Piloto "Paga y Opera"' : '2. "Pay & Operate" Pilot',
+      description: spanish
+        ? 'Disfruta de 3 meses operando con total libertad, respaldado por IA de primer contacto y talento humano certificado.'
+        : 'Operate for 3 months with complete freedom, backed by first-contact AI and certified human talent.',
+    },
+    {
+      number: '03',
+      title: spanish ? '3. Evolución a la Medida' : '3. Tailored Evolution',
+      description: spanish
+        ? 'Al concluir el trimestre, evaluamos métricas en conjunto y definimos el esquema definitivo de crecimiento a largo plazo.'
+        : 'At the end of the trimester, we evaluate metrics together and define the definitive long-term growth plan.',
+    }
+  ];
+
+  return (
+    <section id="modelo-comercial" className="sv-model-commercial">
+      <div className="sv-shell">
+        {/* Header */}
+        <div className="sv-model-head">
+          <div className="sv-eyebrow"><i></i>{spanish ? 'MODELO COMERCIAL TRANSPARENTE' : 'TRANSPARENT COMMERCIAL MODEL'}</div>
+          <h2>{spanish ? 'Sin Plazos Forzosos. Paga, Opera y Valida.' : 'No Lock-in Contracts. Pay, Operate & Validate.'}</h2>
+          <p>
+            {spanish ? (
+              <>Olvídate de los contratos de BPO tradicionales que te atan por años. Durante nuestra <strong style={{color:'#fff'}}>prueba piloto de 3 meses</strong>, el esquema es directo: paga tu mensualidad y pon a operar tu infraestructura con total libertad.</>
+            ) : (
+              <>Forget about traditional BPO contracts that bind you for years. During our <strong style={{color:'#fff'}}>3-month pilot program</strong>, the approach is straightforward: pay your fee and operate your infrastructure freely.</>
+            )}
+          </p>
+        </div>
+
+        {/* Highlight Banner */}
+        <div className="sv-model-banner">
+          <div className="sv-model-banner-text">
+            <span className="sv-banner-kicker">{spanish ? 'FILOSOFÍA DE CRECIMIENTO' : 'GROWTH PHILOSOPHY'}</span>
+            <h3>{spanish ? 'Compromiso mutuo y renegociable' : 'Mutual & Renegotiable Commitment'}</h3>
+            <p>
+              {spanish 
+                ? 'Construimos una relación basada en resultados tangibles. En esta fase inicial de 3 meses no existen ataduras complejas, sino un compromiso ágil que evoluciona de manera natural hacia un esquema definitivo según el éxito de la operación.'
+                : 'We build relationships based on tangible results. In this initial 3-month phase, there are no complex obligations, just an agile commitment that naturally evolves based on operational success.'}
+            </p>
+          </div>
+          <div className="sv-model-pill">
+            <strong>3 {spanish ? 'Meses' : 'Months'}</strong>
+            <span>{spanish ? 'PILOTO SIN ATADURAS' : 'NO-LOCK-IN PILOT'}</span>
+          </div>
+        </div>
+
+        {/* Grid Steps */}
+        <div className="sv-model-steps">
+          {steps.map((step, idx) => (
+            <div key={idx} className="sv-model-card">
+              <span className="sv-model-num">{step.number}</span>
+              <h4>{step.title}</h4>
+              <p>{step.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* Bee Near — editorial page */
 const COPY = {
   es: {
@@ -335,6 +409,27 @@ const STYLES = `
 .sv-service--sales .sv-service-link { color:#ebc05b; }
 .sv-service-link svg { transition:transform .25s; }
 .sv-service-link:hover svg { transform:translate(4px,-4px); }
+
+/* Estilos de la sección Modelo Comercial */
+.sv-model-commercial { background:#111314; padding:96px 0 106px; border-top:1px solid rgba(255,255,255,.1); border-bottom:1px solid rgba(255,255,255,.1); }
+.sv-model-head { text-align:center; max-width:760px; margin:0 auto 56px; }
+.sv-model-head h2 { font:700 clamp(30px,3.5vw,46px)/1.18 Manrope,Arial,sans-serif; letter-spacing:-.05em; color:#f2f0eb; margin:14px 0 18px; }
+.sv-model-head p { color:#939591; font-size:15px; line-height:1.75; }
+.sv-model-banner { background:linear-gradient(145deg,#1b1d1e,#141617); border:1px solid rgba(255,255,255,.1); border-radius:12px; padding:36px 42px; margin-bottom:42px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:28px; box-shadow:0 18px 45px rgba(0,0,0,.35); }
+.sv-model-banner-text { flex:1; min-width:280px; }
+.sv-banner-kicker { color:#f5be1e; font-size:9px; font-weight:700; letter-spacing:1.6px; display:block; margin-bottom:8px; }
+.sv-model-banner h3 { font:700 22px/1.3 Manrope,Arial,sans-serif; color:#f2f0eb; margin-bottom:10px; }
+.sv-model-banner p { color:#939591; font-size:14px; line-height:1.7; max-width:680px; }
+.sv-model-pill { background:rgba(245,190,30,.08); border:1px solid rgba(245,190,30,.25); border-radius:8px; padding:20px 28px; text-align:center; min-width:200px; flex:none; }
+.sv-model-pill strong { display:block; font:800 32px/1 Manrope,Arial,sans-serif; color:#f5be1e; }
+.sv-model-pill span { font-size:9px; font-weight:700; letter-spacing:1.2px; color:#d2ac49; display:block; margin-top:6px; }
+.sv-model-steps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; }
+.sv-model-card { background:#151719; border:1px solid rgba(255,255,255,.1); border-radius:12px; padding:32px 26px; position:relative; overflow:hidden; transition:transform .3s ease; }
+.sv-model-card:hover { transform:translateY(-4px); }
+.sv-model-num { position:absolute; top:14px; right:20px; font:800 48px/1 Manrope,Arial,sans-serif; color:#f5be1e; opacity:.1; pointer-events:none; user-select:none; }
+.sv-model-card h4 { font:700 17px/1.4 Manrope,Arial,sans-serif; color:#f2f0eb; margin-bottom:10px; position:relative; z-index:2; }
+.sv-model-card p { color:#939591; font-size:13.5px; line-height:1.7; position:relative; z-index:2; }
+
 .sv-difference { position:relative; padding:110px 0; color:#161819; background:#f2f0eb; overflow:hidden; }
 .sv-difference-grid { display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); gap:clamp(38px,6vw,90px); align-items:center; }
 .sv-difference h2 { font:700 clamp(34px,3.4vw,50px)/1.19 Manrope,Arial,sans-serif; letter-spacing:-.053em; margin:21px 0; }
@@ -405,6 +500,7 @@ const STYLES = `
  .sv-console { margin-inline:auto; max-width:640px; }
  .sv-section-header { grid-template-columns:1fr; gap:20px; }
  .sv-section-note { margin:0; text-align:left; }
+ .sv-model-steps { grid-template-columns:1fr; }
  .sv-difference-grid { grid-template-columns:1fr; gap:40px; }
  .sv-bridge-layout { grid-template-columns:1fr 1.5fr; gap:28px; }
  .sv-footer-grid { grid-template-columns:repeat(3,1fr); }
@@ -500,6 +596,7 @@ export default function Services() {
             <Link href="/nosotros">{spanish ? 'Nosotros' : 'About'}</Link>
             <Link href="/servicios" aria-current="page">{spanish ? 'Servicios' : 'Services'}</Link>
             <Link href="/blog">Blog</Link>
+            <a href="#modelo-comercial">{spanish ? 'Modelo Comercial' : 'Commercial Model'}</a>
             <Link href="/calculadora">{spanish ? 'Calculadora de personal' : 'Staff calculator'}</Link>
           </nav>
           <div className="sv-nav-ops">
@@ -514,6 +611,7 @@ export default function Services() {
           <Link onClick={closeMenu} href="/nosotros">{spanish ? 'Nosotros' : 'About'}<ArrowUpRight size={15}/></Link>
           <Link onClick={closeMenu} href="/servicios" aria-current="page">{spanish ? 'Servicios' : 'Services'}<ArrowUpRight size={15}/></Link>
           <Link onClick={closeMenu} href="/blog">Blog<ArrowUpRight size={15}/></Link>
+          <a onClick={closeMenu} href="#modelo-comercial">{spanish ? 'Modelo Comercial' : 'Commercial Model'}<ArrowUpRight size={15}/></a>
           <Link onClick={closeMenu} href="/calculadora">{spanish ? 'Calculadora de personal' : 'Staff calculator'}<ArrowUpRight size={15}/></Link>
           <Link onClick={closeMenu} href="/contacto">{spanish ? 'Hablemos' : 'Let’s talk'}<ArrowUpRight size={15}/></Link>
         </nav>}
@@ -548,6 +646,9 @@ export default function Services() {
               </Reveal>
             </div>
           </section>
+
+          {/* Nueva Sección: Modelo Comercial */}
+          <HiringModelSection spanish={spanish} />
 
           <section className="sv-difference" id="why-bee-near">
             <div className="sv-shell sv-difference-grid">
@@ -594,7 +695,13 @@ export default function Services() {
           <div className="sv-shell">
             <div className="sv-footer-grid">
               <div><Link href="/"><Brand /></Link><p className="sv-footer-description">{t('footer_desc')}</p></div>
-              <div className="sv-footer-col"><h4>{w.footerServices}</h4><Link href="/servicios/contact-center">Contact Center</Link><Link href="/servicios/intake-sales">Intake Sales</Link><Link href="/servicios">{spanish ? 'Servicios' : 'Services'}</Link></div>
+              <div className="sv-footer-col">
+                <h4>{w.footerServices}</h4>
+                <Link href="/servicios/contact-center">Contact Center</Link>
+                <Link href="/servicios/intake-sales">Intake Sales</Link>
+                <Link href="/servicios">{spanish ? 'Servicios' : 'Services'}</Link>
+                <a href="#modelo-comercial">{spanish ? 'Modelo Comercial' : 'Commercial Model'}</a>
+              </div>
               <div className="sv-footer-col"><h4>{w.footerCompany}</h4><Link href="/nosotros">{spanish ? 'Nosotros' : 'About'}</Link><Link href="/blog">Blog</Link><Link href="/contacto">{spanish ? 'Hablemos' : 'Let’s talk'}</Link></div>
               <div className="sv-footer-col"><h4>{w.footerContact}</h4><a href="mailto:moreinfo@beenear.mx">moreinfo@beenear.mx</a><a href="tel:+12153180179">+1 (215) 318-0179</a><span>Ejército Nacional 373, CDMX</span></div>
             </div>

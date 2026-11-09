@@ -240,6 +240,7 @@ const CSS = `
 .ab-direction-card p { color:#a7a9a5; font-size:14px; line-height:1.82; max-width:515px; }
 .ab-card-bottom { height:1px; width:38px; background:#ddaf3a; margin-top:33px; transition:width .3s; }
 .ab-direction-card:hover .ab-card-bottom { width:90px; }
+
 .ab-values { background:#101112; padding:101px 0 110px; }
 .ab-values-head { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,.75fr); gap:75px; align-items:end; margin-bottom:39px; }
 .ab-values-head h2 { font:700 clamp(33px,3.35vw,49px)/1.2 Manrope,Arial,sans-serif; letter-spacing:-.052em; margin:18px 0 0; }
@@ -392,6 +393,8 @@ export default function About() {
             <Link href="/nosotros" aria-current="page">{spanish ? 'Nosotros' : 'About'}</Link>
             <Link href="/servicios">{spanish ? 'Servicios' : 'Services'}</Link>
             <Link href="/blog">Blog</Link>
+            {/* RUTA CORREGIDA AQUÍ */}
+            <Link href="/modelo-comercial">{spanish ? 'Modelo Comercial' : 'Commercial Model'}</Link>
             <Link href="/calculadora">{spanish ? 'Calculadora de personal' : 'Staff calculator'}</Link>
           </nav>
 
@@ -415,6 +418,8 @@ export default function About() {
             <Link href="/nosotros" aria-current="page" onClick={closeMenu}>{spanish ? 'Nosotros' : 'About'}<ArrowUpRight size={15}/></Link>
             <Link href="/servicios" onClick={closeMenu}>{spanish ? 'Servicios' : 'Services'}<ArrowUpRight size={15}/></Link>
             <Link href="/blog" onClick={closeMenu}>Blog<ArrowUpRight size={15}/></Link>
+            {/* RUTA CORREGIDA AQUÍ TAMBIÉN */}
+            <Link href="/modelo-comercial" onClick={closeMenu}>{spanish ? 'Modelo Comercial' : 'Commercial Model'}<ArrowUpRight size={15}/></Link>
             <Link href="/calculadora" onClick={closeMenu}>{spanish ? 'Calculadora de personal' : 'Staff calculator'}<ArrowUpRight size={15}/></Link>
             <Link href="/contacto" onClick={closeMenu}>{spanish ? 'Hablemos' : 'Let’s talk'}<ArrowUpRight size={15}/></Link>
           </nav>
@@ -527,6 +532,8 @@ export default function About() {
                 <Link href="/">{spanish ? 'Soluciones' : 'Solutions'}</Link>
                 <Link href="/nosotros">{spanish ? 'Nosotros' : 'About'}</Link>
                 <Link href="/servicios">{spanish ? 'Servicios' : 'Services'}</Link>
+                {/* RUTA CORREGIDA EN EL FOOTER */}
+                <Link href="/modelo-comercial">{spanish ? 'Modelo Comercial' : 'Commercial Model'}</Link>
               </div>
               <div className="ab-footer-col">
                 <h3>{w.reach}</h3>

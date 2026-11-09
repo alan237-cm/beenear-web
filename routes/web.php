@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\StaffingAdminController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -39,6 +40,46 @@ Route::get('/contacto', function () {
 });
 Route::post('/contacto', [ContactController::class, 'store'])->name('contact.store');
 
+Route::get('/modelo-comercial', function () {
+    return Inertia::render('HiringModelSection');
+})->name('hiringmodelsection');
+
+Route::get('/calculadora', function () {
+    return Inertia::render('StaffingCalculator');
+})->name('calculator');
+
+// Administración de la calculadora
+Route::prefix('calculadora/admin')->group(function () {
+    Route::get('/status', [StaffingAdminController::class, 'status'])->name('staffing.admin.status');
+    Route::post('/unlock', [StaffingAdminController::class, 'unlock'])
+        ->middleware('throttle:5,1')->name('staffing.admin.unlock');
+    Route::post('/lock', [StaffingAdminController::class, 'lock'])->name('staffing.admin.lock');
+});
+
+// Blog y artículos
+Route::get('/blog', function () {
+    return Inertia::render('Blog');
+})->name('blog');
+
+Route::get('/blog/{id}', function ($id) {
+    return Inertia::render('BlogArticle', [
+        'id' => (int) $id,
+    ]);
+})->whereNumber('id');
+
+Route::get('/blog/{slug}', function (string $slug) {
+    return Inertia::render('Blog/Show', [
+        'slug' => $slug,
+    ]);
+})->whereIn('slug', [
+    'inteligencia-artificial-atencion-cliente',
+    'atencion-cliente-crecimiento',
+    'automatiza-procesos',
+    'cada-contacto-oportunidad',
+    'menos-tareas-repetitivas',
+    'futuro-conversaciones-empresas-clientes',
+])->name('blog.show');
+
 
 // ==========================================
 // RUTAS PRIVADAS
@@ -54,46 +95,3 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
-Route::get('/blog', function () {
-    return Inertia::render('Blog');
-})->name('blog');
-
-Route::get('/blog/{id}', function ($id) {
-    return Inertia::render('BlogArticle', [
-        'id' => (int) $id,
-    ]);
-})->whereNumber('id');
-
-Route::get('/blog', function () {
-    return Inertia::render('Blog');
-})->name('blog');
-
-
-Route::get('/blog/{slug}', function (string $slug) {
-
-    return Inertia::render('Blog/Show', [
-        'slug' => $slug,
-    ]);
-
-})->whereIn('slug', [
-    'inteligencia-artificial-atencion-cliente',
-    'atencion-cliente-crecimiento',
-    'automatiza-procesos',
-    'cada-contacto-oportunidad',
-    'menos-tareas-repetitivas',
-    'futuro-conversaciones-empresas-clientes',
-])->name('blog.show');
-Route::get('/calculadora', function () {
-    return Inertia::render('StaffingCalculator');
-})->name('calculator');
-// Agregar al INICIO de routes/web.php junto con los demas imports:
-use App\Http\Controllers\StaffingAdminController;
-
-// Agregar las siguientes rutas en routes/web.php, fuera de grupos auth.
-// La ruta publica /calculadora debe seguir existiendo (no duplicarla).
-Route::prefix('calculadora/admin')->group(function () {
-    Route::get('/status', [StaffingAdminController::class, 'status'])->name('staffing.admin.status');
-    Route::post('/unlock', [StaffingAdminController::class, 'unlock'])
-        ->middleware('throttle:5,1')->name('staffing.admin.unlock');
-    Route::post('/lock', [StaffingAdminController::class, 'lock'])->name('staffing.admin.lock');
-});

@@ -174,21 +174,51 @@ function Reveal({children,className=''}){
 function PortfolioNav({t,i18n,spanish}){
   const [menu,setMenu]=useState(false),[scrolled,setScrolled]=useState(false);
   useEffect(()=>{const handler=()=>setScrolled(window.scrollY>40);handler();window.addEventListener('scroll',handler,{passive:true});return()=>window.removeEventListener('scroll',handler)},[]);
-  const links=[{href:'/',label:t('nav_home')},{href:'/nosotros',label:t('nav_about')},{href:'/servicios',label:t('nav_services')},{href:'/blog',label:'Blog'}];
+  
+  const links=[
+    {href:'/#solutions',label: spanish ? 'Soluciones' : 'Solutions'},
+    {href:'/#how-it-works',label: spanish ? 'El modelo' : 'The model'},
+    {href:'/nosotros',label:t('nav_about') || (spanish?'Nosotros':'About us')},
+    {href:'/servicios',label:t('nav_services') || (spanish?'Servicios':'Services')},
+    {href:'/blog',label:'Blog'},
+    {href:'/modelo-comercial',label: spanish ? 'Modelo Comercial' : 'Commercial Model'},
+    {href:'/calculadora',label: spanish?'Calculadora de personal':'Staffing Calculator'}
+  ];
+
   return <>
     <header className={`bp-nav${scrolled?' bp-nav--scrolled':''}`}>
       <Link href="/" aria-label="Bee Near"><Brand/></Link>
-      <nav className="bp-links" aria-label={spanish?'Navegación principal':'Main navigation'}>{links.map(link=><Link key={link.href} href={link.href} aria-current={link.href==='/servicios'?'page':undefined}>{link.label}</Link>)}</nav>
-      <div className="bp-nav-actions"><button type="button" className="bp-lang" onClick={()=>i18n.changeLanguage(spanish?'en':'es')} aria-label={spanish?'Change language to English':'Cambiar idioma a español'}><Globe2 size={15}/>{spanish?'EN':'ES'}</button><Link href="/contacto" className="bp-nav-cta">{t('nav_contact')}<ArrowUpRight size={15}/></Link><button type="button" className="bp-hamb" onClick={()=>setMenu(!menu)} aria-label={menu?(spanish?'Cerrar menú':'Close menu'):(spanish?'Abrir menú':'Open menu')} aria-expanded={menu}>{menu?<X size={20}/>:<Menu size={20}/>}</button></div>
+      <nav className="bp-links" aria-label={spanish?'Navegación principal':'Main navigation'}>
+        {links.map(link=><Link key={link.href} href={link.href} aria-current={link.href==='/servicios'?'page':undefined}>{link.label}</Link>)}
+      </nav>
+      <div className="bp-nav-actions">
+        <button type="button" className="bp-lang" onClick={()=>i18n.changeLanguage(spanish?'en':'es')} aria-label={spanish?'Change language to English':'Cambiar idioma a español'}>
+          <Globe2 size={15}/>{spanish?'EN':'ES'}
+        </button>
+        <Link href="/contacto" className="bp-nav-cta">
+          {spanish?'Hablemos':'Let’s talk'}<ArrowUpRight size={15}/>
+        </Link>
+        <button type="button" className="bp-hamb" onClick={()=>setMenu(!menu)} aria-label={menu?(spanish?'Cerrar menú':'Close menu'):(spanish?'Abrir menú':'Open menu')} aria-expanded={menu}>
+          {menu?<X size={20}/>:<Menu size={20}/>}
+        </button>
+      </div>
     </header>
-    {menu&&<nav className="bp-mobile" aria-label={spanish?'Navegación móvil':'Mobile navigation'}>{links.map(link=><Link href={link.href} key={link.href} onClick={()=>setMenu(false)}>{link.label}<ArrowUpRight size={16}/></Link>)}<Link href="/contacto" onClick={()=>setMenu(false)}>{t('nav_contact')}<ArrowUpRight size={16}/></Link></nav>}
+    {menu&&<nav className="bp-mobile" aria-label={spanish?'Navegación móvil':'Mobile navigation'}>
+      {links.map(link=><Link href={link.href} key={link.href} onClick={()=>setMenu(false)}>{link.label}<ArrowUpRight size={16}/></Link>)}
+      <Link href="/contacto" onClick={()=>setMenu(false)}>
+        {spanish?'Hablemos':'Let’s talk'}<ArrowUpRight size={16}/>
+      </Link>
+      <button type="button" onClick={()=>{i18n.changeLanguage(spanish?'en':'es'); setMenu(false);}}>
+        {spanish?'English':'Español'}<Globe2 size={15}/>
+      </button>
+    </nav>}
   </>;
 }
 function PortfolioClose({spanish}){
   return <section className="bp-close"><div className="bp-shell bp-close-inner"><div><Eyebrow>{spanish?'EL SIGUIENTE PASO':'THE NEXT STEP'}</Eyebrow><h2>{spanish?'Conversemos sobre tu siguiente proyecto.':'Let’s discuss your next project.'}</h2><p>{spanish?'Explora cómo nuestra combinación de tecnología y operación puede conectar mejor a tu empresa con sus clientes.':'Explore how our blend of technology and operations can help your business connect with its customers.'}</p></div><Link href="/contacto" aria-label={spanish?'Ir a contacto':'Go to contact'} className="bp-close-link"><ArrowUpRight size={33}/></Link></div></section>;
 }
 function PortfolioFooter({t,spanish}){
-  return <footer className="bp-footer"><div className="bp-shell"><div className="bp-footer-cols"><div className="bp-footer-brand"><Link href="/"><Brand footer/></Link><p>{t('footer_desc')}</p></div><div><h4>{t('footer_links')}</h4><Link href="/">{t('nav_home')}</Link><Link href="/nosotros">{t('nav_about')}</Link><Link href="/servicios">{t('nav_services')}</Link></div><div><h4>{spanish?'EXPLORAR':'EXPLORE'}</h4><Link href="/blog">Blog</Link><Link href="/contacto">{t('nav_contact')}</Link><a href="/docs/privacy_policy_for_website.pdf" target="_blank" rel="noopener noreferrer">{t('footer_privacy')}</a></div><div><h4>{t('footer_contact')}</h4><a href="mailto:moreinfo@beenear.mx">moreinfo@beenear.mx</a><a href="tel:+12153180179">+1 (215) 318-0179</a><span>Ejército Nacional 373, CDMX</span></div></div><div className="bp-footer-bottom"><span>© {new Date().getFullYear()} Bee Near. {t('footer_rights')}</span><span>HUMAN × INTELLIGENCE</span></div></div></footer>;
+  return <footer className="bp-footer"><div className="bp-shell"><div className="bp-footer-cols"><div className="bp-footer-brand"><Link href="/"><Brand footer/></Link><p>{t('footer_desc')}</p></div><div><h4>{t('footer_links')}</h4><Link href="/">{t('nav_home')}</Link><Link href="/nosotros">{t('nav_about')}</Link><Link href="/servicios">{t('nav_services')}</Link></div><div><h4>{spanish?'EXPLORAR':'EXPLORE'}</h4><Link href="/blog">Blog</Link><Link href="/contacto">{t('nav_contact')}</Link><a href="/docs/privacy_policy_for_website.pdf" target="_blank" rel="noopener noreferrer">{t('footer_privacy')}</a></div><div><h4>{t('footer_contact')}</h4><a href="mailto:moreinfo@beenear.mx">moreinfo@beenear.mx</a><a href="tel:+12153180179">+1 (215) 318-0179</a><span>Ejército Nacional 373, CDMX</span></div></div><div className="bp-footer-bottom"><span>© {new Date().getFullYear()} Bee Near. {t('footer_rights')}</span><div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}><Link href="/modelo-comercial">{spanish ? 'Modelo Comercial' : 'Commercial Model'}</Link><span>HUMAN × INTELLIGENCE</span></div></div></div></footer>;
 }
 
 const COPY={
@@ -251,7 +281,7 @@ export default function IntakeSales(){
       <div className="bp-tiles">{channels.map((item,i)=><Reveal key={i}><div className="bp-tile"><span className="bp-tile-index">0{i+1} / 03</span><item.icon className="bp-tile-icon" size={30} strokeWidth={1.55}/><h3>{item.title}</h3><p>{item.desc}</p></div></Reveal>)}</div>
     </div></section>
 
-    <section className="bp-section bp-section--light" style={{background:'#e8e4db',borderTop:'1px solid #d7d3c9'}}><div className="bp-shell"><Reveal><Eyebrow dark>{w.charge}</Eyebrow><h2 className="bp-section-title">{t('is_charge_title')}</h2></Reveal>
+    <section className="bp-section bp-section--light" id="modelo-comercial" style={{background:'#e8e4db',borderTop:'1px solid #d7d3c9'}}><div className="bp-shell"><Reveal><Eyebrow dark>{w.charge}</Eyebrow><h2 className="bp-section-title">{t('is_charge_title')}</h2></Reveal>
      <div className="bp-list">{charging.map((item,i)=><Reveal key={i}><div className="bp-list-row"><strong>0{i+1}</strong><h3>{item.title}</h3><p>{item.desc}</p></div></Reveal>)}</div>
      <Reveal><div className="bp-motto" aria-label={w.manifesto}>{MOTTOS.map(motto=><div key={motto}>{motto}</div>)}</div></Reveal>
     </div></section>

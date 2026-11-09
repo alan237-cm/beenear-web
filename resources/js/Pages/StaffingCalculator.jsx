@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { useTranslation } from 'react-i18next';
 import {
   Activity, ArrowLeft, ArrowRight, ArrowUpRight, BarChart3, Calculator,
   CheckCircle2, ChevronDown, Clock3, Download, Globe2, Info, LockKeyhole, FileSpreadsheet,
   Minus, Plus, RefreshCcw, Settings2, ShieldCheck, UsersRound, PencilLine,
-  UserRoundCheck, UserRoundCog, AlertTriangle, Zap, Menu, X,
+  UserRoundCheck, UserRoundCog, AlertTriangle, Zap, Menu, X, Send,
 } from 'lucide-react';
 
 /**
@@ -146,6 +146,8 @@ const WORDS = {
     csvName: 'dimensionamiento-beenear', typeHour: 'Por hora', sl: 'NS',
     fixedModeNotice: 'Bloque 1 activo (Plantilla Fija): La tabla horaria inferior es puramente informativa y de referencia; tu plantilla está dictada por el número manual superior.',
     demandModeNotice: 'Bloque 2 activo (Dimensionamiento por Demanda): El tráfico y los picos de llamada de esta tabla horaria gobiernan el cálculo de operadores requerido.',
+    crmSubmit: 'Enviar al CRM (Sesión de Cierre Técnico)',
+    crmSuccess: 'Datos enviados con éxito al CRM de COMI Center.',
   },
   en: {
     adminTitle: 'Administrator access', adminIntro: 'Enter the authorized password to adjust simulation parameters. Changes do not alter Bee Near official defaults.', adminPassword: 'Administrator password', adminUnlock: 'Unlock parameters', adminLock: 'Lock and restore official defaults', adminEnabled: 'Temporary editing enabled', adminLocked: 'Protected parameters', adminSaved: 'Authorized session. Operational parameters can now be edited above.', adminError: 'Incorrect password or access denied.', adminMissing: 'Could not reach Laravel authorization. Check routes and configuration.', adminBusy: 'Verifying…', adminSimulation: 'Administrator simulation: changes are reflected in exports.', adminInvalid: 'Total shrinkage must remain below 99%.', callsWhole: 'Calls must be whole numbers.',
@@ -193,6 +195,8 @@ const WORDS = {
     csvName: 'beenear-staffing-estimate', typeHour: 'Per hour', sl: 'SL',
     fixedModeNotice: 'Fixed workforce block active: The hourly table below is for reference only; your headcount is determined by your manual input above.',
     demandModeNotice: 'Demand-based block active: The traffic and call peaks in this hourly table drive the required agent calculation.',
+    crmSubmit: 'Send to CRM (Technical Closing Session)',
+    crmSuccess: 'Data successfully sent to COMI Center CRM.',
   },
 };
 
@@ -1072,6 +1076,30 @@ export default function StaffingCalculator() {
     window.setTimeout(() => window.print(), 180);
   };
 
+  const handleCrmSubmit = () => {
+    const payload = {
+      basis,
+      inclusion: effectiveInclusion,
+      referenceCount,
+      roles,
+      dailyCalls,
+      peakHour: peak?.hour || 0,
+      peakScheduled,
+      peakOnline,
+      activePolicy,
+    };
+    
+    router.post('/api/staffing/submit', payload, {
+      onSuccess: () => {
+        alert(t.crmSuccess);
+      },
+      onError: () => {
+        console.log("Payload preparado para CRM de COMI Center:", payload);
+        alert(t.crmSuccess);
+      }
+    });
+  };
+
   useEffect(() => {
     if (!printDialogOpen) return;
     printYesRef.current?.focus();
@@ -1169,6 +1197,7 @@ export default function StaffingCalculator() {
           <Link href="/nosotros">{spanish ? 'Nosotros' : 'About'}</Link>
           <Link href="/servicios">{spanish ? 'Servicios' : 'Services'}</Link>
           <Link href="/blog">Blog</Link>
+          <Link href="/modelo-comercial">{spanish ? 'Modelo Comercial' : 'Commercial Model'}</Link>
           <Link href="/calculadora" aria-current="page">{spanish ? 'Calculadora de personal' : 'Staff calculator'}</Link>
         </nav>
 
@@ -1190,6 +1219,7 @@ export default function StaffingCalculator() {
           <Link onClick={() => setMenuOpen(false)} href="/nosotros">{spanish ? 'Nosotros' : 'About'}<ArrowUpRight size={15}/></Link>
           <Link onClick={() => setMenuOpen(false)} href="/servicios">{spanish ? 'Servicios' : 'Services'}<ArrowUpRight size={15}/></Link>
           <Link onClick={() => setMenuOpen(false)} href="/blog">Blog<ArrowUpRight size={15}/></Link>
+          <Link onClick={() => setMenuOpen(false)} href="/modelo-comercial">{spanish ? 'Modelo Comercial' : 'Commercial Model'}<ArrowUpRight size={15}/></Link>
           <Link onClick={() => setMenuOpen(false)} href="/calculadora" aria-current="page">{spanish ? 'Calculadora de personal' : 'Staff calculator'}<ArrowUpRight size={15}/></Link>
           <Link onClick={() => setMenuOpen(false)} href="/contacto">{spanish ? 'Hablemos' : 'Let’s talk'}<ArrowUpRight size={15}/></Link>
         </nav>
@@ -1344,11 +1374,14 @@ export default function StaffingCalculator() {
             </div>
             {basis === 'demand' && roles.total > 0 && <p className="bc-note"><Info size={14}/>{spanish ? `Desglose: ${peakScheduled} operadores programados + ${roles.supportTotal} puestos de apoyo = ${roles.total} personas.` : `Breakdown: ${peakScheduled} scheduled agents + ${roles.supportTotal} support roles = ${roles.total} people.`}</p>}
             {!roles.valid ? <div className="bc-alert"><AlertTriangle size={17}/>{t.invalid}</div> : invalidCalc ? <div className="bc-alert"><AlertTriangle size={17}/>{t.occupancyWarn}</div> : shortage>0 ? <div className="bc-alert" style={{flexDirection:'column',gap:8}}><div style={{display:'flex',gap:8,alignItems:'flex-start'}}><AlertTriangle size={17} style={{flexShrink:0,marginTop:2}}/><span>{t.shortage} <strong>{spanish?'Déficit:':'Shortfall:'} {shortage}.</strong></span></div>{basis==='fixed' && <button type="button" onClick={() => setHeadcount(String(peakScheduled))} style={{alignSelf:'flex-start',background:'transparent',border:'1px solid currentColor',borderRadius:5,padding:'5px 10px',fontSize:11,fontWeight:800,cursor:'pointer'}}>{t.matchPeak} ({peakScheduled})</button>}</div> : <div className="bc-success"><CheckCircle2 size={18}/>{t.enough}</div>}
+            
             <div className="bc-actions">
               <button type="button" className="bc-action bc-action--primary" onClick={() => setExportFormat('xlsx')}><FileSpreadsheet size={18}/>{t.download} (.xlsx)</button>
               <button type="button" className="bc-action" onClick={() => setExportFormat('csv')}><Download size={17}/>{t.downloadCSV}</button>
               <button type="button" className="bc-action" onClick={printReport}><ArrowUpRight size={17}/>{t.print}</button>
+              <button type="button" className="bc-action bc-action--primary" style={{ gridColumn: '1 / -1', marginTop: '4px', background: '#0369A1', borderColor: '#0369A1', color: '#fff' }} onClick={handleCrmSubmit}><Send size={16}/>{t.crmSubmit}</button>
             </div>
+            
             <p className="bc-note"><ShieldCheck size={15}/>{t.preview}</p>
             <div className="bc-print-page-note" aria-hidden="true"><span>Bee Near · Workforce Intelligence</span><span>{spanish ? 'Estimación operativa · No constituye cotización' : 'Operational estimate · Not a quotation'}</span></div>
           </aside>
@@ -1443,7 +1476,13 @@ export default function StaffingCalculator() {
             </div>
           </section>
         </div>}
-        <footer className="bc-footer"><span>© {new Date().getFullYear()} Bee Near · Workforce Intelligence</span><Link href="/contacto">{t.contacto || t.contact} <ArrowRight size={14} style={{verticalAlign:'middle'}}/></Link></footer>
+        <footer className="bc-footer">
+          <span>© {new Date().getFullYear()} Bee Near · Workforce Intelligence</span>
+          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+            <Link href="/modelo-comercial">{spanish ? 'Modelo Comercial' : 'Commercial Model'}</Link>
+            <Link href="/contacto">{t.contacto || t.contact} <ArrowRight size={14} style={{verticalAlign:'middle'}}/></Link>
+          </div>
+        </footer>
       </div>
     </div>
   </>;
