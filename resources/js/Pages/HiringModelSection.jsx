@@ -49,7 +49,7 @@ function Nav({ spanish, i18n, t }) {
           <button
             type="button"
             onClick={() => i18n.changeLanguage(spanish ? 'en' : 'es')}
-            className="flex items-center gap-1.5 text-xs font-bold text-[#e9e9e4] bg-transparent"
+            className="flex items-center gap-1.5 text-xs font-bold text-[#e9e9e4] bg-transparent cursor-pointer"
           >
             <Globe2 size={15} />
             {spanish ? 'EN' : 'ES'}
@@ -109,7 +109,7 @@ function Footer({ spanish, t }) {
             <img src="/images/beenear-imagotipo-dark.png" alt="Bee Near" className="h-10 w-auto" />
           </Link>
           <p className="text-xs leading-relaxed text-[#9fa49c]">
-            {t('footer_desc') || 'Interacciones con IA. Resultados centrados en las personas.'}
+            {t('footer_desc') || (spanish ? 'Interacciones con IA. Resultados centrados en las personas.' : 'AI interactions. People-centered results.')}
           </p>
         </div>
 
@@ -163,18 +163,24 @@ export default function CommercialModel() {
   const steps = [
     {
       number: '01',
-      title: '1. Integración & Acceso VPN',
-      description: 'Configuramos COMI Center, establecemos la seguridad por VPN y enlazamos las herramientas a tu medida.',
+      title: spanish ? '1. Integración & Acceso VPN' : '1. Integration & VPN Access',
+      description: spanish 
+        ? 'Configuramos COMI Center, establecemos la seguridad por VPN y enlazamos las herramientas a tu medida.' 
+        : 'We configure COMI Center, establish VPN security, and link the tools tailored to your needs.',
     },
     {
       number: '02',
-      title: '2. Piloto "Paga y Opera"',
-      description: 'Disfruta de 3 meses operando con total libertad, respaldado por IA de primer contacto y talento humano certificado.',
+      title: spanish ? '2. Piloto "Paga y Opera"' : '2. "Pay & Operate" Pilot',
+      description: spanish 
+        ? 'Disfruta de 3 meses operando con total libertad, respaldado por IA de primer contacto y talento humano certificado.' 
+        : 'Enjoy 3 months of operating with total freedom, backed by first-contact AI and certified human talent.',
     },
     {
       number: '03',
-      title: '3. Evolución a la Medida',
-      description: 'Al concluir el trimestre, evaluamos métricas en conjunto y definimos el esquema definitivo de crecimiento a largo plazo.',
+      title: spanish ? '3. Evolución a la Medida' : '3. Custom Evolution',
+      description: spanish 
+        ? 'Al concluir el trimestre, evaluamos métricas en conjunto y definimos el esquema definitivo de crecimiento a largo plazo.' 
+        : 'At the end of the quarter, we evaluate metrics together and define the final long-term growth scheme.',
     }
   ];
 
@@ -193,14 +199,18 @@ export default function CommercialModel() {
             {/* Header */}
             <div className="text-center max-w-3xl mx-auto mb-16">
               <span className="text-[10px] font-bold text-[#f5be1e] uppercase tracking-[2px]">
-                MODELO COMERCIAL TRANSPARENTE
+                {spanish ? 'MODELO COMERCIAL TRANSPARENTE' : 'TRANSPARENT COMMERCIAL MODEL'}
               </span>
               <h2 className="text-3xl md:text-5xl font-extrabold text-[#f4f1e9] mt-3 mb-5 font-['Manrope',Arial,sans-serif] tracking-tight">
-                Sin Plazos Forzosos. Paga, Opera y Valida.
+                {spanish ? 'Sin Plazos Forzosos. Paga, Opera y Valida.' : 'No Mandatory Terms. Pay, Operate & Validate.'}
               </h2>
               <p className="text-sm md:text-base text-[#939591] leading-relaxed">
-                Olvídate de los contratos de BPO tradicionales que te atan por años. Durante nuestra{' '}
-                <strong className="text-white">prueba piloto de 3 meses</strong>, el esquema es directo: paga tu mensualidad y pon a operar tu infraestructura con total libertad.
+                {spanish ? 'Olvídate de los contratos de BPO tradicionales que te atan por años. Durante nuestra' : 'Forget traditional BPO contracts that tie you down for years. During our'}
+                {' '}
+                <strong className="text-white">
+                  {spanish ? 'prueba piloto de 3 meses' : '3-month pilot test'}
+                </strong>
+                {spanish ? ', el esquema es directo: paga tu mensualidad y pon a operar tu infraestructura con total libertad.' : ', the scheme is direct: pay your monthly fee and get your infrastructure running with total freedom.'}
               </p>
             </div>
 
@@ -208,20 +218,24 @@ export default function CommercialModel() {
             <div className="bg-gradient-to-br from-[#1b1d1e] to-[#141617] border border-white/10 rounded-xl p-8 md:p-10 mb-12 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl relative overflow-hidden">
               <div className="flex-1">
                 <span className="text-[9px] font-bold text-[#f5be1e] uppercase tracking-[1.6px]">
-                  Filosofía de Crecimiento
+                  {spanish ? 'Filosofía de Crecimiento' : 'Growth Philosophy'}
                 </span>
                 <h3 className="text-xl md:text-2xl font-bold text-[#f4f1e9] mt-2 mb-3 font-['Manrope',Arial,sans-serif]">
-                  Compromiso mutuo y renegociable
+                  {spanish ? 'Compromiso mutuo y renegociable' : 'Mutual and renegotiable commitment'}
                 </h3>
                 <p className="text-sm text-[#939591] leading-relaxed">
-                  Construimos una relación basada en resultados tangibles. En esta fase inicial de 3 meses no existen ataduras complejas, sino un compromiso ágil que evoluciona de manera natural hacia un esquema definitivo según el éxito de la operación.
+                  {spanish 
+                    ? 'Construimos una relación basada en resultados tangibles. En esta fase inicial de 3 meses no existen ataduras complejas, sino un compromiso ágil que evoluciona de manera natural hacia un esquema definitivo según el éxito de la operación.'
+                    : 'We build relationships based on tangible results. In this initial 3-month phase, there are no complex ties, just an agile commitment that naturally evolves into a definitive scheme based on operational success.'}
                 </p>
               </div>
 
               <div className="bg-[#f5be1e]/10 border border-[#f5be1e]/30 rounded-lg px-8 py-6 text-center min-w-[220px]">
-                <span className="block text-3xl md:text-4xl font-extrabold text-[#f5be1e] font-['Manrope',Arial,sans-serif]">3 Meses</span>
+                <span className="block text-3xl md:text-4xl font-extrabold text-[#f5be1e] font-['Manrope',Arial,sans-serif]">
+                  {spanish ? '3 Meses' : '3 Months'}
+                </span>
                 <span className="text-[9px] text-[#d2ac49] font-bold uppercase tracking-[1.2px] mt-1 block">
-                  Piloto Sin Ataduras
+                  {spanish ? 'Piloto Sin Ataduras' : 'No-Strings Pilot'}
                 </span>
               </div>
             </div>

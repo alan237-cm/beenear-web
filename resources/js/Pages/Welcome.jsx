@@ -127,7 +127,7 @@ const CONTENT = {
     first: 'Primer contacto con IA', human: 'Ventas y atención humana', queue: 'En espera',
     interactions: 'LLAMADAS ATENDIDAS POR COMI', qualified: 'TRANSFERENCIAS A HUMANOS', instant: 'COLA ILUSTRATIVA',
     signalLabel: 'MOTOR DE CONVERSACIONES', signalState: 'SIMULACIÓN DE ACTIVIDAD DE VOZ',
-    operators: 'CAPAS DE ORQUESTACIÓN', simulated: 'Datos ilustrativos; no corresponden a operaciones en vivo',
+    operators: ' CAPAS DE ORQUESTACIÓN', simulated: 'Datos ilustrativos; no corresponden a operaciones en vivo',
     ticker: ['IA CONVERSACIONAL DE VOZ', 'NEARSHORING BPO', 'ATENCIÓN INTELIGENTE', 'VENTAS CON IA', 'OPERACIONES HUMANAS + IA', 'SERVICIO OMNICANAL'],
     introIndex: '01 / OTRO ENFOQUE',
     introLead: 'La tecnología debe hacer cada conexión humana', introHighlight: 'más valiosa.',
