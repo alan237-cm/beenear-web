@@ -212,6 +212,28 @@ export default function Contact() {
   const w = spanish ? copy.es : copy.en;
   const { data, setData, post, processing, reset, errors } = useForm({ name: '', email: '', phone: '', message: '' });
 
+  // Efecto para inyectar dinámicamente el script del widget de InterAcom
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://comi.interacom.mx/static/js/comi-widget.js';
+    script.setAttribute('data-tenant', 'beenear');
+    script.setAttribute('data-mode', 'all');
+    script.setAttribute('data-position', 'bottom-right');
+    script.async = true;
+
+    document.body.appendChild(script);
+
+    // Limpieza al desmontar el componente (evita duplicar el script si navegas entre páginas de Inertia)
+    return () => {
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+      // Opcional: limpiar elementos globales creados por el widget si deja contenedores huérfanos en el body
+      const widgetContainer = document.getElementById('comi-widget-root'); // o el selector que use el widget
+      if (widgetContainer) widgetContainer.remove();
+    };
+  }, []);
+
   const submit = (e) => {
     e.preventDefault();
     post('/contacto', {
